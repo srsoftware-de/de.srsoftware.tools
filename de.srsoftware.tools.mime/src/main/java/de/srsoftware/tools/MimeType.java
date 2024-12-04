@@ -6,6 +6,7 @@ import java.io.IOException;
 
 public class MimeType {
 	public static final String MIME_DIA     = "image/dia";
+	public static final String MIME_HTML    = "text/html";
 	public static final String MIME_JPG     = "image/jpeg";
 	public static final String MIME_LATEX   = "text/x-tex";
 	public static final String MIME_PDF     = "image/pdf";
