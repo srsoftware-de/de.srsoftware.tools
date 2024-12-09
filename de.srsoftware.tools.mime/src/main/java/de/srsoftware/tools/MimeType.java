@@ -13,6 +13,7 @@ public class MimeType {
 	public static final String MIME_PNG     = "image/png";
 	public static final String MIME_SVG     = "image/svg";
 	public static final String MIME_UNKNOWN = "content/unknown";
+	public static final String MIME_XML     = "application/xml";
 
 	public static String guessMime(File file) {
 		var parts     = file.getName().split("\\.");
