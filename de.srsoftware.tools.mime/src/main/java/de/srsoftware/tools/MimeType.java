@@ -12,6 +12,7 @@ public class MimeType {
 	public static final String MIME_PDF     = "image/pdf";
 	public static final String MIME_PNG     = "image/png";
 	public static final String MIME_SVG     = "image/svg";
+	public static final String MIME_TXT     = "text/plain";
 	public static final String MIME_UNKNOWN = "content/unknown";
 	public static final String MIME_XML     = "application/xml";
 

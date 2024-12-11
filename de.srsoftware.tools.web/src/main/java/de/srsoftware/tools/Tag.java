@@ -10,7 +10,7 @@ import java.util.*;
 public class Tag extends HashMap<String, String> {
 	private final List<Tag> children = new ArrayList<>();
 	private final String    type;
-	private String content = null;
+	private String	        content = null;
 
 	public Tag(String type) {
 		this.type = type;
@@ -61,7 +61,7 @@ public class Tag extends HashMap<String, String> {
 	@SuppressWarnings("unchecked")
 	public <T extends Tag> T content(String content) {
 		this.content = content == null ? null : content.trim();
-		return (T) this;
+		return (T)this;
 	}
 
 	public <T extends Tag> T id(String id) {
@@ -103,7 +103,7 @@ public class Tag extends HashMap<String, String> {
 		return sb.toString();
 	}
 
-	protected void indent(StringBuilder sb, int indent, int currentIndentation){
+	protected void indent(StringBuilder sb, int indent, int currentIndentation) {
 		sb.append(" ".repeat(currentIndentation)).append("<").append(type);
 		for (Entry<String, String> entry : entrySet()) sb.append(" ").append(entry.getKey()).append("=\"").append(entry.getValue()).append("\"");
 		if (children.isEmpty()) {
@@ -115,15 +115,15 @@ public class Tag extends HashMap<String, String> {
 		} else {
 			sb.append(">\n");
 			for (Tag child : children) {
-				child.indent(sb,indent,currentIndentation+indent);
+				child.indent(sb, indent, currentIndentation + indent);
 			}
 			sb.append(" ".repeat(currentIndentation)).append("</").append(type).append(">\n");
 		}
 	}
 
-	public String toString(int indent){
+	public String toString(int indent) {
 		StringBuilder sb = new StringBuilder();
-		indent(sb,indent,0);
+		indent(sb, indent, 0);
 		return sb.toString();
 	}
 
