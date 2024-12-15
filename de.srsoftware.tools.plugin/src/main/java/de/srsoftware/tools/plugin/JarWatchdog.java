@@ -16,12 +16,12 @@ import java.util.stream.Stream;
 public class JarWatchdog extends Thread {
 	private static final System.Logger LOGGER = ColorLogger.of(JarWatchdog.class).setLogLevel(DEBUG);
 
-	private final Set<File>    dirs	       = new HashSet<>();
-	private ClassLoader        context     = null;
-	private Duration           delay       = Duration.ofSeconds(30);
-	private Set<File>          loadedFiles = new HashSet<>();
-	private Set<ClassListener> listeners   = new HashSet<>();
-	private Set<String>        warned      = new HashSet<>();
+	private final Set<File> dirs	           = new HashSet<>();
+	private ClassLoader     context	           = null;
+	private Duration        delay	           = Duration.ofSeconds(30);
+	private final Set<File> loadedFiles        = new HashSet<>();
+	private final Set<ClassListener> listeners = new HashSet<>();
+	private final Set<String> warned           = new HashSet<>();
 
 	public JarWatchdog addDirectory(File dir) {
 		dirs.add(dir);

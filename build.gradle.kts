@@ -6,10 +6,9 @@ repositories {
     mavenCentral()
 }
 
-
 spotless {
     java {
-        target("*/src/*/java/**/*.java")
+        target("**/src/**/java/**/*.java")
         removeUnusedImports()
         importOrder()
         clangFormat("18.1.8").style("file:config/clang-format")

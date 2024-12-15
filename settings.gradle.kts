@@ -1,5 +1,9 @@
 rootProject.name = "de.srsoftware.tools"
+include("de.srsoftware.tools.http")
+include("de.srsoftware.tools.jdbc")
+include("de.srsoftware.tools.logging")
 include("de.srsoftware.tools.mime")
 include("de.srsoftware.tools.optionals")
 include("de.srsoftware.tools.plugin")
+include("de.srsoftware.tools.util")
 include("de.srsoftware.tools.web")
