@@ -1,6 +1,7 @@
 /* © SRSoftware 2024 */
 package de.srsoftware.tools;
 
+import static de.srsoftware.tools.Strings.hex;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.security.MessageDigest;
@@ -35,16 +36,5 @@ public class UuidHasher implements PasswordHasher<String> {
 	@Override
 	public String salt(String hashedPassword) {
 		return hashedPassword.split("@", 2)[1];
-	}
-
-	/**
-	 * get a hexadecimal representation of the byte array
-	 * @param bytes a byte array to convert to a hex string
-	 * @return a string containing a hexadecimal representation of the given byte array
-	 */
-	public static String hex(byte[] bytes) {
-		StringBuilder sb = new StringBuilder(bytes.length * 2);
-		for (byte b : bytes) sb.append(String.format("%02x", b));
-		return sb.toString();
 	}
 }
