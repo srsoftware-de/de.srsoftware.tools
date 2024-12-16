@@ -16,27 +16,20 @@ spotless {
     }
 }
 
-
 subprojects {
     group = "de.srsoftware"
-    version = "1.0-SNAPSHOT"
 
-    apply(plugin = "java")
-    apply(plugin = "maven-publish")
-    apply(plugin = "com.diffplug.spotless")
+    apply(plugin = "java-library")
 
     repositories {
         mavenLocal()
         mavenCentral()
     }
 
-
-
     val implementation by configurations
     val compileOnly by configurations
     val testImplementation by configurations
     val testRuntimeOnly by configurations
-
 
     dependencies {
         testImplementation(platform("org.junit:junit-bom:5.10.0"))
