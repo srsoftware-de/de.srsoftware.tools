@@ -1,5 +1,5 @@
 /* © SRSoftware 2024 */
-package de.srsoftware.logging;
+package de.srsoftware.tools;
 
 import java.util.HashMap;
 import java.util.Map;

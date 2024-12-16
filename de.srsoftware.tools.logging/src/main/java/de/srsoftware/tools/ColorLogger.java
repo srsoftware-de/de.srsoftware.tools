@@ -1,5 +1,5 @@
 /* © SRSoftware 2024 */
-package de.srsoftware.logging;
+package de.srsoftware.tools;
 
 import static de.srsoftware.logging.ConsoleColors.*;
 import static java.lang.System.Logger.Level.*;
@@ -19,6 +19,18 @@ public class ColorLogger implements System.Logger {
 
 	public ColorLogger(String name) {
 		this.name = name;
+	}
+
+	private static String colorize(String message, int severity) {
+		var           color = severity >= ERROR.getSeverity() ? RED : severity >= WARNING.getSeverity() ? YELLOW : severity >= INFO.getSeverity() ? WHITE_BRIGHT : WHITE;
+		var           date  = new Date();
+		var           day   = DATE.format(date);
+		StringBuilder sb    = new StringBuilder();
+		if (!day.equals(lastDate)) {
+			lastDate = day;
+			sb.append(WHITE).append(day).append("\n");
+		}
+		return sb.append(WHITE).append(TIME.format(date)).append(" ").append(color).append(message).append(RESET).toString();
 	}
 
 	@Override
@@ -46,20 +58,12 @@ public class ColorLogger implements System.Logger {
 		}
 	}
 
+	public static ColorLogger of(Class<?> clazz) {
+		return new ColorLogger(clazz.getSimpleName());
+	}
+
 	public ColorLogger setLogLevel(Level level) {
 		rootLevel = level.getSeverity();
 		return this;
-	}
-
-	private static String colorize(String message, int severity) {
-		var           color = severity >= ERROR.getSeverity() ? RED : severity >= WARNING.getSeverity() ? YELLOW : severity >= INFO.getSeverity() ? WHITE_BRIGHT : WHITE;
-		var           date  = new Date();
-		var           day   = DATE.format(date);
-		StringBuilder sb    = new StringBuilder();
-		if (!day.equals(lastDate)) {
-			lastDate = day;
-			sb.append(WHITE).append(day).append("\n");
-		}
-		return sb.append(WHITE).append(TIME.format(date)).append(" ").append(color).append(message).append(RESET).toString();
 	}
 }

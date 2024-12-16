@@ -3,7 +3,7 @@ package de.srsoftware.tools.plugin;
 
 import static java.lang.System.Logger.Level.*;
 
-import de.srsoftware.logging.ColorLogger;
+import de.srsoftware.tools.ColorLogger;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;

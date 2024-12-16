@@ -34,7 +34,6 @@ subprojects {
     dependencies {
         testImplementation(platform("org.junit:junit-bom:5.10.0"))
         testImplementation("org.junit.jupiter:junit-jupiter")
-        implementation("de.srsoftware:logging:1.0.0")
     }
 
     tasks.withType<Test>() {

@@ -4,7 +4,7 @@ package de.srsoftware.tools.jdbc;
 import static java.lang.System.Logger.Level.DEBUG;
 import static java.lang.System.Logger.Level.INFO;
 
-import de.srsoftware.logging.ColorLogger;
+import de.srsoftware.tools.ColorLogger;
 import java.lang.System.Logger;
 import java.sql.*;
 import java.util.*;
