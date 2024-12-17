@@ -1,7 +1,6 @@
 /* © SRSoftware 2024 */
 package de.srsoftware.tools;
 
-import static de.srsoftware.tools.Optionals.absentIfBlank;
 
 import java.util.*;
 
@@ -73,6 +72,10 @@ public class Tag extends TreeMap<String, String> {
 		return this.type != null && this.type.equalsIgnoreCase(type);
 	}
 
+	public static Tag of(String type) {
+		return new Tag(type);
+	}
+
 	public <T extends Tag> T pos(int x, int y) {
 		return attr("x", x).attr("y", y);
 	}
@@ -130,7 +133,7 @@ public class Tag extends TreeMap<String, String> {
 	}
 
 	protected void indent(StringBuilder sb, int indent, int currentIndentation) {
-		boolean       empty = type == null || type.isBlank();
+		boolean empty = type == null || type.isBlank();
 		if (!empty) {
 			sb.append(" ".repeat(currentIndentation)).append("<").append(type);
 			for (var entry : entrySet()) {
@@ -145,7 +148,7 @@ public class Tag extends TreeMap<String, String> {
 			if (!empty) {
 				sb.append(">").append("\n");
 			}
-			for (Tag child : children) child.indent(sb,indent,currentIndentation+indent);
+			for (Tag child : children) child.indent(sb, indent, currentIndentation + indent);
 			if (!empty) sb.append(" ".repeat(currentIndentation));
 			if (!empty) sb.append("</").append(type).append(">\n");
 		}

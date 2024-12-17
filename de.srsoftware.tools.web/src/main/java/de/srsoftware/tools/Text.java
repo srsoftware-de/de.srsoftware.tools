@@ -1,6 +1,7 @@
+/* © SRSoftware 2024 */
 package de.srsoftware.tools;
 
-public class Text extends Tag{
+public class Text extends Tag {
 	private final String content;
 
 	public Text(String content) {

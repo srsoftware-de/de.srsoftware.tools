@@ -1,17 +1,11 @@
 /* © SRSoftware 2024 */
 package de.srsoftware.tools;
 
-public class OpeningTag extends Payload<Tag> {
-	/**
-	 * Wrap a payload as a successful instance of Result
-	 *
-	 * @param object the payload object
-	 */
-	public OpeningTag(Tag object) {
-		super(object);
+public class OpeningTag extends Tag {
+	public OpeningTag(String type) {
+		super(type);
 	}
-
-	public static OpeningTag of(Tag tag) {
-		return new OpeningTag(tag);
+	public static OpeningTag of(String type) {
+		return new OpeningTag(type);
 	}
 }

@@ -1,23 +1,12 @@
 /* © SRSoftware 2024 */
 package de.srsoftware.tools;
 
-public class ClosedTag implements Result<Tag> {
-	private final Tag tag;
-
-	/**
-	 * Wrap a payload as a successful instance of Result
-	 *
-	 * @param tag the payload tag
-	 */
-	public ClosedTag(Tag tag) {
-		this.tag = tag;
+public class ClosedTag extends Tag {
+	public ClosedTag(String type) {
+		super(type);
 	}
 
-	public static Result<?> of(Tag tag) {
-		return new ClosedTag(tag);
-	}
-
-	public Tag get() {
-		return tag;
+	public static ClosedTag of(String type) {
+		return new ClosedTag(type);
 	}
 }

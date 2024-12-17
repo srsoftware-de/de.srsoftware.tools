@@ -4,85 +4,72 @@ package de.srsoftware.tools;
 import static java.lang.Character.*;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class XMLParser {
 	public static Result<Tag> parse(InputStream input) throws IOException, ParseException {
 		var result = parse(new PushbackReader(new InputStreamReader(input)));
-		if (result instanceof OpeningTag openingTag) return openingTag;
-		return Error.of("Failed!");
+		return result == null || result.isEmpty() ? Error.of("nope!") : Payload.of(result.removeFirst());
 	}
 
-	private static Result<?> parse(PushbackReader input) throws IOException {
-		skipWhitespace(input);
-		int c = read(input);
-		while (c == '<') {
-			String token  = readUntil(input, ">", false);
-			var    result = convert(token);
-			if (result instanceof ClosedTag closedTag) {
-				return closedTag;
+	private static List<Tag> parse(PushbackReader input) throws IOException {
+		var tags   = new ArrayList<Tag>();
+		while (true) {
+			var prefix = readUntil(input, "<", true);
+			if (!prefix.isBlank()) {
+				System.out.println("encountered some text: " + prefix);
+				tags.add(new Text(prefix));
 			}
-			if (result instanceof ClosingTag closing) {
-				return closing;
-			}
-			if (result instanceof OpeningTag opening) {
-				var       tag	= opening.get();
-				Result<?> child = null;
-				do {
-					child = parse(input);
-					if (child instanceof OpeningTag ot) {
-						// System.out.printf("adding to %s: %s\n",tag.flat(), ot.get().flat());
-						tag.add(ot.get());
-						continue;
-					}
-					if (child instanceof ClosedTag ct) {
-						// System.out.printf("adding to %s: %s\n",tag.flat(), ct.get().flat());
-						tag.add(ct.get());
-						continue;
-					}
-					if (child instanceof ClosingTag closing) {
-						if (closing.matches(tag)) {
-							closing.get().children().forEach(tag::add);
-							return opening;
+			int c = read(input);
+			if (c <= 0) break;
+			if (c == '<') {
+				var token = readUntil(input, ">", false);
+				var result = convert(token);
+				if (result instanceof OpeningTag) {
+					var children = parse(input);
+					if (!children.isEmpty() && children.getLast() instanceof ClosingTag closingTag){
+						if (result.is(closingTag.type())) {
+							children.removeLast();
+						} else {
+							children.removeLast();
+							children.forEach(result::add);
+							tags.add(result);
+							break;
 						}
-						System.out.println("Closing: " + closing.get().flat());
-						System.out.println("Parent: " + tag.flat());
-						closing.get().add(tag);
-						return closing;
+
 					}
-					if (child instanceof ContentTag content) {
-						// System.out.printf("setting content of %s: %s\n", tag,content.get());
-						tag.content(content.get());
-						continue;
-					}
-				} while (child != null);
-				return opening;
-			}
-			if (result instanceof Comment comment) {
-				skipWhitespace(input);
-				c = read(input);
+					children.forEach(result::add);
+					tags.add(result);
+				}
+				if (result instanceof ClosedTag) {
+					tags.add(result);
+				}
+				if (result instanceof ClosingTag) {
+					tags.add(result);
+					break;
+				}
 			}
 		}
-		if (c > 0) input.unread(c);
-		String token = readUntil(input, "<", true);
-		return token.isBlank() ? null : ContentTag.of(token);
+		return tags;
 	}
 
-	private static Result<?> convert(String token) throws IOException {
+	private static Tag convert(String token) throws IOException {
 		if (token.startsWith("/")) return ClosingTag.of(token.substring(1));
 		if (token.startsWith("!")) return Comment.of(token);
 		return toTag(token);
 	}
 
-	private static Result<?> toTag(String token) throws IOException {
+	private static Tag toTag(String token) throws IOException {
 		token	= token.trim();
 		boolean closing = token.endsWith("/");
 		if (closing) token = token.substring(0, token.length() - 2).trim();
-		if (token.isBlank()) return Error.of("encountered empty tag!");
+		if (token.isBlank()) return null;
 		var parts = token.split(" ", 2);
 		var type  = parts[0];
-		var tag   = new Tag(type);
+		Tag tag   = closing ? ClosedTag.of(type) : OpeningTag.of(type);
 		if (parts.length > 1) fetchAttributes(tag, parts[1]);
-		return closing ? ClosedTag.of(tag) : OpeningTag.of(tag);
+		return tag;
 	}
 
 	private static void fetchAttributes(Tag tag, String data) throws IOException {

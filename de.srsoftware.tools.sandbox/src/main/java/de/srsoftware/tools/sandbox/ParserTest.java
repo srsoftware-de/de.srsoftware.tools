@@ -1,7 +1,8 @@
 /* © SRSoftware 2024 */
 package de.srsoftware.tools.sandbox;
 
-import de.srsoftware.tools.OpeningTag;
+import de.srsoftware.tools.Payload;
+import de.srsoftware.tools.Tag;
 import de.srsoftware.tools.XMLParser;
 import java.io.IOException;
 import java.net.URI;
@@ -15,9 +16,10 @@ public class ParserTest {
 		URL url    = new URI("https://srsoftware.de").toURL();
 		var input  = url.openConnection().getInputStream();
 		var result = XMLParser.parse(input);
-		if (result instanceof OpeningTag tag) {
-			System.out.println(tag.get().toString(2));
-			Files.writeString(Path.of("/tmp/test.html"), tag.get().toString(2));
+		if (result instanceof Payload<?> tag) {
+			var code = ((Tag)tag.get()).toString(2);
+			System.out.println(code);
+			Files.writeString(Path.of("/tmp/test.html"), code);
 		}
 	}
 }
