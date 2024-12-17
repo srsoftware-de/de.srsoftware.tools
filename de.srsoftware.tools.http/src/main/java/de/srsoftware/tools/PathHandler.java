@@ -18,6 +18,9 @@ import java.util.stream.Stream;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+/**
+ * implementation of HttpHandler that attaches to a given path
+ */
 public abstract class PathHandler implements HttpHandler {
 	public static final String  AUTHORIZATION    = "Authorization";
 	public static final String  CONTENT_TYPE     = "Content-Type";
@@ -32,23 +35,55 @@ public abstract class PathHandler implements HttpHandler {
 
 	private String[] paths;
 
+	/**
+	 * Object to hold auth data
+	 * @param userId the user's id
+	 * @param pass the assigned plaintext password
+	 */
 	public record BasicAuth(String userId, String pass) {
 	}
 
+	/**
+	 * this class allows to bind a PathHandler to a HttpServer instance
+	 */
 	public class Bond {
+		/**
+		 * create a new bond
+		 * @param paths the paths to bind to
+		 */
 		Bond(String[] paths) {
 			PathHandler.this.paths = paths;
 		}
+
+		/**
+		 * create a context on the server object for every path stored in this Bond
+		 * @param server the server to bind to
+		 * @return this PathHandler object
+		 */
 		public PathHandler on(HttpServer server) {
 			for (var path : paths) server.createContext(path, PathHandler.this);
 			return PathHandler.this;
 		}
 	}
 
+	/**
+	 * create a response with status code 400, send payload
+	 * @param ex the HttpExchange to write to
+	 * @param bytes the payload
+	 * @return true – result is only created to allow return badRequest(…)
+	 * @throws IOException if writing to the HttpEchange object fails
+	 */
 	public static boolean badRequest(HttpExchange ex, byte[] bytes) throws IOException {
 		return sendContent(ex, HTTP_BAD_REQUEST, bytes);
 	}
 
+	/**
+	 * create a response with status code 400, send payload
+	 * @param ex the HttpExchange to write to
+	 * @param o the payload
+	 * @return true – result is only created to allow return badRequest(…)
+	 * @throws IOException if writing to the HttpEchange object fails
+	 */
 	public static boolean badRequest(HttpExchange ex, Object o) throws IOException {
 		return sendContent(ex, HTTP_BAD_REQUEST, o);
 	}
@@ -99,6 +134,12 @@ public abstract class PathHandler implements HttpHandler {
 
 		/******* begin of static methods *************/
 
+		/**
+		 * extracts the body of an HttpExchange
+		 * @param ex the exchange to process
+		 * @return the content of the HttpExchange
+		 * @throws IOException if reading the body failed
+		 */
 		public static String body(HttpExchange ex) throws IOException {
 			return new String(ex.getRequestBody().readAllBytes(), UTF_8);
 		}
@@ -166,6 +207,14 @@ public abstract class PathHandler implements HttpHandler {
 			return sendEmptyResponse(HTTP_MOVED_TEMP, ex);
 		}
 
+		/**
+		 * create a response given status code, send payload
+		 * @param ex the HttpExchange to write to
+		 * @param status the status code
+		 * @param bytes the payload
+		 * @return true – result is only created to allow return badRequest(…)
+		 * @throws IOException if writing to the HttpEchange object fails
+		 */
 		public static boolean sendContent(HttpExchange ex, int status, byte[] bytes) throws IOException {
 			LOG.log(DEBUG, "sending {0} response…", status);
 			ex.sendResponseHeaders(status, bytes.length);
@@ -173,6 +222,14 @@ public abstract class PathHandler implements HttpHandler {
 			return true;
 		}
 
+		/**
+		 * create a response given status code, send payload
+		 * @param ex the HttpExchange to write to
+		 * @param status the status code
+		 * @param o the payload
+		 * @return true – result is only created to allow return badRequest(…)
+		 * @throws IOException if writing to the HttpEchange object fails
+		 */
 		public static boolean sendContent(HttpExchange ex, int status, Object o) throws IOException {
 			if (o instanceof List<?> list) o = new JSONArray(list);
 			if (o instanceof Map<?, ?> map) o = new JSONObject(map);

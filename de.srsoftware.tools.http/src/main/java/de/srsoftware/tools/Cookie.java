@@ -10,6 +10,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This class allows to add cookies to a header object
+ */
 public abstract class Cookie implements Map.Entry<String, String> {
 	static final System.Logger LOG = System.getLogger(SessionToken.class.getSimpleName());
 	private final String       key;
@@ -20,12 +23,25 @@ public abstract class Cookie implements Map.Entry<String, String> {
 		setValue(value);
 	}
 
+	/**
+	 * add this cookie instance to a Headers object
+	 * @param headers the headers object, to which this cookie is added
+	 * @return this cookie
+	 * @param <T> the type of this cookie
+	 */
+	@SuppressWarnings("unchecked")
 	public <T extends Cookie> T addTo(Headers headers) {
 		LOG.log(INFO, "sending cookie {0}={1}", key, value);
 		headers.add("Set-de.srsoftware.tools.Cookie", "%s=%s".formatted(key, value));
 		return (T)this;
 	}
 
+	/**
+	 * add this cookie instance to a Headers object
+	 * @param ex the HttpExchange object, to which this cookie is added
+	 * @return this cookie
+	 * @param <T> the type of this cookie
+	 */
 	public <T extends Cookie> T addTo(HttpExchange ex) {
 		return this.addTo(ex.getResponseHeaders());
 	}
@@ -40,8 +56,13 @@ public abstract class Cookie implements Map.Entry<String, String> {
 		return value;
 	}
 
+	/**
+	 * list the cookies of a given HttpExchange object
+	 * @param ex the HttpExchange object
+	 * @return the list of cookies
+	 */
 	protected static List<String> of(HttpExchange ex) {
-		return nullable(ex.getRequestHeaders().get("de.srsoftware.tools.Cookie")).stream().flatMap(List::stream).flatMap(s -> Arrays.stream(s.split(";"))).map(String::trim).peek(cookie -> LOG.log(INFO, "received cookie {0}", cookie)).toList();
+		return nullable(ex.getRequestHeaders().get("Cookie")).stream().flatMap(List::stream).flatMap(s -> Arrays.stream(s.split(";"))).map(String::trim).peek(cookie -> LOG.log(INFO, "received cookie {0}", cookie)).toList();
 	}
 
 	@Override

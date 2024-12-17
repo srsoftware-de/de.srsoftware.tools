@@ -1,54 +1,72 @@
 /* © SRSoftware 2024 */
 package de.srsoftware.tools;
 
-
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import org.json.JSONObject;
 
 /**
- * Generic Error class for methods that return Result
- * @param <T> The return type for actual results
+ * This class may be returned by methods whose execution failed.
+ * It may carry additional data about the cause of the failure
+ * @param <None> This result is not expected to carry a payload in the sense of a positive execution result.
  */
-public class Error<T> implements Result<T> {
-	private final String        cause;
-	private Map<String, Object> metadata;
+public class Error<None> implements Result<None> {
+	private final List<Exception> exceptions = new ArrayList<>();
+	private final Map<String, Object> data   = new HashMap<>();
+	private final String	  message;
 
 	/**
-	 * Create an Error carrying its cause
-	 * @param cause a description why the error was returned
+	 * create a new Error object carrying the passed message
+	 * @param message the message to add to the Error object
 	 */
-	public Error(String cause) {
-		this.cause = cause;
+	public Error(String message) {
+		this.message = message;
 	}
 
 	/**
-	 * Get the cause of the error.
-	 * @return return the message describing what caused the error
+	 * add an exception to this Error object
+	 * @param exception the exception to add
+	 * @return this object
 	 */
-	public String cause() {
-		return cause;
-	}
-
-	@Override
-	public boolean isError() {
-		return true;
+	public Error<None> add(Exception exception) {
+		exceptions.add(exception);
+		return this;
 	}
 
 	/**
-	 * Create an Error object carrying the given cause and add more metadata
-	 * @param cause a description why the error was returned
-	 * @param tokens additional metadata
-	 * @return the created Error
-	 * @param <T> the type of the result that was expected
+	 * Add values to the data map
+	 * @param tokens a list of objects. The even elements are used as key in the data map, the odd ones as values.
+	 * @return this Error object
 	 */
-	public static <T> Error<T> message(String cause, Object... tokens) {
-		var err      = new Error<T>(cause);
-		err.metadata = new HashMap<>();
-		for (int i = 0; i < tokens.length - 1; i += 2) {
-			err.metadata.put(tokens[i].toString(), tokens[i + 1]);
-		}
-		return err;
+	public Error<None> addData(Object... tokens) {
+		for (int i = 0; i < tokens.length - 1; i += 2) data.put(tokens[i].toString(), tokens[i + 1]);
+		return this;
+	}
+
+	/**
+	 * return the data map
+	 * @return metadata added to this Error object
+	 */
+	public Map<String, Object> data() {
+		return data;
+	}
+
+	/**
+	 * get the list of Exceptions added to this Error object
+	 * @return the list of Exceptions
+	 */
+	public List<Exception> exceptions() {
+		return exceptions;
+	}
+
+	/**
+	 * create a new Error object with the message formatted with the given fills
+	 * @param message a message string, which may contain placeholders
+	 * @param fills the objects to replace the placeholders
+	 * @return a new Error object populated with the formatted message
+	 * @param <None> any type
+	 */
+	public static <None> Error<None> format(String message, Object... fills) {
+		return new Error<None>(message.formatted(fills));
 	}
 
 	/**
@@ -56,8 +74,34 @@ public class Error<T> implements Result<T> {
 	 * @return the json object describing the error.
 	 */
 	public JSONObject json() {
-		var json = new JSONObject(Map.of("error", cause));
-		if (metadata != null) json.put("metadata", metadata);
+		var json = new JSONObject(Map.of("error", message));
+		if (!exceptions.isEmpty()) json.put("exceptions", exceptions);
+		if (!data.isEmpty()) json.put("data", data);
 		return json;
+	}
+
+	/**
+	 * create a new Error object carrying the passed message
+	 * @param message the message to add to the Error object
+	 * @return a new Error object populated with the passed message
+	 * @param <None> any type
+	 */
+	public static <None> Error<None> of(String message) {
+		return new Error<None>(message);
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder(message);
+		for (var ex : exceptions) sb.append("\n").append(ex.getMessage());
+		return sb.toString();
+	}
+
+	/**
+	 * Wrap an error object as Optional
+	 * @return an Optional carrying this Error object
+	 */
+	public Optional<Error<None>> wrap() {
+		return Optional.of(this);
 	}
 }
