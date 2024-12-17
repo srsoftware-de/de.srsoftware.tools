@@ -3,6 +3,8 @@ package de.srsoftware.tools;
 
 import java.util.*;
 
+import static de.srsoftware.tools.Optionals.absentIfBlank;
+
 /**
  * @author Stephan Richter, 2018-2024
  *
@@ -92,11 +94,12 @@ public class Tag extends HashMap<String, String> {
 	public String toString() {
 		StringBuilder sb = new StringBuilder("<" + type);
 		for (Entry<String, String> entry : entrySet()) sb.append(" ").append(entry.getKey()).append("=\"").append(entry.getValue()).append("\"");
-		if (children.isEmpty()) {
+		if (children.isEmpty() && absentIfBlank(content).isEmpty()) {
 			sb.append(" />");
 		} else {
 			sb.append(">");
 			for (Tag child : children) sb.append(child.toString());
+			absentIfBlank(content).ifPresent(sb::append);
 			sb.append("</").append(type).append(">");
 		}
 
