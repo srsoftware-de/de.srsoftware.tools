@@ -62,7 +62,7 @@ public class Tag extends TreeMap<String, String> {
 
 	@SuppressWarnings("unchecked")
 	public <T extends Tag> T content(String content) {
-		this.content = content == null ? null : content.trim();
+		this.content = content;
 		return (T)this;
 	}
 
@@ -90,7 +90,7 @@ public class Tag extends TreeMap<String, String> {
 		return attr("title", t);
 	}
 
-	public String flat(){
+	public String flat() {
 		StringBuilder sb = new StringBuilder("<" + type);
 		for (var entry : entrySet()) {
 			sb.append(" ").append(entry.getKey());
@@ -109,39 +109,52 @@ public class Tag extends TreeMap<String, String> {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder("<" + type);
-		for (var entry : entrySet()) {
-			sb.append(" ").append(entry.getKey());
-			var value = entry.getValue();
-			if (value != null) sb.append("=\"").append(entry.getValue()).append("\"");
+		StringBuilder sb    = new StringBuilder();
+		boolean       empty = type == null || type.isBlank();
+		if (!empty) {
+			sb.append("<").append(type);
+			for (var entry : entrySet()) {
+				sb.append(" ").append(entry.getKey());
+				var value = entry.getValue();
+				if (value != null) sb.append("=\"").append(entry.getValue()).append("\"");
+			}
 		}
 		if (children.isEmpty() && absentIfBlank(content).isEmpty()) {
 			sb.append(" />");
 		} else {
-			sb.append(">");
+			if (!empty) sb.append(">");
 			for (Tag child : children) sb.append(child.toString());
-			absentIfBlank(content).ifPresent(sb::append);
-			sb.append("</").append(type).append(">");
+			if (content != null && !content.isBlank()) sb.append(content);
+			if (!empty) sb.append("</").append(type).append(">");
 		}
 
 		return sb.toString();
 	}
 
 	protected void indent(StringBuilder sb, int indent, int currentIndentation) {
-		sb.append(" ".repeat(currentIndentation)).append("<").append(type);
-		for (var entry : entrySet()) sb.append(" ").append(entry.getKey()).append("=\"").append(entry.getValue()).append("\"");
-		if (children.isEmpty()) {
-			if (content == null) {
-				sb.append(" />\n");
-			} else {
-				sb.append(">").append(content).append("</").append(type).append(">\n");
+		boolean       empty = type == null || type.isBlank();
+		if (!empty) {
+			sb.append(" ".repeat(currentIndentation)).append("<").append(type);
+			for (var entry : entrySet()) {
+				sb.append(" ").append(entry.getKey());
+				var value = entry.getValue();
+				if (value != null) sb.append("=\"").append(entry.getValue()).append("\"");
 			}
+		}
+		if (children.isEmpty() && absentIfBlank(content).isEmpty()) {
+			sb.append(" />\n");
 		} else {
-			sb.append(">\n");
-			for (Tag child : children) {
-				child.indent(sb, indent, currentIndentation + indent);
+			if (!empty) {
+				sb.append(">");
+				if (content == null || content.isBlank()) sb.append("\n");
 			}
-			sb.append(" ".repeat(currentIndentation)).append("</").append(type).append(">\n");
+			for (Tag child : children) child.indent(sb,indent,currentIndentation+indent);
+			if (content != null && !content.isBlank()) {
+				sb.append(content);
+			} else {
+				if (!empty) sb.append(" ".repeat(currentIndentation));
+			}
+			if (!empty) sb.append("</").append(type).append(">\n");
 		}
 	}
 

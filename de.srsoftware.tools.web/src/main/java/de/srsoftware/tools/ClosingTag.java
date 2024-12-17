@@ -1,23 +1,22 @@
 /* © SRSoftware 2024 */
 package de.srsoftware.tools;
 
-public class ClosingTag implements Result<String> {
-	private final String token;
-
-	private ClosingTag(String token) {
-		this.token = token;
+public class ClosingTag implements Result<Tag> {
+	private final Tag tag;
+	private ClosingTag(Tag token) {
+		this.tag = token;
 	}
 
-	public static ClosingTag of(String token) {
-		return new ClosingTag(token);
+	public static ClosingTag of(String type) {
+		return new ClosingTag(new Tag(type));
 	}
 
-	public boolean matches(Tag tag){
+	public boolean matches(Tag tag) {
 		if (tag == null) return false;
-		return token.equals(tag.type());
+		return this.tag.type().equals(tag.type());
 	}
 
-	public String token() {
-		return token;
+	public Tag get() {
+		return tag;
 	}
 }

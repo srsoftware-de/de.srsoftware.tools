@@ -54,7 +54,7 @@ public class XmlParserTest {
 		assertInstanceOf(OpeningTag.class, result);
 		var tag = ((OpeningTag)result).get();
 		System.out.println(tag.toString(2));
-		assertEquals("<html lang=\"en\"><head><meta role=\"broken\"><legal>content</legal><body>TEst</body></meta></head></html>", tag.toString());
+		assertEquals("<html lang=\"en\"><head><meta role=\"broken\"><legal>content</legal></meta></head><body>Test</body></html>", tag.toString());
 	}
 
 	@Test
@@ -65,5 +65,15 @@ public class XmlParserTest {
 		var tag = ((OpeningTag)result).get();
 		System.out.println(tag.toString(2));
 		assertEquals("<html lang=\"en\"><head><meta charset=\"UTF-8\" /></head><body><h1>Test</h1></body></html>", tag.toString());
+	}
+
+	@Test
+	public void testParseMixed() throws IOException, ParseException {
+		var code   = load("mixed_content.html");
+		var result = XMLParser.parse(code);
+		assertInstanceOf(OpeningTag.class, result);
+		var tag = ((OpeningTag)result).get();
+		System.out.println(tag.toString(2));
+		assertEquals("<html lang=\"en\"><head><meta charset=\"UTF-8\" /><title>Title</title></head><body><p>\nThis <em>paragraph</em> contains <b>mixed, <i>nested</i></b> Content\n</p></body></html>", tag.toString());
 	}
 }

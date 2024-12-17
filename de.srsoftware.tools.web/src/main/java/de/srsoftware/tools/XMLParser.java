@@ -30,22 +30,27 @@ public class XMLParser {
 				do {
 					child = parse(input);
 					if (child instanceof OpeningTag ot) {
-						//System.out.printf("adding to %s: %s\n",tag.flat(), ot.get().flat());
+						// System.out.printf("adding to %s: %s\n",tag.flat(), ot.get().flat());
 						tag.add(ot.get());
 						continue;
 					}
 					if (child instanceof ClosedTag ct) {
-						//System.out.printf("adding to %s: %s\n",tag.flat(), ct.get().flat());
+						// System.out.printf("adding to %s: %s\n",tag.flat(), ct.get().flat());
 						tag.add(ct.get());
 						continue;
 					}
 					if (child instanceof ClosingTag closing) {
-						if (closing.matches(tag)) return opening;
-						//System.out.println("Closing: "+closing.token());
-						//System.out.println("Parent: "+tag.flat());
+						if (closing.matches(tag)) {
+							closing.get().children().forEach(tag::add);
+							return opening;
+						}
+						System.out.println("Closing: " + closing.get().flat());
+						System.out.println("Parent: " + tag.flat());
+						closing.get().add(tag);
+						return closing;
 					}
 					if (child instanceof Content content) {
-						//System.out.printf("setting content of %s: %s\n", tag,content.get());
+						// System.out.printf("setting content of %s: %s\n", tag,content.get());
 						tag.content(content.get());
 						continue;
 					}
