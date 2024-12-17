@@ -12,7 +12,6 @@ import java.util.*;
 public class Tag extends TreeMap<String, String> {
 	private final List<Tag> children = new ArrayList<>();
 	private final String    type;
-	private String	        content = null;
 
 	public Tag(String type) {
 		this.type = type;
@@ -50,19 +49,19 @@ public class Tag extends TreeMap<String, String> {
 
 	@SuppressWarnings("unchecked")
 	public <T extends Tag> T clazz(Collection<String> classes) {
-		put("class", String.join(" ", classes));
+		attr("class", String.join(" ", classes));
 		return (T)this;
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T extends Tag> T clazz(String... classes) {
-		put("class", String.join(" ", classes));
+		attr("class", String.join(" ", classes));
 		return (T)this;
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T extends Tag> T content(String content) {
-		this.content = content;
+		add(new Text(content));
 		return (T)this;
 	}
 
@@ -98,7 +97,7 @@ public class Tag extends TreeMap<String, String> {
 			if (value != null) sb.append("=\"").append(entry.getValue()).append("\"");
 			break;
 		}
-		if (children.isEmpty() && absentIfBlank(content).isEmpty()) {
+		if (children.isEmpty()) {
 			sb.append(" />");
 		} else {
 			sb.append(">…</").append(type).append(">");
@@ -119,12 +118,11 @@ public class Tag extends TreeMap<String, String> {
 				if (value != null) sb.append("=\"").append(entry.getValue()).append("\"");
 			}
 		}
-		if (children.isEmpty() && absentIfBlank(content).isEmpty()) {
+		if (children.isEmpty()) {
 			sb.append(" />");
 		} else {
 			if (!empty) sb.append(">");
 			for (Tag child : children) sb.append(child.toString());
-			if (content != null && !content.isBlank()) sb.append(content);
 			if (!empty) sb.append("</").append(type).append(">");
 		}
 
@@ -141,19 +139,14 @@ public class Tag extends TreeMap<String, String> {
 				if (value != null) sb.append("=\"").append(entry.getValue()).append("\"");
 			}
 		}
-		if (children.isEmpty() && absentIfBlank(content).isEmpty()) {
+		if (children.isEmpty()) {
 			sb.append(" />\n");
 		} else {
 			if (!empty) {
-				sb.append(">");
-				if (content == null || content.isBlank()) sb.append("\n");
+				sb.append(">").append("\n");
 			}
 			for (Tag child : children) child.indent(sb,indent,currentIndentation+indent);
-			if (content != null && !content.isBlank()) {
-				sb.append(content);
-			} else {
-				if (!empty) sb.append(" ".repeat(currentIndentation));
-			}
+			if (!empty) sb.append(" ".repeat(currentIndentation));
 			if (!empty) sb.append("</").append(type).append(">\n");
 		}
 	}

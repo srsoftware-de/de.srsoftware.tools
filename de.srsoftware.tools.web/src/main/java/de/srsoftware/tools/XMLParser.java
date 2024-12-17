@@ -49,7 +49,7 @@ public class XMLParser {
 						closing.get().add(tag);
 						return closing;
 					}
-					if (child instanceof Content content) {
+					if (child instanceof ContentTag content) {
 						// System.out.printf("setting content of %s: %s\n", tag,content.get());
 						tag.content(content.get());
 						continue;
@@ -64,7 +64,7 @@ public class XMLParser {
 		}
 		if (c > 0) input.unread(c);
 		String token = readUntil(input, "<", true);
-		return token.isBlank() ? null : Content.of(token);
+		return token.isBlank() ? null : ContentTag.of(token);
 	}
 
 	private static Result<?> convert(String token) throws IOException {

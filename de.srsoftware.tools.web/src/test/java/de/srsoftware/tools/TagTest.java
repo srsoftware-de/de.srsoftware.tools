@@ -13,15 +13,13 @@ public class TagTest {
 				.add(new Tag("head").add(new Tag("title").content("Title")))
 				.add(new Tag("body").attr("id","nice").add(new Tag("h1").id("test").content("this is the headline")))
 				.toString(2);
-		var expected = "<html>\n  <head>\n    <title>Title</title>\n  </head>\n  <body id=\"nice\">\n    <h1 id=\"test\">this is the headline</h1>\n  </body>\n</html>\n";
+		var expected = "<html>\n  <head>\n    <title>\n      Title\n    </title>\n  </head>\n  <body id=\"nice\">\n    <h1 id=\"test\">\n      this is the headline\n    </h1>\n  </body>\n</html>\n";
 		assertEquals(expected,code);
 
 	}
 	@Test
 	public void testMixedContent() {
-		var tag = new Tag("p").add(new Tag(null).attr("dont","show").content("This ")).add(new Tag("b").content("is")).add(new Tag("").content(" a ")).add(new Tag("i").content("test"));
-		System.out.println(tag.toString(2));
-		System.out.println(tag);
+		var tag = new Tag("p").content("This ").add(new Tag("b").content("is")).content(" a ").add(new Tag("i").content("test"));
 		assertEquals("<p>This <b>is</b> a <i>test</i></p>", tag.toString());
 	}
 }
