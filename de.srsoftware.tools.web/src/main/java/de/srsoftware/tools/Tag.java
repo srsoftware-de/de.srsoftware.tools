@@ -1,13 +1,15 @@
 /* © SRSoftware 2024 */
 package de.srsoftware.tools;
 
+import static de.srsoftware.tools.Optionals.absentIfBlank;
+
 import java.util.*;
 
 /**
  * @author Stephan Richter, 2018-2024
  *
  */
-public class Tag extends HashMap<String, String> {
+public class Tag extends TreeMap<String, String> {
 	private final List<Tag> children = new ArrayList<>();
 	private final String    type;
 	private String	        content = null;
@@ -88,15 +90,37 @@ public class Tag extends HashMap<String, String> {
 		return attr("title", t);
 	}
 
+	public String flat(){
+		StringBuilder sb = new StringBuilder("<" + type);
+		for (var entry : entrySet()) {
+			sb.append(" ").append(entry.getKey());
+			var value = entry.getValue();
+			if (value != null) sb.append("=\"").append(entry.getValue()).append("\"");
+			break;
+		}
+		if (children.isEmpty() && absentIfBlank(content).isEmpty()) {
+			sb.append(" />");
+		} else {
+			sb.append(">…</").append(type).append(">");
+		}
+
+		return sb.toString();
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("<" + type);
-		for (Entry<String, String> entry : entrySet()) sb.append(" ").append(entry.getKey()).append("=\"").append(entry.getValue()).append("\"");
-		if (children.isEmpty()) {
+		for (var entry : entrySet()) {
+			sb.append(" ").append(entry.getKey());
+			var value = entry.getValue();
+			if (value != null) sb.append("=\"").append(entry.getValue()).append("\"");
+		}
+		if (children.isEmpty() && absentIfBlank(content).isEmpty()) {
 			sb.append(" />");
 		} else {
 			sb.append(">");
 			for (Tag child : children) sb.append(child.toString());
+			absentIfBlank(content).ifPresent(sb::append);
 			sb.append("</").append(type).append(">");
 		}
 
@@ -105,7 +129,7 @@ public class Tag extends HashMap<String, String> {
 
 	protected void indent(StringBuilder sb, int indent, int currentIndentation) {
 		sb.append(" ".repeat(currentIndentation)).append("<").append(type);
-		for (Entry<String, String> entry : entrySet()) sb.append(" ").append(entry.getKey()).append("=\"").append(entry.getValue()).append("\"");
+		for (var entry : entrySet()) sb.append(" ").append(entry.getKey()).append("=\"").append(entry.getValue()).append("\"");
 		if (children.isEmpty()) {
 			if (content == null) {
 				sb.append(" />\n");
