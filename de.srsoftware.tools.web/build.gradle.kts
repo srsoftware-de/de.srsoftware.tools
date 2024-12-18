@@ -1,5 +1,10 @@
 description = "SRSoftware Tools : Web"
 
+dependencies {
+    implementation(project(":de.srsoftware.tools.optionals"))
+    implementation(project(":de.srsoftware.tools.util"))
+}
+
 plugins {
     id("eu.kakde.gradle.sonatype-maven-central-publisher") version "1.0.6"
 }

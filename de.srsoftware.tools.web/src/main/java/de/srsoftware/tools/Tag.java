@@ -1,33 +1,40 @@
 /* © SRSoftware 2024 */
 package de.srsoftware.tools;
 
-import java.util.*;
 
-import static de.srsoftware.tools.Optionals.absentIfBlank;
+import static de.srsoftware.tools.Optionals.nullable;
+import static java.util.Optional.empty;
+
+import java.util.*;
 
 /**
  * @author Stephan Richter, 2018-2024
  *
  */
-public class Tag extends HashMap<String, String> {
+public class Tag extends TreeMap<String, String> {
 	private final List<Tag> children = new ArrayList<>();
+	private Tag	        parent;
 	private final String    type;
-	private String	        content = null;
 
 	public Tag(String type) {
 		this.type = type;
 	}
 
-	public Tag add(Tag... tags) {
-		for (Tag tag : tags) {
-			if (tag != null) children().add(tag);
+	public Tag add(Tag... newChildren) {
+		for (Tag child : newChildren) {
+			if (child != null) {
+				if (child.parent != null) child.parent.removeChild(child);
+				child.parent = this;
+				children.add(child);
+			}
 		}
 		return this;
 	}
 
-	public <T extends Tag> T addTo(T tag) {
-		tag.children().add(this);
-		return tag;
+	public <T extends Tag> T addTo(T parent) {
+		parent.children().add(this);
+		this.parent = this;
+		return parent;
 	}
 
 	public <T extends Tag> T alt(String txt) {
@@ -50,32 +57,77 @@ public class Tag extends HashMap<String, String> {
 
 	@SuppressWarnings("unchecked")
 	public <T extends Tag> T clazz(Collection<String> classes) {
-		put("class", String.join(" ", classes));
+		attr("class", String.join(" ", classes));
 		return (T)this;
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T extends Tag> T clazz(String... classes) {
-		put("class", String.join(" ", classes));
+		attr("class", String.join(" ", classes));
 		return (T)this;
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T extends Tag> T content(String content) {
-		this.content = content == null ? null : content.trim();
+		add(new Text(content));
 		return (T)this;
+	}
+
+	public List<Tag> find(String attr) {
+		List<Tag> hits = new ArrayList<>();
+		nullable(get(attr)).ifPresent(o -> hits.add(this));
+		for (var child : children) hits.addAll(child.find(attr));
+		return hits;
+	}
+
+	public List<Tag> find(String attr, String value) {
+		List<Tag> hits = new ArrayList<>();
+		nullable(get(attr)).filter(value::equals).ifPresent(o -> hits.add(this));
+		for (var child : children) hits.addAll(child.find(attr, value));
+		return hits;
 	}
 
 	public <T extends Tag> T id(String id) {
 		return attr("id", id);
 	}
 
+	protected void indent(StringBuilder sb, int indent, int currentIndentation) {
+		boolean empty = type == null || type.isBlank();
+		if (!empty) {
+			sb.append(" ".repeat(currentIndentation)).append("<").append(type);
+			for (var entry : entrySet()) {
+				sb.append(" ").append(entry.getKey());
+				var value = entry.getValue();
+				if (value != null) sb.append("=\"").append(entry.getValue()).append("\"");
+			}
+		}
+		if (children.isEmpty()) {
+			sb.append(" />\n");
+		} else {
+			if (!empty) {
+				sb.append(">").append("\n");
+			}
+			for (Tag child : children) child.indent(sb, indent, currentIndentation + indent);
+			if (!empty) sb.append(" ".repeat(currentIndentation));
+			if (!empty) sb.append("</").append(type).append(">\n");
+		}
+	}
+
 	public boolean is(String type) {
 		return this.type != null && this.type.equalsIgnoreCase(type);
 	}
 
+	public static Tag of(String type) {
+		return new Tag(type);
+	}
+
 	public <T extends Tag> T pos(int x, int y) {
 		return attr("x", x).attr("y", y);
+	}
+
+	private void removeChild(Tag child) {
+		children.remove(child);
+		child.parent = null;
 	}
 
 	public <T extends Tag> T size(int width, int height) {
@@ -90,39 +142,46 @@ public class Tag extends HashMap<String, String> {
 		return attr("title", t);
 	}
 
-	@Override
-	public String toString() {
+	public String flat() {
 		StringBuilder sb = new StringBuilder("<" + type);
-		for (Entry<String, String> entry : entrySet()) sb.append(" ").append(entry.getKey()).append("=\"").append(entry.getValue()).append("\"");
-		if (children.isEmpty() && absentIfBlank(content).isEmpty()) {
+		for (var entry : entrySet()) {
+			sb.append(" ").append(entry.getKey());
+			var value = entry.getValue();
+			if (value != null) sb.append("=\"").append(entry.getValue()).append("\"");
+			break;
+		}
+		if (children.isEmpty()) {
 			sb.append(" />");
 		} else {
-			sb.append(">");
-			for (Tag child : children) sb.append(child.toString());
-			absentIfBlank(content).ifPresent(sb::append);
-			sb.append("</").append(type).append(">");
+			sb.append(">…</").append(type).append(">");
 		}
 
 		return sb.toString();
 	}
 
-	protected void indent(StringBuilder sb, int indent, int currentIndentation) {
-		sb.append(" ".repeat(currentIndentation)).append("<").append(type);
-		for (Entry<String, String> entry : entrySet()) sb.append(" ").append(entry.getKey()).append("=\"").append(entry.getValue()).append("\"");
-		if (children.isEmpty()) {
-			if (content == null) {
-				sb.append(" />\n");
-			} else {
-				sb.append(">").append(content).append("</").append(type).append(">\n");
+	@Override
+	public String toString() {
+		StringBuilder sb    = new StringBuilder();
+		boolean       empty = type == null || type.isBlank();
+		if (!empty) {
+			sb.append("<").append(type);
+			for (var entry : entrySet()) {
+				sb.append(" ").append(entry.getKey());
+				var value = entry.getValue();
+				if (value != null) sb.append("=\"").append(entry.getValue()).append("\"");
 			}
-		} else {
-			sb.append(">\n");
-			for (Tag child : children) {
-				child.indent(sb, indent, currentIndentation + indent);
-			}
-			sb.append(" ".repeat(currentIndentation)).append("</").append(type).append(">\n");
 		}
+		if (children.isEmpty()) {
+			sb.append(" />");
+		} else {
+			if (!empty) sb.append(">");
+			for (Tag child : children) sb.append(child.toString());
+			if (!empty) sb.append("</").append(type).append(">");
+		}
+
+		return sb.toString();
 	}
+
 
 	public String toString(int indent) {
 		StringBuilder sb = new StringBuilder();
