@@ -91,7 +91,7 @@ public class XMLParser {
 	 * @param input the transient input stream to read from
 	 * @return input stream created from in-memory buffer
 	 */
-	public InputStream preload(InputStream input) throws IOException {
+	public static InputStream preload(InputStream input) throws IOException {
 		var bos = new ByteArrayOutputStream();
 		input.transferTo(bos);
 		input.close();
