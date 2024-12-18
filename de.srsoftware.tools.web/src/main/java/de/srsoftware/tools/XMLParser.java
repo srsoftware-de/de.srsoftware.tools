@@ -17,10 +17,7 @@ public class XMLParser {
 		var tags = new ArrayList<Tag>();
 		while (true) {
 			var prefix = readUntil(input, "<", true);
-			if (!prefix.isBlank()) {
-				System.out.println("encountered some text: " + prefix);
-				tags.add(new Text(prefix));
-			}
+			if (!prefix.isBlank()) tags.add(new Text(prefix));
 			int c = read(input);
 			if (c <= 0) break;
 			if (c == '<') {
@@ -102,10 +99,7 @@ public class XMLParser {
 		if (!input.ready()) {
 			return 0;
 		}
-		var c = input.read();
-		// System.out.print(cx);
-		// System.out.flush();
-		return c;
+		return input.read();
 	}
 
 	private static String readUntil(PushbackReader input, String delimiters, boolean pushBack) throws IOException {
