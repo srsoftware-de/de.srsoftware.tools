@@ -41,11 +41,11 @@ public class TagTest {
 	public void testFindTypeValue() throws IOException {
 		var result = XMLParser.parse(load("finding_nemo.html"));
 		if (result instanceof Payload<Tag> payload) {
-			List<Tag> matches = payload.get().find("id", "last");
+			List<Tag> matches = payload.get().find("id", "last" ::equals);
 			assertEquals(1, matches.size());
 			assertEquals("li", matches.getFirst().type());
 
-			matches = payload.get().find("class", "red");
+			matches = payload.get().find("class", "red" ::equals);
 			assertEquals(1, matches.size());
 			var tag = matches.getFirst();
 			assertEquals("span", tag.type());
@@ -53,6 +53,13 @@ public class TagTest {
 			assertInstanceOf(Text.class, child);
 			var text = (Text)child;
 			assertEquals("Text", text.toString());
+
+			matches = payload.get().find("class", s -> s.contains("title"));
+			assertEquals(2, matches.size());
+			tag = matches.getFirst();
+			assertEquals("title", tag.type());
+			tag = matches.get(1);
+			assertEquals("h1", tag.type());
 		}
 	}
 }
