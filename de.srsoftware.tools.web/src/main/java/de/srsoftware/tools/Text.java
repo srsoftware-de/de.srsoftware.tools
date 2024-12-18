@@ -10,7 +10,7 @@ public class Text extends Tag {
 	}
 
 	@Override
-	public Tag add(Tag... tags) {
+	public Tag add(Tag... newChildren) {
 		throw new RuntimeException("Must not add tag(s) to Text!");
 	}
 
