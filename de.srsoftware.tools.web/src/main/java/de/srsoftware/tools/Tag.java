@@ -2,10 +2,10 @@
 package de.srsoftware.tools;
 
 
-import java.util.*;
-
 import static de.srsoftware.tools.Optionals.nullable;
 import static java.util.Optional.empty;
+
+import java.util.*;
 
 /**
  * @author Stephan Richter, 2018-2024
@@ -13,7 +13,7 @@ import static java.util.Optional.empty;
  */
 public class Tag extends TreeMap<String, String> {
 	private final List<Tag> children = new ArrayList<>();
-	private Tag parent;
+	private Tag	        parent;
 	private final String    type;
 
 	public Tag(String type) {
@@ -73,17 +73,17 @@ public class Tag extends TreeMap<String, String> {
 		return (T)this;
 	}
 
-	public List<Tag> find(String attr){
+	public List<Tag> find(String attr) {
 		List<Tag> hits = new ArrayList<>();
 		nullable(get(attr)).ifPresent(o -> hits.add(this));
 		for (var child : children) hits.addAll(child.find(attr));
 		return hits;
 	}
 
-	public List<Tag> find(String attr, String value){
+	public List<Tag> find(String attr, String value) {
 		List<Tag> hits = new ArrayList<>();
 		nullable(get(attr)).filter(value::equals).ifPresent(o -> hits.add(this));
-		for (var child : children) hits.addAll(child.find(attr,value));
+		for (var child : children) hits.addAll(child.find(attr, value));
 		return hits;
 	}
 
@@ -181,7 +181,6 @@ public class Tag extends TreeMap<String, String> {
 
 		return sb.toString();
 	}
-
 
 
 	public String toString(int indent) {

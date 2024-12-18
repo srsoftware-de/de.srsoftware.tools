@@ -1,17 +1,14 @@
 /* © SRSoftware 2024 */
 package de.srsoftware.tools;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 public class TagTest {
-
 	private static InputStream load(String filename) throws IOException {
 		var resource = XmlParserTest.class.getClassLoader().getResource(filename);
 		return resource.openConnection().getInputStream();
@@ -32,33 +29,30 @@ public class TagTest {
 	@Test
 	public void testFindType() throws IOException {
 		var result = XMLParser.parse(load("finding_nemo.html"));
-		if (result instanceof Payload<Tag> payload){
+		if (result instanceof Payload<Tag> payload) {
 			List<Tag> matches = payload.get().find("type");
-			assertEquals(2,matches.size());
-			assertEquals("input",matches.getFirst().type());
-			assertEquals("input",matches.get(1).type());
+			assertEquals(2, matches.size());
+			assertEquals("input", matches.getFirst().type());
+			assertEquals("input", matches.get(1).type());
 		}
-
 	}
 
 	@Test
 	public void testFindTypeValue() throws IOException {
 		var result = XMLParser.parse(load("finding_nemo.html"));
-		if (result instanceof Payload<Tag> payload){
-			List<Tag> matches = payload.get().find("id","last");
-			assertEquals(1,matches.size());
-			assertEquals("li",matches.getFirst().type());
+		if (result instanceof Payload<Tag> payload) {
+			List<Tag> matches = payload.get().find("id", "last");
+			assertEquals(1, matches.size());
+			assertEquals("li", matches.getFirst().type());
 
-			matches = payload.get().find("class","red");
-			assertEquals(1,matches.size());
+			matches = payload.get().find("class", "red");
+			assertEquals(1, matches.size());
 			var tag = matches.getFirst();
-			assertEquals("span",tag.type());
+			assertEquals("span", tag.type());
 			var child = tag.children().getFirst();
-			assertInstanceOf(Text.class,child);
-			var text = (Text) child;
-			assertEquals("Text",text.toString());
+			assertInstanceOf(Text.class, child);
+			var text = (Text)child;
+			assertEquals("Text", text.toString());
 		}
-
 	}
-
 }

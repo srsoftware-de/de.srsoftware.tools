@@ -14,7 +14,7 @@ public class XMLParser {
 	}
 
 	private static List<Tag> parse(PushbackReader input) throws IOException {
-		var tags   = new ArrayList<Tag>();
+		var tags = new ArrayList<Tag>();
 		while (true) {
 			var prefix = readUntil(input, "<", true);
 			if (!prefix.isBlank()) {
@@ -24,11 +24,11 @@ public class XMLParser {
 			int c = read(input);
 			if (c <= 0) break;
 			if (c == '<') {
-				var token = readUntil(input, ">", false);
+				var token  = readUntil(input, ">", false);
 				var result = convert(token);
 				if (result instanceof OpeningTag) {
 					var children = parse(input);
-					if (!children.isEmpty() && children.getLast() instanceof ClosingTag closingTag){
+					if (!children.isEmpty() && children.getLast() instanceof ClosingTag closingTag) {
 						if (result.is(closingTag.type())) {
 							children.removeLast();
 						} else {
@@ -37,7 +37,6 @@ public class XMLParser {
 							tags.add(result);
 							break;
 						}
-
 					}
 					children.forEach(result::add);
 					tags.add(result);
