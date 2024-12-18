@@ -85,6 +85,29 @@ public class XMLParser {
 		}
 	}
 
+	/**
+	 * Load input stream into local buffer, create input stream from local buffer.
+	 * May help with some websites.
+	 * @param input the transient input stream to read from
+	 * @return input stream created from in-memory buffer
+	 */
+	public InputStream preload(InputStream input) throws IOException {
+		var bos = new ByteArrayOutputStream();
+		input.transferTo(bos);
+		input.close();
+		return new ByteArrayInputStream(bos.toByteArray());
+	}
+
+	private static int read(PushbackReader input) throws IOException {
+		if (!input.ready()) {
+			return 0;
+		}
+		var c = input.read();
+		// System.out.print(cx);
+		// System.out.flush();
+		return c;
+	}
+
 	private static String readUntil(PushbackReader input, String delimiters, boolean pushBack) throws IOException {
 		var token = new StringBuilder();
 		int c     = read(input);
@@ -105,23 +128,13 @@ public class XMLParser {
 		return token.toString();
 	}
 
-	private static boolean unlimited(int c, String delimiter) {
-		return c > 0 && delimiter.indexOf(c) < 0;
-	}
-
-	private static int read(PushbackReader input) throws IOException {
-		if (!input.ready()) {
-			return 0;
-		}
-		var c = input.read();
-		// System.out.print(cx);
-		// System.out.flush();
-		return c;
-	}
-
 	private static void skipWhitespace(PushbackReader input) throws IOException {
 		int c = read(input);
 		while (c > 0 && isWhitespace(c)) c = read(input);
 		if (c > 0) input.unread(c);
+	}
+
+	private static boolean unlimited(int c, String delimiter) {
+		return c > 0 && delimiter.indexOf(c) < 0;
 	}
 }
