@@ -88,18 +88,44 @@ public abstract class PathHandler implements HttpHandler {
 		return sendContent(ex, HTTP_BAD_REQUEST, o);
 	}
 
+	/**
+	 * Bind the PathHandler object to one/several paths
+	 * @param path the paths to bind to
+	 * @return a bond, that can be used to create a context on a HttpServer
+	 */
 	public Bond bindPath(String... path) {
 		return new Bond(path);
 	}
 
+	/**
+	 * "not found" default implementation
+	 * @param path ignored
+	 * @param ex HttpExchange used to return the not-implmented notification
+	 * @return false
+	 * @throws IOException if sending the response fails
+	 */
 	public boolean doDelete(String path, HttpExchange ex) throws IOException {
 		return notFound(ex);
 	}
 
+	/**
+	 * "not found" default implementation
+	 * @param path ignored
+	 * @param ex HttpExchange used to return the not-implmented notification
+	 * @return false
+	 * @throws IOException if sending the response fails
+	 */
 	public boolean doGet(String path, HttpExchange ex) throws IOException {
 		return notFound(ex);
 	}
 
+	/**
+	 * "not found" default implementation
+	 * @param path ignored
+	 * @param ex HttpExchange used to return the not-implmented notification
+	 * @return false
+	 * @throws IOException if sending the response fails
+	 */
 	public boolean doPost(String path, HttpExchange ex) throws IOException {
 		return notFound(ex);
 	}
@@ -144,6 +170,11 @@ public abstract class PathHandler implements HttpHandler {
 			return new String(ex.getRequestBody().readAllBytes(), UTF_8);
 		}
 
+		/**
+		 * extract the value of an <em>Authorization</em> header, if present
+		 * @param ex the HttpExchange to extract from
+		 * @return an optional, carrying the first value of an <em>Authorization</em> header, of present. empty, otherwise.
+		 */
 		public static Optional<String> getAuthToken(HttpExchange ex) {
 			return getHeader(ex, AUTHORIZATION);
 		}
