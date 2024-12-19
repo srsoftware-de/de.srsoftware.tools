@@ -2,8 +2,6 @@
 package de.srsoftware.tools;
 
 
-import static de.srsoftware.tools.Optionals.nullable;
-
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -85,27 +83,14 @@ public class Tag extends TreeMap<String, String> {
 	}
 
 	/**
-	 * find all Tags, that have a given attribute
-	 * @param attr the attribute to look for
-	 * @return the list of tags gaving the requested attribute, regardless of its value
+	 * find all Tags, that satisfy a given filter
+	 * @param filter a predicate that acts as filter
+	 * @return the list of tags that satisfy the filter predicate
 	 */
-	public List<Tag> find(String attr) {
+	public List<Tag> find(Predicate<Tag> filter) {
 		List<Tag> hits = new ArrayList<>();
-		nullable(get(attr)).ifPresent(o -> hits.add(this));
-		for (var child : children) hits.addAll(child.find(attr));
-		return hits;
-	}
-
-	/**
-	 * find all Tags, that have a certain attribute whose value matches the given filter
-	 * @param attr the name of the attribute
-	 * @param filter the filte condition
-	 * @return the list of tags having a matching attribute
-	 */
-	public List<Tag> find(String attr, Predicate<String> filter) {
-		List<Tag> hits = new ArrayList<>();
-		nullable(get(attr)).filter(filter).ifPresent(o -> hits.add(this));
-		for (var child : children) hits.addAll(child.find(attr, filter));
+		if (filter.test(this)) hits.add(this);
+		for (var child : children) hits.addAll(child.find(filter));
 		return hits;
 	}
 

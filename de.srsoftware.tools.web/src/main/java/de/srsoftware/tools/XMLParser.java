@@ -7,7 +7,19 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Parser to create Document Object Model from InputStream
+ */
 public class XMLParser {
+	private XMLParser() {
+		// discourage intantiation
+	}
+
+	/**
+	 * Parse the inputstream, try to load DOM as Tag
+	 * @param input the input stream to read from
+	 * @return Payload&lt;Tag&gt; if stream is read successfull and contains xml, Error otherwise
+	 */
 	public static Result<Tag> parse(InputStream input) {
 		try {
 			var result = parse(new PushbackReader(new InputStreamReader(input)));
@@ -91,6 +103,7 @@ public class XMLParser {
 	 * May help with some websites.
 	 * @param input the transient input stream to read from
 	 * @return input stream created from in-memory buffer
+	 * @throws IOException if input cannot be read
 	 */
 	public static InputStream preload(InputStream input) throws IOException {
 		var bos = new ByteArrayOutputStream();

@@ -1,6 +1,7 @@
 /* © SRSoftware 2024 */
 package de.srsoftware.tools;
 
+import static de.srsoftware.tools.TagFilter.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
@@ -30,7 +31,7 @@ public class TagTest {
 	public void testFindType() throws IOException {
 		var result = XMLParser.parse(load("finding_nemo.html"));
 		if (result instanceof Payload<Tag> payload) {
-			List<Tag> matches = payload.get().find("type");
+			List<Tag> matches = payload.get().find(withAttribute("type"));
 			assertEquals(2, matches.size());
 			assertEquals("input", matches.getFirst().type());
 			assertEquals("input", matches.get(1).type());
@@ -41,11 +42,11 @@ public class TagTest {
 	public void testFindTypeValue() throws IOException {
 		var result = XMLParser.parse(load("finding_nemo.html"));
 		if (result instanceof Payload<Tag> payload) {
-			List<Tag> matches = payload.get().find("id", "last" ::equals);
+			List<Tag> matches = payload.get().find(attributeEquals("id", "last"));
 			assertEquals(1, matches.size());
 			assertEquals("li", matches.getFirst().type());
 
-			matches = payload.get().find("class", "red" ::equals);
+			matches = payload.get().find(attributeEquals("class", "red"));
 			assertEquals(1, matches.size());
 			var tag = matches.getFirst();
 			assertEquals("span", tag.type());
@@ -54,7 +55,7 @@ public class TagTest {
 			var text = (Text)child;
 			assertEquals("Text", text.toString());
 
-			matches = payload.get().find("class", s -> s.contains("title"));
+			matches = payload.get().find(attributeContains("class", "title"));
 			assertEquals(2, matches.size());
 			tag = matches.getFirst();
 			assertEquals("title", tag.type());

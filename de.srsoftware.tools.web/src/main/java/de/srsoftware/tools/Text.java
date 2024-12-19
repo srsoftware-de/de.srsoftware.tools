@@ -1,9 +1,16 @@
 /* © SRSoftware 2024 */
 package de.srsoftware.tools;
 
+/**
+ * Tag that represents Text in HTML
+ */
 public class Text extends Tag {
 	private final String content;
 
+	/**
+	 * create new Text tag with provided content
+	 * @param content the content to store in this tag
+	 */
 	public Text(String content) {
 		super(null);
 		this.content = content;
