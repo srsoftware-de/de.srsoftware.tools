@@ -77,4 +77,35 @@ public class TagFilter {
 			return false;
 		};
 	}
+
+	/**
+	 * Returns a predicate that tests, whether a tag has a certain attribute whose value starts with the passed value
+	 * @param key the name of the attribute to look for
+	 * @param value the value to test against
+	 * @return the predicate that returns true if the described condition is fulfilled
+	 */
+	public static Predicate<Tag> attributeStartsWith(String key, String value) {
+		if (key == null) return t -> false;
+		if (value == null) return t -> false;
+		return tag -> {
+			var val = tag.get(key);
+			return val != null && val.startsWith(value);
+		};
+	}
+
+	/**
+	 * Returns a predicate that tests, whether a tag has a certain attribute whose value ends with the passed value
+	 * @param key the name of the attribute to look for
+	 * @param value the value to test against
+	 * @return the predicate that returns true if the described condition is fulfilled
+	 */
+
+	public static Predicate<Tag> attributeEndsWith(String key, String value) {
+		if (key == null) return t -> false;
+		if (value == null) return t -> false;
+		return tag -> {
+			var val = tag.get(key);
+			return val != null && val.endsWith(value);
+		};
+	}
 }
