@@ -1,6 +1,8 @@
 /* © SRSoftware 2024 */
 package de.srsoftware.tools;
 
+import java.util.function.Function;
+
 /**
  * A wrapper for results that carry an actual payload
  * @param <P> the type of the expected payload
@@ -32,5 +34,15 @@ public class Payload<P> implements Result<P> {
 	 */
 	public P get() {
 		return object;
+	}
+
+	@Override
+	public <Mapped> Result<Mapped> map(Function<Result<P>, Result<Mapped>> mapper) {
+		return mapper.apply(this);
+	}
+
+	@Override
+	public String toString() {
+		return object.toString();
 	}
 }

@@ -8,6 +8,7 @@ import java.util.*;
 import java.util.function.Predicate;
 
 /**
+ * This class represents an X(ht)ML tag
  * @author Stephan Richter, 2018-2024
  *
  */
@@ -16,10 +17,20 @@ public class Tag extends TreeMap<String, String> {
 	private Tag	        parent;
 	private final String    type;
 
+	/**
+	 * Create a new tag of the specified type
+	 * @param type the type of the tag
+	 */
 	public Tag(String type) {
 		this.type = type;
 	}
 
+	/**
+	 * Add children to the tag. The parent of the children will be set to this tag, too.
+	 * If a child had another parent before, this relationship will be terminated.
+	 * @param newChildren an aray of tags to be added.
+	 * @return this tag
+	 */
 	public Tag add(Tag... newChildren) {
 		for (Tag child : newChildren) {
 			if (child != null) {

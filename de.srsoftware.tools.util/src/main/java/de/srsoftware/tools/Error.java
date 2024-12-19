@@ -2,6 +2,7 @@
 package de.srsoftware.tools;
 
 import java.util.*;
+import java.util.function.Function;
 import org.json.JSONObject;
 
 /**
@@ -80,14 +81,22 @@ public class Error<None> implements Result<None> {
 		return json;
 	}
 
+	@Override
+	public <Mapped> Result<Mapped> map(Function<Result<None>, Result<Mapped>> mapper) {
+		return mapper.apply(this);
+	}
+
 	/**
 	 * create a new Error object carrying the passed message
 	 * @param message the message to add to the Error object
 	 * @return a new Error object populated with the passed message
 	 * @param <None> any type
+	 * @param exceptions exceptions to be added to the errors metadata
 	 */
-	public static <None> Error<None> of(String message) {
-		return new Error<None>(message);
+	public static <None> Error<None> of(String message, Exception... exceptions) {
+		var err = new Error<None>(message);
+		for (Exception e : exceptions) err.add(e);
+		return err;
 	}
 
 	@Override
@@ -95,6 +104,18 @@ public class Error<None> implements Result<None> {
 		StringBuilder sb = new StringBuilder(message);
 		for (var ex : exceptions) sb.append("\n").append(ex.getMessage());
 		return sb.toString();
+	}
+
+	/**
+	 * create an Error with the same metadata content as this Object, but with different payload type
+	 * @return the transformed Error (new object)
+	 * @param <NewType> the payload type of the returned error
+	 */
+	public <NewType> Error<NewType> transform() {
+		Error<NewType> transformed = Error.of(message);
+		transformed.data.putAll(data());
+		transformed.exceptions.addAll(exceptions);
+		return transformed;
 	}
 
 	/**

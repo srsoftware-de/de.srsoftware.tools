@@ -8,9 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class XMLParser {
-	public static Result<Tag> parse(InputStream input) throws IOException, ParseException {
-		var result = parse(new PushbackReader(new InputStreamReader(input)));
-		return result == null || result.isEmpty() ? Error.of("nope!") : Payload.of(result.removeFirst());
+	public static Result<Tag> parse(InputStream input) {
+		try {
+			var result = parse(new PushbackReader(new InputStreamReader(input)));
+			return result.isEmpty() ? Error.of("Failed to parse content") : Payload.of(result.getFirst());
+		} catch (Exception e) {
+			return Error.of("Failed to parse content of stream", e);
+		}
 	}
 
 	private static List<Tag> parse(PushbackReader input) throws IOException {
