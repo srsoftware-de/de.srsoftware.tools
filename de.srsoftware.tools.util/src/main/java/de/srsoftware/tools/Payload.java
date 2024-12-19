@@ -1,7 +1,9 @@
 /* © SRSoftware 2024 */
 package de.srsoftware.tools;
 
+import java.util.Collection;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * A wrapper for results that carry an actual payload
@@ -39,6 +41,24 @@ public class Payload<P> implements Result<P> {
 	@Override
 	public <Mapped> Result<Mapped> map(Function<Result<P>, Result<Mapped>> mapper) {
 		return mapper.apply(this);
+	}
+
+	@Override
+	public <Inner> Stream<Result<Inner>> stream() {
+		if (object instanceof Collection<?> coll) {
+			try {
+				Collection<Inner> collection = (Collection<Inner>)coll;
+				return collection.stream().map(Payload::of);
+			} catch (ClassCastException cce) {
+				return Stream.of(Error.of("Failed to cast %s".formatted(coll.getClass().getSimpleName()), cce));
+			}
+		}
+		try {
+			var inner = (Inner)object;
+			return Stream.of(Payload.of(inner));
+		} catch (ClassCastException cce) {
+			return Stream.of(Error.of("Failed to cast %s".formatted(object.getClass().getSimpleName()), cce));
+		}
 	}
 
 	@Override

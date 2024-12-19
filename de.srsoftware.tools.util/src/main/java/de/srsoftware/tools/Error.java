@@ -3,6 +3,7 @@ package de.srsoftware.tools;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Stream;
 import org.json.JSONObject;
 
 /**
@@ -97,6 +98,11 @@ public class Error<None> implements Result<None> {
 		var err = new Error<None>(message);
 		for (Exception e : exceptions) err.add(e);
 		return err;
+	}
+
+	@Override
+	public <Inner> Stream<Result<Inner>> stream() {
+		return Stream.of(this.transform());
 	}
 
 	@Override

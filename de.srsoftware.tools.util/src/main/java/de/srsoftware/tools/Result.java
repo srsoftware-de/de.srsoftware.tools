@@ -2,6 +2,7 @@
 package de.srsoftware.tools;
 
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * This interface can be used as a result type for functions that may return something or an error.
@@ -15,4 +16,11 @@ public interface Result<Content> {
 	 * @param <Mapped> the payload type of the result of the mapping function
 	 */
 	public <Mapped> Result<Mapped> map(Function<Result<Content>, Result<Mapped>> mapper);
+
+	/**
+	 * Create a stream of the Payload. This may be suitable, if the payload is a collection.
+	 * @return a stream of results
+	 * @param <Inner> the type of the payloads of the elements of the stream
+	 */
+	public <Inner> Stream<Result<Inner>> stream();
 }
