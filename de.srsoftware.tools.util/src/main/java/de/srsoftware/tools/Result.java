@@ -1,6 +1,7 @@
 /* © SRSoftware 2024 */
 package de.srsoftware.tools;
 
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -16,6 +17,12 @@ public interface Result<Content> {
 	 * @param <Mapped> the payload type of the result of the mapping function
 	 */
 	public <Mapped> Result<Mapped> map(Function<Result<Content>, Result<Mapped>> mapper);
+
+	/**
+	 * Create an Optional from a Result.
+	 * @return An optional containing the Result`s content, if set.
+	 */
+	public Optional<Content> optional();
 
 	/**
 	 * Create a stream of the Payload. This may be suitable, if the payload is a collection.

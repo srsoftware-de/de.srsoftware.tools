@@ -1,6 +1,8 @@
 /* © SRSoftware 2024 */
 package de.srsoftware.tools;
 
+import static java.util.Optional.empty;
+
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -98,6 +100,11 @@ public class Error<None> implements Result<None> {
 		var err = new Error<None>(message);
 		for (Exception e : exceptions) err.add(e);
 		return err;
+	}
+
+	@Override
+	public Optional<None> optional() {
+		return empty();
 	}
 
 	@Override

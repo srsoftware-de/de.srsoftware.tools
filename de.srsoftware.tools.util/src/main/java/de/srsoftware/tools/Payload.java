@@ -2,6 +2,7 @@
 package de.srsoftware.tools;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -41,6 +42,11 @@ public class Payload<P> implements Result<P> {
 	@Override
 	public <Mapped> Result<Mapped> map(Function<Result<P>, Result<Mapped>> mapper) {
 		return mapper.apply(this);
+	}
+
+	@Override
+	public Optional<P> optional() {
+		return Optional.ofNullable(object);
 	}
 
 	@Override
