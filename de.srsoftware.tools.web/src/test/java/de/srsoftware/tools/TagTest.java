@@ -28,7 +28,7 @@ public class TagTest {
 	}
 
 	@Test
-	public void testFindType() throws IOException {
+	public void testFindAttribute() throws IOException {
 		var result = XMLParser.parse(load("finding_nemo.html"));
 		if (result instanceof Payload<Tag> payload) {
 			List<Tag> matches = payload.get().find(withAttribute("type"));
@@ -39,7 +39,7 @@ public class TagTest {
 	}
 
 	@Test
-	public void testFindTypeValue() throws IOException {
+	public void testFindAttributeWithValue() throws IOException {
 		var result = XMLParser.parse(load("finding_nemo.html"));
 		if (result instanceof Payload<Tag> payload) {
 			List<Tag> matches = payload.get().find(attributeEquals("id", "last"));
@@ -61,6 +61,71 @@ public class TagTest {
 			assertEquals("title", tag.type());
 			tag = matches.get(1);
 			assertEquals("h1", tag.type());
+		}
+	}
+
+	@Test
+	public void testFindTagType() throws IOException {
+		var result = XMLParser.parse(load("finding_nemo.html"));
+		if (result instanceof Payload<Tag> payload) {
+			List<Tag> matches = payload.get().find(ofType("select"));
+			assertEquals(1,matches.size());
+			var select = matches.getFirst();
+			assertEquals("select",select.type());
+		}
+	}
+
+	@Test
+	public void testFindAttributeHas() throws IOException {
+		var result = XMLParser.parse(load("finding_nemo.html"));
+		if (result instanceof Payload<Tag> payload) {
+			var matches = payload.get().find(attributeHas("name","several"));
+			assertEquals(1,matches.size());
+			var select = matches.getFirst();
+			assertEquals("select",select.type());
+
+			matches = payload.get().find(attributeHas("name","values"));
+			assertEquals(1,matches.size());
+			select = matches.getFirst();
+			assertEquals("select",select.type());
+
+			matches = payload.get().find(attributeHas("name","for"));
+			assertEquals(1,matches.size());
+			select = matches.getFirst();
+			assertEquals("select",select.type());
+
+			matches = payload.get().find(attributeHas("name","tag"));
+			assertEquals(1,matches.size());
+			select = matches.getFirst();
+			assertEquals("select",select.type());
+
+			matches = payload.get().find(attributeHas("name","several values"));
+			assertTrue(matches.isEmpty());
+
+			matches = payload.get().find(attributeHas("name","for tag"));
+			assertTrue(matches.isEmpty());
+		}
+	}
+
+	@Test
+	public void testFindAttributeStartsWith() throws IOException {
+		var result = XMLParser.parse(load("finding_nemo.html"));
+		if (result instanceof Payload<Tag> payload) {
+			List<Tag> matches = payload.get().find(attributeStartsWith("class", "page_"));
+			assertEquals(1, matches.size());
+			assertEquals("h1", matches.getFirst().type());
+
+		}
+	}
+
+	@Test
+	public void testFindAttributeEndsWith() throws IOException {
+		var result = XMLParser.parse(load("finding_nemo.html"));
+		if (result instanceof Payload<Tag> payload) {
+			List<Tag> matches = payload.get().find(attributeEndsWith("class", "_first"));
+			assertEquals(1, matches.size());
+			assertEquals("h1", matches.getFirst().type());
+
 		}
 	}
 }
