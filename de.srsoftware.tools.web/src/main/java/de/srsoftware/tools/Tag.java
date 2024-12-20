@@ -2,6 +2,8 @@
 package de.srsoftware.tools;
 
 
+import static java.util.Optional.empty;
+
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -40,12 +42,24 @@ public class Tag extends TreeMap<String, String> {
 		return this;
 	}
 
+	/**
+	 * add this Tag to another Tag
+	 * @param parent the tag to which this object is appended
+	 * @return the parent tag
+	 * @param <T> the type of the parent tag
+	 */
 	public <T extends Tag> T addTo(T parent) {
 		parent.children().add(this);
 		this.parent = this;
 		return parent;
 	}
 
+	/**
+	 * add an &lt;alt&gt; attribute with a given value to this tag
+	 * @param txt the text to set for the alt attribute
+	 * @return this tag
+	 * @param <T> the type of this tag
+	 */
 	public <T extends Tag> T alt(String txt) {
 		return attr("alt", txt);
 	}
@@ -120,6 +134,23 @@ public class Tag extends TreeMap<String, String> {
 		}
 	}
 
+	/**
+	 * get the aggregated string content of the children of this tag
+	 * @param indent children will be indented by the given number of spaces
+	 * @return the combined code of the children
+	 */
+	public Optional<String> inner(int indent) {
+		if (children().isEmpty()) return empty();
+		StringBuilder sb = new StringBuilder();
+		children().forEach(child -> sb.append(child.toString(indent)));
+		return Optional.of(sb.toString());
+	}
+
+	/**
+	 * test, whether a tag is of a given type
+	 * @param type the type to test against
+	 * @return true, only if the type of this tag matches the given string
+	 */
 	public boolean is(String type) {
 		return this.type != null && this.type.equalsIgnoreCase(type);
 	}

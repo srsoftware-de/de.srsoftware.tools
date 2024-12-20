@@ -5,6 +5,9 @@ package de.srsoftware.tools;
  * Tag that represents Text in HTML
  */
 public class Text extends Tag {
+	/**
+	 * the content of this text element
+	 */
 	private final String content;
 
 	/**

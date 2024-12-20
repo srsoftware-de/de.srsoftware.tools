@@ -69,9 +69,9 @@ public class TagTest {
 		var result = XMLParser.parse(load("finding_nemo.html"));
 		if (result instanceof Payload<Tag> payload) {
 			List<Tag> matches = payload.get().find(ofType("select"));
-			assertEquals(1,matches.size());
+			assertEquals(1, matches.size());
 			var select = matches.getFirst();
-			assertEquals("select",select.type());
+			assertEquals("select", select.type());
 		}
 	}
 
@@ -79,30 +79,30 @@ public class TagTest {
 	public void testFindAttributeHas() throws IOException {
 		var result = XMLParser.parse(load("finding_nemo.html"));
 		if (result instanceof Payload<Tag> payload) {
-			var matches = payload.get().find(attributeHas("name","several"));
-			assertEquals(1,matches.size());
+			var matches = payload.get().find(attributeHas("name", "several"));
+			assertEquals(1, matches.size());
 			var select = matches.getFirst();
-			assertEquals("select",select.type());
+			assertEquals("select", select.type());
 
-			matches = payload.get().find(attributeHas("name","values"));
-			assertEquals(1,matches.size());
+			matches = payload.get().find(attributeHas("name", "values"));
+			assertEquals(1, matches.size());
 			select = matches.getFirst();
-			assertEquals("select",select.type());
+			assertEquals("select", select.type());
 
-			matches = payload.get().find(attributeHas("name","for"));
-			assertEquals(1,matches.size());
+			matches = payload.get().find(attributeHas("name", "for"));
+			assertEquals(1, matches.size());
 			select = matches.getFirst();
-			assertEquals("select",select.type());
+			assertEquals("select", select.type());
 
-			matches = payload.get().find(attributeHas("name","tag"));
-			assertEquals(1,matches.size());
+			matches = payload.get().find(attributeHas("name", "tag"));
+			assertEquals(1, matches.size());
 			select = matches.getFirst();
-			assertEquals("select",select.type());
+			assertEquals("select", select.type());
 
-			matches = payload.get().find(attributeHas("name","several values"));
+			matches = payload.get().find(attributeHas("name", "several values"));
 			assertTrue(matches.isEmpty());
 
-			matches = payload.get().find(attributeHas("name","for tag"));
+			matches = payload.get().find(attributeHas("name", "for tag"));
 			assertTrue(matches.isEmpty());
 		}
 	}
@@ -114,7 +114,6 @@ public class TagTest {
 			List<Tag> matches = payload.get().find(attributeStartsWith("class", "page_"));
 			assertEquals(1, matches.size());
 			assertEquals("h1", matches.getFirst().type());
-
 		}
 	}
 
@@ -125,7 +124,6 @@ public class TagTest {
 			List<Tag> matches = payload.get().find(attributeEndsWith("class", "_first"));
 			assertEquals(1, matches.size());
 			assertEquals("h1", matches.getFirst().type());
-
 		}
 	}
 }

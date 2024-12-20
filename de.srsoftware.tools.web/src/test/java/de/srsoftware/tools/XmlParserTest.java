@@ -17,7 +17,7 @@ public class XmlParserTest {
 	}
 
 	@Test
-	public void testParseSimple() throws IOException, ParseException {
+	public void testParseSimple() throws IOException {
 		var code   = load("simple.html");
 		var result = XMLParser.parse(code);
 		assertInstanceOf(Payload.class, result);
@@ -27,7 +27,7 @@ public class XmlParserTest {
 	}
 
 	@Test
-	public void testParseWithAttributes() throws IOException, ParseException {
+	public void testParseWithAttributes() throws IOException {
 		var code   = load("attributes.html");
 		var result = XMLParser.parse(code);
 		assertInstanceOf(Payload.class, result);
@@ -37,7 +37,7 @@ public class XmlParserTest {
 	}
 
 	@Test
-	public void testParseWithEmptyAttributes() throws IOException, ParseException {
+	public void testParseWithEmptyAttributes() throws IOException {
 		var code   = load("empty_attributes.html");
 		var result = XMLParser.parse(code);
 		assertInstanceOf(Payload.class, result);
@@ -48,7 +48,7 @@ public class XmlParserTest {
 
 
 	@Test
-	public void testParseUnmatched() throws IOException, ParseException {
+	public void testParseUnmatched() throws IOException {
 		var code   = load("unmatched.html");
 		var result = XMLParser.parse(code);
 		assertInstanceOf(Payload.class, result);
@@ -58,7 +58,7 @@ public class XmlParserTest {
 	}
 
 	@Test
-	public void testParseXHtml() throws IOException, ParseException {
+	public void testParseXHtml() throws IOException {
 		var code   = load("xhtml.html");
 		var result = XMLParser.parse(code);
 		assertInstanceOf(Payload.class, result);
@@ -68,7 +68,7 @@ public class XmlParserTest {
 	}
 
 	@Test
-	public void testParseMixed() throws IOException, ParseException {
+	public void testParseMixed() throws IOException {
 		var code   = load("mixed_content.html");
 		var result = XMLParser.parse(code);
 		assertInstanceOf(Payload.class, result);
