@@ -108,6 +108,26 @@ public class Tag extends TreeMap<String, String> {
 		return hits;
 	}
 
+	/**
+	 * Extract this tag as text without explicitly listing its children.
+	 * @return a flat representation of this tag
+	 */
+	public String flat() {
+		StringBuilder sb = new StringBuilder("<" + type);
+		for (var entry : entrySet()) {
+			sb.append(" ").append(entry.getKey());
+			var value = entry.getValue();
+			if (value != null) sb.append("=\"").append(entry.getValue()).append("\"");
+			break;
+		}
+		if (children.isEmpty()) {
+			sb.append(" />");
+		} else {
+			sb.append(">…</").append(type).append(">");
+		}
+		return sb.toString();
+	}
+
 	public <T extends Tag> T id(String id) {
 		return attr("id", id);
 	}
@@ -176,24 +196,23 @@ public class Tag extends TreeMap<String, String> {
 		return attr("style", style);
 	}
 
-	public <T extends Tag> T title(String t) {
-		return attr("title", t);
+	/**
+	 * add a title attribute to this tag
+	 * @param title the title to set
+	 * @return this tag
+	 * @param <T> the type of this tag
+	 */
+	public <T extends Tag> T title(String title) {
+		return attr("title", title);
 	}
 
-	public String flat() {
-		StringBuilder sb = new StringBuilder("<" + type);
-		for (var entry : entrySet()) {
-			sb.append(" ").append(entry.getKey());
-			var value = entry.getValue();
-			if (value != null) sb.append("=\"").append(entry.getValue()).append("\"");
-			break;
-		}
-		if (children.isEmpty()) {
-			sb.append(" />");
-		} else {
-			sb.append(">…</").append(type).append(">");
-		}
-
+	/**
+	 * Return the text content of this tag and its descendants, i.e. the code without the tags.
+	 * @return the combined text
+	 */
+	public String strip() {
+		var sb = new StringBuilder();
+		children.stream().map(Tag::strip).forEach(sb::append);
 		return sb.toString();
 	}
 

@@ -30,100 +30,113 @@ public class TagTest {
 	@Test
 	public void testFindAttribute() throws IOException {
 		var result = XMLParser.parse(load("finding_nemo.html"));
-		if (result instanceof Payload<Tag> payload) {
-			List<Tag> matches = payload.get().find(withAttribute("type"));
-			assertEquals(2, matches.size());
-			assertEquals("input", matches.getFirst().type());
-			assertEquals("input", matches.get(1).type());
-		}
+		assertInstanceOf(Payload.class, result);
+		Payload<Tag> payload = (Payload<Tag>)result;
+		List<Tag>    matches = payload.get().find(withAttribute("type"));
+		assertEquals(2, matches.size());
+		assertEquals("input", matches.getFirst().type());
+		assertEquals("input", matches.get(1).type());
 	}
 
 	@Test
 	public void testFindAttributeWithValue() throws IOException {
 		var result = XMLParser.parse(load("finding_nemo.html"));
-		if (result instanceof Payload<Tag> payload) {
-			List<Tag> matches = payload.get().find(attributeEquals("id", "last"));
-			assertEquals(1, matches.size());
-			assertEquals("li", matches.getFirst().type());
+		assertInstanceOf(Payload.class, result);
+		Payload<Tag> payload = (Payload<Tag>)result;
+		List<Tag>    matches = payload.get().find(attributeEquals("id", "last"));
+		assertEquals(1, matches.size());
+		assertEquals("li", matches.getFirst().type());
 
-			matches = payload.get().find(attributeEquals("class", "red"));
-			assertEquals(1, matches.size());
-			var tag = matches.getFirst();
-			assertEquals("span", tag.type());
-			var child = tag.children().getFirst();
-			assertInstanceOf(Text.class, child);
-			var text = (Text)child;
-			assertEquals("Text", text.toString());
+		matches = payload.get().find(attributeEquals("class", "red"));
+		assertEquals(1, matches.size());
+		var tag = matches.getFirst();
+		assertEquals("span", tag.type());
+		var child = tag.children().getFirst();
+		assertInstanceOf(Text.class, child);
+		var text = (Text)child;
+		assertEquals("Text", text.toString());
 
-			matches = payload.get().find(attributeContains("class", "title"));
-			assertEquals(2, matches.size());
-			tag = matches.getFirst();
-			assertEquals("title", tag.type());
-			tag = matches.get(1);
-			assertEquals("h1", tag.type());
-		}
+		matches = payload.get().find(attributeContains("class", "title"));
+		assertEquals(2, matches.size());
+		tag = matches.getFirst();
+		assertEquals("title", tag.type());
+		tag = matches.get(1);
+		assertEquals("h1", tag.type());
 	}
 
 	@Test
 	public void testFindTagType() throws IOException {
 		var result = XMLParser.parse(load("finding_nemo.html"));
-		if (result instanceof Payload<Tag> payload) {
-			List<Tag> matches = payload.get().find(ofType("select"));
-			assertEquals(1, matches.size());
-			var select = matches.getFirst();
-			assertEquals("select", select.type());
-		}
+		assertInstanceOf(Payload.class, result);
+		Payload<Tag> payload = (Payload<Tag>)result;
+		List<Tag>    matches = payload.get().find(ofType("select"));
+		assertEquals(1, matches.size());
+		var select = matches.getFirst();
+		assertEquals("select", select.type());
 	}
 
 	@Test
 	public void testFindAttributeHas() throws IOException {
 		var result = XMLParser.parse(load("finding_nemo.html"));
-		if (result instanceof Payload<Tag> payload) {
-			var matches = payload.get().find(attributeHas("name", "several"));
-			assertEquals(1, matches.size());
-			var select = matches.getFirst();
-			assertEquals("select", select.type());
+		assertInstanceOf(Payload.class, result);
+		Payload<Tag> payload = (Payload<Tag>)result;
+		var          matches = payload.get().find(attributeHas("name", "several"));
+		assertEquals(1, matches.size());
+		var select = matches.getFirst();
+		assertEquals("select", select.type());
 
-			matches = payload.get().find(attributeHas("name", "values"));
-			assertEquals(1, matches.size());
-			select = matches.getFirst();
-			assertEquals("select", select.type());
+		matches = payload.get().find(attributeHas("name", "values"));
+		assertEquals(1, matches.size());
+		select = matches.getFirst();
+		assertEquals("select", select.type());
 
-			matches = payload.get().find(attributeHas("name", "for"));
-			assertEquals(1, matches.size());
-			select = matches.getFirst();
-			assertEquals("select", select.type());
+		matches = payload.get().find(attributeHas("name", "for"));
+		assertEquals(1, matches.size());
+		select = matches.getFirst();
+		assertEquals("select", select.type());
 
-			matches = payload.get().find(attributeHas("name", "tag"));
-			assertEquals(1, matches.size());
-			select = matches.getFirst();
-			assertEquals("select", select.type());
+		matches = payload.get().find(attributeHas("name", "tag"));
+		assertEquals(1, matches.size());
+		select = matches.getFirst();
+		assertEquals("select", select.type());
 
-			matches = payload.get().find(attributeHas("name", "several values"));
-			assertTrue(matches.isEmpty());
+		matches = payload.get().find(attributeHas("name", "several values"));
+		assertTrue(matches.isEmpty());
 
-			matches = payload.get().find(attributeHas("name", "for tag"));
-			assertTrue(matches.isEmpty());
-		}
+		matches = payload.get().find(attributeHas("name", "for tag"));
+		assertTrue(matches.isEmpty());
 	}
 
 	@Test
 	public void testFindAttributeStartsWith() throws IOException {
 		var result = XMLParser.parse(load("finding_nemo.html"));
-		if (result instanceof Payload<Tag> payload) {
-			List<Tag> matches = payload.get().find(attributeStartsWith("class", "page_"));
-			assertEquals(1, matches.size());
-			assertEquals("h1", matches.getFirst().type());
-		}
+		assertInstanceOf(Payload.class, result);
+		Payload<Tag> payload = (Payload<Tag>)result;
+		List<Tag>    matches = payload.get().find(attributeStartsWith("class", "page_"));
+		assertEquals(1, matches.size());
+		assertEquals("h1", matches.getFirst().type());
 	}
 
 	@Test
 	public void testFindAttributeEndsWith() throws IOException {
 		var result = XMLParser.parse(load("finding_nemo.html"));
-		if (result instanceof Payload<Tag> payload) {
-			List<Tag> matches = payload.get().find(attributeEndsWith("class", "_first"));
-			assertEquals(1, matches.size());
-			assertEquals("h1", matches.getFirst().type());
-		}
+		assertInstanceOf(Payload.class, result);
+		Payload<Tag> payload = (Payload<Tag>)result;
+		List<Tag>    matches = payload.get().find(attributeEndsWith("class", "_first"));
+		assertEquals(1, matches.size());
+		assertEquals("h1", matches.getFirst().type());
+	}
+
+	@Test
+	public void testStrip() throws IOException {
+		var result = XMLParser.parse(load("finding_nemo.html"));
+		assertInstanceOf(Payload.class, result);
+		Payload<Tag> payload = (Payload<Tag>)result;
+		List<Tag>    matches = payload.get().find(ofType("p"));
+		assertEquals(1, matches.size());
+		var p = matches.getFirst();
+		assertEquals("p", p.type());
+		var text = p.strip().trim();
+		assertEquals("Some Text with emphasis.", text);
 	}
 }

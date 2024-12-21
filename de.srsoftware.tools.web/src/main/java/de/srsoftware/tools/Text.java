@@ -35,6 +35,11 @@ public class Text extends Tag {
 	}
 
 	@Override
+	public String strip() {
+		return content;
+	}
+
+	@Override
 	public String toString() {
 		return content;
 	}
