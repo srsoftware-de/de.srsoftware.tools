@@ -2,6 +2,7 @@
 package de.srsoftware.tools;
 
 
+import static de.srsoftware.tools.Optionals.nullable;
 import static java.util.Optional.empty;
 
 import java.util.*;
@@ -179,13 +180,38 @@ public class Tag extends TreeMap<String, String> {
 		return new Tag(type);
 	}
 
+	/**
+	 * get the parent of this tag
+	 * @return empty, if this tag has no parent or an optional containing the parent tag of this element.
+	 */
+	public Optional<Tag> parent() {
+		return nullable(parent);
+	}
+
 	public <T extends Tag> T pos(int x, int y) {
 		return attr("x", x).attr("y", y);
 	}
 
-	private void removeChild(Tag child) {
+	/**
+	 * Removes a certain child tag
+	 * @param child the tag to be removed from the list of children
+	 * @return this tag
+	 * @param <T> the type of this tag
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends Tag> T removeChild(Tag child) {
 		children.remove(child);
 		child.parent = null;
+		return (T)this;
+	}
+
+	/**
+	 * Remove a tag from its parent tag.
+	 * If the tag has no parent, noting changes.
+	 * @return the parent tag, if it was present
+	 */
+	public Optional<Tag> remove() {
+		return nullable(parent).map(p -> p.removeChild(this));
 	}
 
 	public <T extends Tag> T size(int width, int height) {

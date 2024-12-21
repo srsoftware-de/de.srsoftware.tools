@@ -26,11 +26,10 @@ public class UuidHasher implements PasswordHasher<String> {
 
 	@Override
 	public String hash(String password, String uuid) {
-		var salt       = uuid;
-		var saltedPass = "%s %s".formatted(salt, password);
+		var saltedPass = "%s %s".formatted(uuid, password);
 		var bytes      = digest.digest(saltedPass.getBytes(UTF_8));
 
-		return "%s@%s".formatted(hex(bytes), salt);
+		return "%s@%s".formatted(hex(bytes), uuid);
 	}
 
 	@Override
