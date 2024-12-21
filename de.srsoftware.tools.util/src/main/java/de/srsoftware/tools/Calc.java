@@ -1,0 +1,49 @@
+/* © SRSoftware 2024 */
+package de.srsoftware.tools;
+
+import static java.lang.System.Logger.Level.ERROR;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Optional;
+
+public class Calc {
+	private static final System.Logger LOG    = System.getLogger(Calc.class.getSimpleName());
+	private static final MessageDigest SHA256 = getSha256();
+
+	private static MessageDigest getSha256() {
+		try {
+			return MessageDigest.getInstance("SHA256");
+		} catch (final NoSuchAlgorithmException e) {
+			LOG.log(ERROR, "Failed to get SHA256 digest object! [{0}]", Calc.class.getPackageName());
+			System.exit(1);
+			return null;
+		}
+	}
+
+	public static long ggt(long a, long b) {
+		if (a == 0 || b == 0) {
+			return 0;
+		}
+
+		while (a != b) {
+			if (a > b) {
+				a = a - b;
+			} else {
+				b = b - a;
+			}
+		}
+
+		return a;
+	}
+
+	public static Optional<String> hash(final Object o) {
+		return Optional	 //
+		    .ofNullable(o)
+		    .map(Object::toString)
+		    .map(s -> s.getBytes(UTF_8))
+		    .map(SHA256::digest)
+		    .map(Strings::hex);
+	}
+}

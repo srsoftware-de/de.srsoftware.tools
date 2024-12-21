@@ -4,8 +4,7 @@ package de.srsoftware.tools.jdbc;
 import static java.lang.System.Logger.Level.DEBUG;
 import static java.lang.System.Logger.Level.INFO;
 
-import de.srsoftware.tools.ColorLogger;
-import java.lang.System.Logger;
+import de.srsoftware.tools.Strings;
 import java.sql.*;
 import java.util.*;
 import java.util.Map.Entry;
@@ -15,13 +14,19 @@ import java.util.stream.Collectors;
  * @author Stephan Richter, 2021-2024
  */
 public class Query {
-	private static final Logger LOG = ColorLogger.of(Query.class);
-	private final String        query;
+	private static final System.Logger LOG = System.getLogger(Query.class.getSimpleName());
+	private final String	   query;
 	private final SortedMap<String, HashSet<Object>> conditions = new TreeMap<>();
 	private final List<String> order	            = new ArrayList<>();
 
 	public Query(final Object queryObject) {
 		query = queryObject.toString();
+	}
+
+	public static String condition(final Map.Entry<String, HashSet<Object>> entry) {
+		final String key           = entry.getKey();
+		final HashSet<Object> vals = entry.getValue();
+		return key + " IN (" + vals.stream().map(v -> "?").collect(Collectors.joining(", ")) + ")";
 	}
 
 	public ResultSet execute(final Connection conn) throws SQLException {
@@ -37,24 +42,8 @@ public class Query {
 			}
 			return rs;
 		} catch (final SQLException e) {
-			throw new SQLException(Util.fill("{} failed", this), e);
+			throw new SQLException(Strings.fill("{} failed", this), e);
 		}
-	}
-
-	public String sql() {
-		String sql = query;
-		if (!conditions.isEmpty()) {
-			sql += sql.toLowerCase().contains("where") ? " AND " : " WHERE ";
-			sql += conditions.entrySet().stream().map(Query::condition).collect(Collectors.joining(" AND "));
-		}
-		if (!order.isEmpty()) sql += " ORDER BY " + String.join(", ", order);
-		return sql.trim();
-	}
-
-	public static String condition(final Map.Entry<String, HashSet<Object>> entry) {
-		final String key           = entry.getKey();
-		final HashSet<Object> vals = entry.getValue();
-		return key + " IN (" + vals.stream().map(v -> "?").collect(Collectors.joining(", ")) + ")";
 	}
 
 	private String fill(String sql, final PreparedStatement p) throws SQLException {
@@ -72,6 +61,17 @@ public class Query {
 		Collections.addAll(order, fields);
 		return this;
 	}
+
+	public String sql() {
+		String sql = query;
+		if (!conditions.isEmpty()) {
+			sql += sql.toLowerCase().contains("where") ? " AND " : " WHERE ";
+			sql += conditions.entrySet().stream().map(Query::condition).collect(Collectors.joining(" AND "));
+		}
+		if (!order.isEmpty()) sql += " ORDER BY " + String.join(", ", order);
+		return sql.trim();
+	}
+
 
 	public PreparedStatement statement(final Connection conn) throws SQLException {
 		String	        sql = sql();
@@ -96,13 +96,13 @@ public class Query {
 		return sb.toString();
 	}
 
+	public final Query where(final String key, final Object vals) {
+		return whereCollection(key, vals instanceof final Collection<?> collection ? collection : Set.of(vals));
+	}
+
 	private Query whereCollection(final String key, final Collection<?> values) {
 		final HashSet<Object> cond = conditions.computeIfAbsent(key, k -> new HashSet<>());
 		cond.addAll(values);
 		return this;
-	}
-
-	public final Query where(final String key, final Object vals) {
-		return whereCollection(key, vals instanceof final Collection<?> collection ? collection : Set.of(vals));
 	}
 }
