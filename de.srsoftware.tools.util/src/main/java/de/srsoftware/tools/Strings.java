@@ -11,6 +11,27 @@ public class Strings {
 	}
 
 	/**
+	 * convert a string to camel case: every character following a space is converted to uppercase, spaces are removed
+	 * @param text the text to be converted
+	 * @return the camelcase version of the provided text
+	 */
+	public static String camelCase(String text) {
+		if (text == null) return null;
+		var sb    = new StringBuilder();
+		var upper = false;
+		for (int i = 0; i < text.length(); i++) {
+			char c = text.charAt(i);
+			if (c == ' ') {
+				upper = true;
+			} else {
+				sb.append(upper ? Character.toUpperCase(c) : c);
+				upper = false;
+			}
+		}
+		return sb.toString();
+	}
+
+	/**
 	 * stuff the placeholders in the text with the string representations of the objects, don't indent
 	 * @param indent add whitespace in front of the line
 	 * @param text a text with {} placeholders
