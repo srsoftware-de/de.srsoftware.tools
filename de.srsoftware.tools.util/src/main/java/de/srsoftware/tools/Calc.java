@@ -8,9 +8,15 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
+/**
+ * collection of tiny algorithms
+ */
 public class Calc {
 	private static final System.Logger LOG    = System.getLogger(Calc.class.getSimpleName());
 	private static final MessageDigest SHA256 = getSha256();
+
+	private Calc() {
+	}
 
 	private static MessageDigest getSha256() {
 		try {
@@ -22,6 +28,12 @@ public class Calc {
 		}
 	}
 
+	/**
+	 * calculate the grates common divisor
+	 * @param a first number
+	 * @param b second number
+	 * @return greatest common divisor of a and b
+	 */
 	public static long ggt(long a, long b) {
 		if (a == 0 || b == 0) {
 			return 0;
@@ -38,6 +50,11 @@ public class Calc {
 		return a;
 	}
 
+	/**
+	 * calculate the hash of the objects string representation
+	 * @param o the object to hash
+	 * @return the hash value represented as hexadecimal string
+	 */
 	public static Optional<String> hash(final Object o) {
 		return Optional	 //
 		    .ofNullable(o)

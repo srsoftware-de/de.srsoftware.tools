@@ -10,6 +10,13 @@ public class Strings {
 	private Strings() {
 	}
 
+	/**
+	 * stuff the placeholders in the text with the string representations of the objects, don't indent
+	 * @param indent add whitespace in front of the line
+	 * @param text a text with {} placeholders
+	 * @param fills the fills to apply
+	 * @return the text with placeholders replaced
+	 */
 	public static String fill(final int indent, final String text, final Object... fills) {
 		final StringBuilder sb = new StringBuilder(" ".repeat(indent));
 
@@ -26,6 +33,12 @@ public class Strings {
 		return sb.toString();
 	}
 
+	/**
+	 * stuff the placeholders in the text with the string representations of the objects, don't indent
+	 * @param text a text with {} placeholders
+	 * @param fills the fills to apply
+	 * @return the text with placeholders replaced
+	 */
 	public static String fill(final String text, final Object... fills) {
 		return fill(0, text, fills);
 	}
