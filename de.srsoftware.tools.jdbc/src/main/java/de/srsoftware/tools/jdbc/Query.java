@@ -1,14 +1,13 @@
 /* © SRSoftware 2024 */
 package de.srsoftware.tools.jdbc;
 
-import static java.lang.System.Logger.Level.DEBUG;
-import static java.lang.System.Logger.Level.INFO;
-
 import de.srsoftware.tools.Strings;
 import java.sql.*;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+
+import static java.lang.System.Logger.Level.*;
 
 /**
  * Object that wraps an SQL query
@@ -53,7 +52,7 @@ public class Query {
 				final ResultSetMetaData meta = rs.getMetaData();
 				final int	        cnt  = meta.getColumnCount();
 				for (int i = 1; i <= cnt; i++) {
-					LOG.log(DEBUG, "{0}:\t({1})\t{2}", i, meta.getColumnTypeName(i), meta.getColumnName(i));
+					LOG.log(TRACE, "{0}:\t({1})\t{2}", i, meta.getColumnTypeName(i), meta.getColumnName(i));
 				}
 			}
 			return rs;
@@ -117,7 +116,7 @@ public class Query {
 		String	        sql = sql();
 		final PreparedStatement p   = conn.prepareStatement(sql);
 		sql	            = fill(sql, p);
-		LOG.log(INFO, "Prepared statement: {0}", sql);
+		LOG.log(DEBUG, "Prepared statement: {0}", sql);
 		return p;
 	}
 
