@@ -33,7 +33,7 @@ public class Tag extends TreeMap<String, String> {
 	 * @return this tag
 	 */
 	public Tag add(Tag... newChildren) {
-		return add(Arrays.asList(newChildren));
+		return addAll(Arrays.asList(newChildren));
 	}
 
 	/**
@@ -42,7 +42,7 @@ public class Tag extends TreeMap<String, String> {
 	 * @param newChildren an aray of tags to be added.
 	 * @return this tag
 	 */
-	public Tag add(List<Tag> newChildren) {
+	public Tag addAll(Iterable<Tag> newChildren) {
 		for (Tag child : newChildren) {
 			if (child != null) {
 				if (child.parent != null) child.parent.removeChild(child);
