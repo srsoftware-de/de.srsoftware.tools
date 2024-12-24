@@ -42,7 +42,7 @@ public class Tag extends TreeMap<String, String> {
 	 * @param newChildren an aray of tags to be added.
 	 * @return this tag
 	 */
-	public Tag add(Collection<Tag> newChildren) {
+	public Tag add(List<Tag> newChildren) {
 		for (Tag child : newChildren) {
 			if (child != null) {
 				if (child.parent != null) child.parent.removeChild(child);
