@@ -33,6 +33,16 @@ public class Tag extends TreeMap<String, String> {
 	 * @return this tag
 	 */
 	public Tag add(Tag... newChildren) {
+		return add(Arrays.asList(newChildren));
+	}
+
+	/**
+	 * Add children to the tag. The parent of the children will be set to this tag, too.
+	 * If a child had another parent before, this relationship will be terminated.
+	 * @param newChildren an aray of tags to be added.
+	 * @return this tag
+	 */
+	public Tag add(Collection<Tag> newChildren) {
 		for (Tag child : newChildren) {
 			if (child != null) {
 				if (child.parent != null) child.parent.removeChild(child);
