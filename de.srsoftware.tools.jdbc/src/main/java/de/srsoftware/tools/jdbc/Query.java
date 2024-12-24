@@ -1,13 +1,14 @@
 /* © SRSoftware 2024 */
 package de.srsoftware.tools.jdbc;
 
-import de.srsoftware.tools.Strings;
+
+import static java.lang.System.Logger.Level.DEBUG;
+import static java.lang.System.Logger.Level.TRACE;
+
+import java.security.InvalidParameterException;
 import java.sql.*;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
-
-import static java.lang.System.Logger.Level.*;
 
 /**
  * Object that wraps an SQL query
@@ -15,139 +16,422 @@ import static java.lang.System.Logger.Level.*;
  */
 public class Query {
 	private static final System.Logger LOG = System.getLogger(Query.class.getSimpleName());
-	private final String	   query;
-	private final SortedMap<String, HashSet<Object>> conditions = new TreeMap<>();
-	private final List<String> order	            = new ArrayList<>();
+	/**
+	 * this mark instance can be during construction of update queries
+	 */
+	public static final Mark MARK = new Mark();
 
 	/**
-	 * create a new Query object by serializing the passed object
-	 * @param queryObject an object whose toString method delivers a valid SQL query
+	 * This class is used to build INSERT INTO … queries
 	 */
-	public Query(final Object queryObject) {
-		query = queryObject.toString();
+	public static class InsertQuery {
+		private final String   table;
+		private String[]       fields	 = null;
+		private List<Object[]> valueSets = new ArrayList<>();
+
+		private InsertQuery(String table) {
+			this.table = table;
+		}
+
+		/**
+		 * run this query on the provided database connection
+		 * @param conn the connection to use while running this query
+		 * @throws SQLException if the execution of the query fails
+		 */
+		public void execute(Connection conn) throws SQLException {
+			var stmt = conn.prepareStatement(sql());
+			conn.setAutoCommit(false);
+			for (var arr : valueSets) {
+				for (int i = 0; i < arr.length; i++) stmt.setObject(i + 1, arr[i]);
+				stmt.execute();
+			}
+			conn.setAutoCommit(true);
+		}
+
+		private InsertQuery fields(String[] fields) {
+			this.fields = fields;
+			return this;
+		}
+
+		/**
+		 * generate the sql statement for this query
+		 * @return sql query
+		 */
+		public String sql() {
+			var marks = Arrays.stream(fields).map(field -> "?").collect(Collectors.joining(", "));
+			var names = String.join(", ", Arrays.asList(fields));
+			return "INSERT INTO %s (%s) VALUES (%s)".formatted(table, names, marks);
+		}
+
+
+		@Override
+		public String toString() {
+			return sql();
+		}
+
+		/**
+		 * add a set of values to the query.
+		 * @param values the values to insert. must be in the same number and order as the fields provided when creating the query.
+		 * @return the query
+		 */
+		public InsertQuery values(Object... values) {
+			if (fields != null && fields.length != values.length) throw new InvalidParameterException("Number of values must match the number of fields!");
+			valueSets.add(values);
+			return this;
+		}
 	}
 
 	/**
-	 * add a condition to this query
-	 * @param entry a map entry whose key acts as field selector and whose values are compared against
-	 * @return the query string part
+	 * This class can be used to create SELECT queries
 	 */
-	protected static String condition(final Map.Entry<String, HashSet<Object>> entry) {
-		final String key           = entry.getKey();
-		final HashSet<Object> vals = entry.getValue();
-		return key + " IN (" + vals.stream().map(v -> "?").collect(Collectors.joining(", ")) + ")";
-	}
+	public static class SelectQuery {
+		private List<String> sort = new ArrayList<>();
+		private final String[]	     fields;
+		private StringBuilder	     tables = new StringBuilder();
+		private String		     lastTable;
+		private Long		     limit;
+		private Map<String, List<Condition>> conditions = new HashMap<>();
+		private Long		     skip;
 
-	/**
-	 * build this query and execute it using the provided connection
-	 * @param conn the connection on which the query is executed
-	 * @return the ResultSet of the executed Query
-	 * @throws SQLException if the query cannot be executed
-	 */
-	public ResultSet execute(final Connection conn) throws SQLException {
-		try {
-			final ResultSet rs = statement(conn).executeQuery();
+		/**
+		 * the fields to select
+		 * @param fields the fields to select
+		 */
+		private SelectQuery(String[] fields) {
+			this.fields = fields;
+		}
 
-			if (LOG.isLoggable(DEBUG)) {
-				final ResultSetMetaData meta = rs.getMetaData();
-				final int	        cnt  = meta.getColumnCount();
-				for (int i = 1; i <= cnt; i++) {
-					LOG.log(TRACE, "{0}:\t({1})\t{2}", i, meta.getColumnTypeName(i), meta.getColumnName(i));
+		/**
+		 * Create an SQL String from this query object
+		 * @param values
+		 * @return
+		 */
+		private String compile(List<Object> values) {
+			var sb = new StringBuilder("SELECT ")  //
+			             .append(String.join(", ", Arrays.asList(fields)))
+			             .append(" ")
+			             .append(tables);
+
+			List<String> where = new ArrayList<>();
+			for (var field : conditions.keySet()) {
+				for (Condition sub : conditions.get(field)) {
+					where.add(field + sub.sql());
+					values.addAll(sub.values());
 				}
 			}
-			return rs;
-		} catch (final SQLException e) {
-			throw new SQLException(Strings.fill("{} failed", this), e);
-		}
-	}
+			if (!where.isEmpty()) sb.append(" WHERE ");
+			sb.append(String.join(" AND ", where));
 
-	private String fill(String sql, final PreparedStatement p) throws SQLException {
-		int idx = 1;
-		for (final Entry<String, HashSet<Object>> entry : conditions.entrySet()) {
-			for (final Object val : entry.getValue()) {
-				if (p != null) p.setObject(idx++, val);
-				sql = sql.replaceFirst("\\?", val instanceof Number ? val.toString() : "'" + val + "'");
+			if (!sort.isEmpty()) {
+				sb.append(" ORDER BY ");
+				sb.append(String.join(", ", sort));
 			}
-		}
-		return sql;
-	}
-
-	/**
-	 * create a new Query object from the given object
-	 * @param queryObject an object whose toString method delivers a valid SQL query
-	 * @return the created Query object
-	 */
-	public static Query of(Object queryObject) {
-		return new Query(queryObject);
-	}
-
-	/**
-	 * order the results of this query be the provided fields
-	 * @param fields the list of fields to sort by
-	 * @return the Query object
-	 */
-	public Query orderBy(final String... fields) {
-		Collections.addAll(order, fields);
-		return this;
-	}
-
-
-	/**
-	 * create the SQL represented by this query
-	 * @return the SQL string
-	 */
-	protected String sql() {
-		String sql = query;
-		if (!conditions.isEmpty()) {
-			sql += sql.toLowerCase().contains("where") ? " AND " : " WHERE ";
-			sql += conditions.entrySet().stream().map(Query::condition).collect(Collectors.joining(" AND "));
-		}
-		if (!order.isEmpty()) sql += " ORDER BY " + String.join(", ", order);
-		return sql.trim();
-	}
-
-	/**
-	 * create a PreparedStatement from this Query object
-	 * @param conn use this connection to prepare the result
-	 * @return the PreparedStatement build from this Query
-	 * @throws SQLException if this Query cannot be translated in a PreparedStatement
-	 */
-	public PreparedStatement statement(final Connection conn) throws SQLException {
-		String	        sql = sql();
-		final PreparedStatement p   = conn.prepareStatement(sql);
-		sql	            = fill(sql, p);
-		LOG.log(DEBUG, "Prepared statement: {0}", sql);
-		return p;
-	}
-
-	@Override
-	public String toString() {
-		final StringBuilder sb = new StringBuilder();
-		sb.append(getClass().getSimpleName());
-		sb.append("[");
-
-		try {
-			sb.append(query == null ? "undefined query" : fill(query, null));
-		} catch (final SQLException ignored) {
+			if (limit != null) sb.append(" LIMIT ").append(limit);
+			if (skip != null) sb.append(" OFFSET ").append(skip);
+			return sb.toString();
 		}
 
-		sb.append("]");
-		return sb.toString();
+		/**
+		 * execute this query
+		 * @param conn the database connection to act on
+		 * @return the resultset of this execution
+		 * @throws SQLException if the request fails
+		 */
+		public ResultSet exec(Connection conn) throws SQLException {
+			var values = new ArrayList<>();
+			var sql    = compile(values);
+			var stmt   = conn.prepareStatement(sql);
+			for (int i = 0; i < values.size(); i++) stmt.setObject(i + 1, values.get(i));
+			return stmt.executeQuery();
+		}
+
+		private String fill(String sql, ArrayList<Object> values) {
+			while (!values.isEmpty()) {
+				var    o = values.removeFirst();
+				String s = (o instanceof Number num) ? "" + num : "\"" + o + "\"";
+				sql      = sql.replaceFirst("\\?", s);
+			}
+			return sql;
+		}
+
+		/**
+		 * define the table to select from
+		 * @param table the name of a table
+		 * @return this query
+		 */
+		public SelectQuery from(String table) {
+			tables.append("FROM ").append(table);
+			lastTable = table;
+			return this;
+		}
+
+		/**
+		 * define a left join with another table
+		 * @param joiningColumn the column of the previous table to join with
+		 * @param otherTable the name of the added table
+		 * @param otherTableColumn the column of the added table to join with
+		 * @return this query
+		 */
+		public SelectQuery leftJoin(String joiningColumn, String otherTable, String otherTableColumn) {
+			if (lastTable == null) throw new RuntimeException("Left join without calling from(…) before!");
+			tables  //
+			    .append(" LEFT JOIN ")
+			    .append(otherTable)
+			    .append(" ON ")
+			    .append(lastTable)
+			    .append('.')
+			    .append(joiningColumn)
+			    .append(" = ")
+			    .append(otherTable)
+			    .append('.')
+			    .append(otherTableColumn);
+			lastTable = otherTable;
+			return this;
+		}
+
+		/**
+		 * restict the ResultSet to a given number of entries
+		 * @param limit the maximum count of entries the result set shall contain
+		 * @return this Query
+		 */
+		public SelectQuery limit(long limit) {
+			this.limit = limit;
+			return this;
+		}
+
+		/**
+		 * do not return the first <em>count</em> elements of the ResultSet
+		 * @param count the number of lines to skip
+		 * @return this query
+		 */
+		public SelectQuery skip(long count) {
+			this.skip = count;
+			return this;
+		}
+
+		/**
+		 * Sort the entries in the result set by the given fields.
+		 * Modifiers as "ASC" or "DESC" may be used
+		 * @param fields the fields to sort with
+		 * @return this query
+		 */
+		public SelectQuery sort(String... fields) {
+			sort.addAll(Arrays.asList(fields));
+			return this;
+		}
+
+
+		@Override
+		public String toString() {
+			var values = new ArrayList<>();
+			return fill(compile(values), values);
+		}
+
+		/**
+		 * add a where condition
+		 * @param field the field in which the condition is to be fulfilled
+		 * @param condition the condition to be fulfilled
+		 * @return the updated query object
+		 */
+		public SelectQuery where(String field, Condition condition) {
+			conditions.computeIfAbsent(field, k -> new ArrayList<>()).add(condition);
+			return this;
+		}
 	}
 
 	/**
-	 * add a where condition
-	 * @param key the field against whom the values shall be compared
-	 * @param vals the values to look for
-	 * @return this query
+	 * Wrapper for prepared statement with metadata to extract data from input values passed by apply
 	 */
-	public final Query where(final String key, final Object vals) {
-		return whereCollection(key, vals instanceof final Collection<?> collection ? collection : Set.of(vals));
+	public static class PreparedUpdateQuery {
+		private final PreparedStatement stmt;
+		private final List<Object> conditionInputs;
+		private final long         counter;
+		private final List<Integer> fieldInputs;
+
+		private PreparedUpdateQuery(PreparedStatement stmt, List<Integer> fieldInputs, List<Object> conditionInputs) {
+			this.stmt	     = stmt;
+			this.conditionInputs = conditionInputs;
+			this.fieldInputs     = fieldInputs;
+			counter	     = fieldInputs.size() + conditionInputs.stream().filter(o -> o instanceof Mark).count();
+		}
+
+		/**
+		 * execute a database transaction:
+		 * values are applied to the placeholders in the order the were presented during Query construction.
+		 * @param values values to apply to the query
+		 * @return this PreparedUpdateQuery (can be used to repeat the apply process)
+		 * @throws SQLException if writing data fails
+		 */
+		public PreparedUpdateQuery apply(Object... values) throws SQLException {
+			if (values.length != counter) throw new InvalidParameterException("apply(…) expected %s arguments, got %s!".formatted(counter, values.length));
+			int index = 0;
+			for (int fieldInputIndex : fieldInputs) {
+				stmt.setObject(++index, values[fieldInputIndex]);
+			}
+			for (var obj : conditionInputs) {
+				if (obj instanceof Mark mark) {
+					stmt.setObject(++index, values[mark.position()]);
+				} else {
+					stmt.setObject(++index, obj);
+				}
+			}
+			LOG.log(TRACE,() -> " → applying ("+String.join(", ", Arrays.stream(values).map(Object::toString).toList())+")");
+			stmt.execute();
+			return this;
+		}
 	}
 
-	private Query whereCollection(final String key, final Collection<?> values) {
-		final HashSet<Object> cond = conditions.computeIfAbsent(key, k -> new HashSet<>());
-		cond.addAll(values);
-		return this;
+	/**
+	 * This class can be used to create UPDATE queries
+	 */
+	public static class UpdateQuery {
+		private final String  table;
+		private final boolean ignore;
+		private int	      counter;
+		private List<String>  fields	      = new ArrayList<>();
+		private List<Integer> fieldInputs     = new ArrayList<>();
+		private List<String>  conditions      = new ArrayList<>();
+		private List<Object>  conditionInputs = new ArrayList<>();
+
+		private UpdateQuery(String table, boolean ignore) {
+			this.table  = table;
+			this.ignore = ignore;
+			counter     = 0;
+		}
+
+		private void addField(String field) {
+			// note: nth field has name {field}
+			fields.add(field + " = ?");
+			// note input at {counter} goes into nth field
+			fieldInputs.add(counter++);
+		}
+
+		/**
+		 * create a SQL string like the sql()-method does, then add fixed values and information about argument positions
+		 * @return the created string
+		 */
+		public String fill() {
+			var sql = sql();
+			var pos = 0;
+			for (int index : fieldInputs) {	 // skip field inputs
+				pos = sql.indexOf("?", pos + 1);
+				if (pos < 0) return sql;
+				sql = sql.substring(0, pos) + "args[" + index + "]" + sql.substring(pos + 1);
+			}
+
+			for (var obj : conditionInputs) {
+				pos = sql.indexOf("?", pos + 1);
+				if (pos < 0) return sql;
+				if (obj instanceof Mark mark) {
+					sql = sql.substring(0, pos) + "args[" + mark.position() + "]" + sql.substring(pos + 1);
+				} else {
+					sql = sql.substring(0, pos) + obj + sql.substring(pos + 1);
+				}
+			}
+			return sql;
+		}
+
+		/**
+		 * fix fields and conditions, create a prepared statement and prepare for data application
+		 * @param conn the connection to act on
+		 * @return an object with metadata to do acutal database transactions
+		 * @throws SQLException if preparing the statement fails
+		 */
+		public PreparedUpdateQuery prepare(Connection conn) throws SQLException {
+			LOG.log(DEBUG, () -> "preparing " + this);
+			var stmt = conn.prepareStatement(sql());
+			return new PreparedUpdateQuery(stmt, fieldInputs, conditionInputs);
+		}
+
+		/**
+		 * adds fields that shall be set with this update query
+		 * @param fields the fields to add
+		 * @return this UpdateQuery object
+		 */
+		public UpdateQuery set(String... fields) {
+			for (var field : fields) addField(field);
+			return this;
+		}
+
+		/**
+		 * create SQL string from table, fields and conditions
+		 * @return compiled sql sting with question marks in place of the inputs
+		 */
+		public String sql() {
+			var sb = new StringBuilder("UPDATE ");
+			if (ignore) sb.append("IGNORE ");
+			sb.append(table).append(" SET ");
+			sb.append(String.join(", ", fields));
+
+			if (!conditions.isEmpty()) sb.append(" WHERE ").append(String.join(" AND ", conditions));
+			return sb.toString();
+		}
+
+		@Override
+		public String toString() {
+			return fill();
+		}
+
+		/**
+		 * add a where condition
+		 * @param field the field in which the condition is to be fulfilled
+		 * @param condition the condition to be fulfilled
+		 * @return the updated query object
+		 */
+		public UpdateQuery where(String field, Condition condition) {
+			conditions.add(field + condition.sql());
+			for (var val : condition.values()) {
+				if (val instanceof Mark mark) {
+					// take note: input at {counter} goes into nth condition input
+					conditionInputs.add(mark.set(counter++));
+				} else {
+					// note: nth condition input has fixed value
+					conditionInputs.add(val);
+				}
+			}
+			return this;
+		}
+	}
+
+	private Query() {
+	}
+
+
+	/**
+	 * Create a new SelectQuery for the given fields.
+	 * Needs to be followed by a call of .from(…)
+	 * @param fields the fields to select
+	 * @return the SelectQuery, which may be further manupilated.
+	 */
+	public static SelectQuery select(String... fields) {
+		return new SelectQuery(fields);
+	}
+
+	/**
+	 * create a new InsertQuery for the given fields in the given table
+	 * @param table the table to insert into
+	 * @param fields the fields to set
+	 * @return the new InsertQuery
+	 */
+	public static InsertQuery insertInto(String table, String... fields) {
+		return new InsertQuery(table).fields(fields);
+	}
+
+	/**
+	 * create a new UPDATE query
+	 * @param table the table to apply updates on
+	 * @return the query object
+	 */
+	public static UpdateQuery update(String table) {
+		return new UpdateQuery(table, false);
+	}
+
+	/**
+	 * create an UPDATE IGNORE query
+	 * @param table the table to apply updates on
+	 * @return the query object
+	 */
+	public static UpdateQuery updateIgnore(String table) {
+		return new UpdateQuery(table, true);
 	}
 }
