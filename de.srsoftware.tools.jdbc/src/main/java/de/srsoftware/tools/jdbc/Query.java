@@ -92,6 +92,7 @@ public class Query {
 		private Long		     limit;
 		private Map<String, List<Condition>> conditions = new HashMap<>();
 		private Long		     skip;
+		private List<String>	     groupFields = new ArrayList<>();
 
 		/**
 		 * the fields to select
@@ -121,11 +122,8 @@ public class Query {
 			}
 			if (!where.isEmpty()) sb.append(" WHERE ");
 			sb.append(String.join(" AND ", where));
-
-			if (!sort.isEmpty()) {
-				sb.append(" ORDER BY ");
-				sb.append(String.join(", ", sort));
-			}
+			if (!groupFields.isEmpty()) sb.append(" GROUP BY ").append(String.join(", ", groupFields));
+			if (!sort.isEmpty()) sb.append(" ORDER BY ").append(String.join(", ", sort));
 			if (limit != null) sb.append(" LIMIT ").append(limit);
 			if (skip != null) sb.append(" OFFSET ").append(skip);
 			return sb.toString();
@@ -162,6 +160,16 @@ public class Query {
 		public SelectQuery from(String table) {
 			tables.append("FROM ").append(table);
 			lastTable = table;
+			return this;
+		}
+
+		/**
+		 * set fields to group by
+		 * @param fields the fields of which group are built
+		 * @return this query object
+		 */
+		public SelectQuery groupBy(String... fields) {
+			groupFields.addAll(Arrays.asList(fields));
 			return this;
 		}
 
@@ -275,7 +283,7 @@ public class Query {
 					stmt.setObject(++index, obj);
 				}
 			}
-			LOG.log(TRACE,() -> " → applying ("+String.join(", ", Arrays.stream(values).map(Object::toString).toList())+")");
+			LOG.log(TRACE, () -> " → applying (" + String.join(", ", Arrays.stream(values).map(Object::toString).toList()) + ")");
 			stmt.execute();
 			return this;
 		}
