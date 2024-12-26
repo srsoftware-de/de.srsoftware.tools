@@ -265,7 +265,7 @@ public abstract class PathHandler implements HttpHandler {
 			if (o instanceof List<?> list) o = new JSONArray(list);
 			if (o instanceof Map<?, ?> map) o = new JSONObject(map);
 			if (o instanceof Error<?> error) o = error.json();
-			if (o instanceof JSONObject) ex.getResponseHeaders().add(CONTENT_TYPE, JSON);
+			if (o instanceof JSONObject || o instanceof JSONArray) ex.getResponseHeaders().add(CONTENT_TYPE, JSON);
 			return sendContent(ex, status, o.toString().getBytes(UTF_8));
 		}
 
@@ -278,11 +278,23 @@ public abstract class PathHandler implements HttpHandler {
 			return sendContent(ex, HTTP_OK, o);
 		}
 
+		/**
+		 * create a "internal server error" response
+		 * @param ex the HttpExchange object
+		 * @param o an additional payload
+		 * @return false
+		 * @throws IOException if the content cannot be sent
+		 */
 		public static boolean serverError(HttpExchange ex, Object o) throws IOException {
 			sendContent(ex, HTTP_INTERNAL_ERROR, o);
 			return false;
 		}
 
+		/**
+		 * recover the URL from an HttpExchange object
+		 * @param ex the HttpExchange object
+		 * @return the url of this object
+		 */
 		public static String url(HttpExchange ex) {
 			return hostname(ex) + ex.getRequestURI();
 		}
