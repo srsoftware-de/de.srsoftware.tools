@@ -30,4 +30,14 @@ public interface Result<Content> {
 	 * @param <Inner> the type of the payloads of the elements of the stream
 	 */
 	public <Inner> Stream<Result<Inner>> stream();
+
+	/**
+	 * Transforms the Result to an Error with appropriate payload type
+	 * @param res if this reslult is an error, it will be transformed using the Error.transform method, otherwise a new Error will be created
+	 * @return the transformed error
+	 * @param <T> the payload type of the returned error
+	 */
+	public static <T> Result<T> transform(Result<?> res) {
+		return res instanceof Error<?> err ? err.transform() : Error.format("Invalid parameter: %s", res.getClass().getSimpleName());
+	}
 }
