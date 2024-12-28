@@ -1,7 +1,7 @@
 /* © SRSoftware 2024 */
 package de.srsoftware.tools;
 
-import static de.srsoftware.logging.ConsoleColors.*;
+import static de.srsoftware.tools.ConsoleColors.*;
 import static java.lang.System.Logger.Level.*;
 
 import java.text.DateFormat;
@@ -10,6 +10,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.ResourceBundle;
 
+/**
+ * Provides colorful logging to System.out
+ */
 public class ColorLogger implements System.Logger {
 	private final String      name;
 	private static int        rootLevel = INFO.getSeverity();
@@ -17,6 +20,10 @@ public class ColorLogger implements System.Logger {
 	private static DateFormat DATE	    = new SimpleDateFormat("yyyy-MM-dd");
 	private static String     lastDate  = null;
 
+	/**
+	 * create a new ColorLogger with a given name
+	 * @param name the name for this logger
+	 */
 	public ColorLogger(String name) {
 		this.name = name;
 	}
@@ -53,15 +60,27 @@ public class ColorLogger implements System.Logger {
 
 	@Override
 	public void log(Level level, ResourceBundle bundle, String format, Object... params) {
-		if (isLoggable(level)) {
-			System.out.println(colorize(MessageFormat.format(format, params), level.getSeverity()));
-		}
+		if (isLoggable(level)) try {
+				System.out.println(colorize(MessageFormat.format(format, params), level.getSeverity()));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 	}
 
+	/**
+	 * Conveniance method to create a new ColorLogger
+	 * @param clazz SimpleName of this class will be used as name for the ColorLogger
+	 * @return the created ColorLogger
+	 */
 	public static ColorLogger of(Class<?> clazz) {
 		return new ColorLogger(clazz.getSimpleName());
 	}
 
+	/**
+	 * alte the log level of this logger
+	 * @param level the new log level
+	 * @return this ColorLogger instance
+	 */
 	public ColorLogger setLogLevel(Level level) {
 		rootLevel = level.getSeverity();
 		return this;
