@@ -1,6 +1,7 @@
 /* © SRSoftware 2024 */
 package de.srsoftware.tools;
 
+import java.util.Base64;
 import java.util.UUID;
 
 /**
@@ -8,6 +9,15 @@ import java.util.UUID;
  */
 public class Strings {
 	private Strings() {
+	}
+
+	/**
+	 * create a base-64 representation of the byte array
+	 * @param bytes the byte array to transform
+	 * @return the base 64 encoded representation of the bytes
+	 */
+	public static String base64(byte[] bytes) {
+		return Base64.getEncoder().encodeToString(bytes);
 	}
 
 	/**
