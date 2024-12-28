@@ -3,7 +3,6 @@ package de.srsoftware.tools.plugin;
 
 import static java.lang.System.Logger.Level.*;
 
-import de.srsoftware.tools.ColorLogger;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
@@ -14,7 +13,7 @@ import java.util.jar.JarFile;
 import java.util.stream.Stream;
 
 public class JarWatchdog extends Thread {
-	private static final System.Logger LOGGER = ColorLogger.of(JarWatchdog.class).setLogLevel(DEBUG);
+	private static final System.Logger LOGGER = System.getLogger(JarWatchdog.class.getSimpleName());
 
 	private final Set<File> dirs	           = new HashSet<>();
 	private ClassLoader     context	           = null;
