@@ -216,6 +216,12 @@ public abstract class PathHandler implements HttpHandler {
 			    .orElse(DEFAULT_LANGUAGE);
 		}
 
+		/**
+		 * sends a "not found" response
+		 * @param ex the HttpExchange to act upon
+		 * @return false
+		 * @throws IOException if sending the response fails
+		 */
 		public static boolean notFound(HttpExchange ex) throws IOException {
 			LOG.log(ERROR, "not implemented");
 			return sendEmptyResponse(HTTP_NOT_FOUND, ex);
@@ -262,10 +268,10 @@ public abstract class PathHandler implements HttpHandler {
 		 * @throws IOException if writing to the HttpEchange object fails
 		 */
 		public static boolean sendContent(HttpExchange ex, int status, Object o) throws IOException {
+			if (o instanceof Payload<?> payload) o = payload.get();
 			if (o instanceof List<?> list) o = new JSONArray(list);
 			if (o instanceof Map<?, ?> map) o = new JSONObject(map);
-			if (o instanceof Error<?> error) o = error.json();
-			if (o instanceof Payload<?> payload) o = payload.get();
+			if (o instanceof Error<?> error) return serverError(ex, error.json());
 			if (o instanceof JSONObject || o instanceof JSONArray) ex.getResponseHeaders().add(CONTENT_TYPE, JSON);
 			return sendContent(ex, status, o.toString().getBytes(UTF_8));
 		}
