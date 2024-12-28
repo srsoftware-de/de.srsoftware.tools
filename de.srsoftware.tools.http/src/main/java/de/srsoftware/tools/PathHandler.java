@@ -189,6 +189,11 @@ public abstract class PathHandler implements HttpHandler {
 			    .map(arr -> new BasicAuth(arr[0], arr[1]));
 		}
 
+		/**
+		 * try to extract a bearer token from the headers of the HttpExchange
+		 * @param ex the HttpExchange to process
+		 * @return an optional carrying the token without the 'Bearer' prefix or empty, if no such token is given
+		 */
 		public static Optional<String> getBearer(HttpExchange ex) {
 			return getAuthToken(ex).filter(token -> token.startsWith("Bearer ")).map(token -> token.substring(7));
 		}
