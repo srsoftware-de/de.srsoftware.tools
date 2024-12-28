@@ -35,17 +35,20 @@ public class Query {
 
 		/**
 		 * run this query on the provided database connection
+		 *
 		 * @param conn the connection to use while running this query
+		 * @return the prepared statement that was executed
 		 * @throws SQLException if the execution of the query fails
 		 */
-		public void execute(Connection conn) throws SQLException {
-			var stmt = conn.prepareStatement(sql());
+		public PreparedStatement execute(Connection conn) throws SQLException {
+			var stmt = conn.prepareStatement(sql(), Statement.RETURN_GENERATED_KEYS);
 			conn.setAutoCommit(false);
 			for (var arr : valueSets) {
 				for (int i = 0; i < arr.length; i++) stmt.setObject(i + 1, arr[i]);
 				stmt.execute();
 			}
 			conn.setAutoCommit(true);
+			return stmt;
 		}
 
 		private InsertQuery fields(String[] fields) {
