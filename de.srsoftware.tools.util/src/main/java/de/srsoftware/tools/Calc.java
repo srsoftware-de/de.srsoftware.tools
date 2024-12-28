@@ -51,16 +51,15 @@ public class Calc {
 	}
 
 	/**
-	 * calculate the hash of the objects string representation
+	 * calculate the sha256 hash of the objects string representation
 	 * @param o the object to hash
-	 * @return the hash value represented as hexadecimal string
+	 * @return the hash value represented as byte array string
 	 */
-	public static Optional<String> hash(final Object o) {
+	public static Optional<byte[]> sha256(final Object o) {
 		return Optional	 //
 		    .ofNullable(o)
 		    .map(Object::toString)
 		    .map(s -> s.getBytes(UTF_8))
-		    .map(SHA256::digest)
-		    .map(Strings::hex);
+		    .map(SHA256::digest);
 	}
 }

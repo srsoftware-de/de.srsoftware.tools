@@ -34,7 +34,7 @@ public class Text extends Tag {
 		sb.append(" ".repeat(currentIndentation)).append(content).append("\n");
 	}
 
-	public static Text of(String content){
+	public static Text of(String content) {
 		return new Text(content);
 	}
 
