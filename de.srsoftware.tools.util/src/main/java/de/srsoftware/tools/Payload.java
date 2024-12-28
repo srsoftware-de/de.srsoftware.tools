@@ -27,8 +27,9 @@ public class Payload<P> implements Result<P> {
 	 * @return the wrapped payload object
 	 * @param <P> the type of the payload
 	 */
-	public static <P> de.srsoftware.tools.Payload<P> of(P object) {
-		return new de.srsoftware.tools.Payload<>(object);
+	public static <P> Result<P> of(P object) {
+		if (object == null) return Error.of("Can not create payload of NULL value!");
+		return new Payload<>(object);
 	}
 
 	/**
