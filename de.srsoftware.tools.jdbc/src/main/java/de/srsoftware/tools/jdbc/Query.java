@@ -286,7 +286,7 @@ public class Query {
 					stmt.setObject(++index, obj);
 				}
 			}
-			LOG.log(TRACE, () -> " → applying (" + String.join(", ", Arrays.stream(values).map(Object::toString).toList()) + ")");
+			LOG.log(TRACE, () -> " → applying (" + String.join(", ", Arrays.stream(values).map(o -> ""+o).toList()) + ")");
 			stmt.execute();
 			return this;
 		}
