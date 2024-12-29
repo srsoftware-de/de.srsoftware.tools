@@ -22,6 +22,66 @@ public class Query {
 	public static final Mark MARK = new Mark();
 
 	/**
+	 * represents a delete statement
+	 */
+	public static class DeleteQuery {
+		private String		     table;
+		private Map<String, List<Condition>> conditions = new HashMap<>();
+
+		private DeleteQuery() {
+		}
+
+		/**
+		 * set the table, from which to delete
+		 * @param table the name of the table to delete from
+		 * @return this DeleteQuery instance
+		 */
+		public DeleteQuery from(String table) {
+			this.table = table;
+			return this;
+		}
+
+		/**
+		 * add a where condition
+		 * @param field the field in which the condition is to be fulfilled
+		 * @param condition the condition to be fulfilled
+		 * @return the updated query object
+		 */
+		public DeleteQuery where(String field, Condition condition) {
+			conditions.computeIfAbsent(field, k -> new ArrayList<>()).add(condition);
+			return this;
+		}
+
+		/**
+		 * run this query on the provided database connection
+		 *
+		 * @param conn the connection to use while running this query
+		 * @return the prepared statement that was executed
+		 * @throws SQLException if the execution of the query fails
+		 */
+		public boolean execute(Connection conn) throws SQLException {
+			var values = new ArrayList<>();
+			var sql    = new StringBuilder();
+			sql.append("DELETE FROM ");
+			sql.append(table);
+			List<String> where = new ArrayList<>();
+			for (var field : conditions.keySet()) {
+				for (Condition sub : conditions.get(field)) {
+					where.add(field + sub.sql());
+					values.addAll(sub.values());
+				}
+			}
+			if (!where.isEmpty()) {
+				sql.append(" WHERE ");
+				sql.append(String.join(" AND ", where));
+			}
+			var stmt = conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
+			for (int i = 0; i < values.size(); i++) stmt.setObject(i + 1, values.get(i));
+			return stmt.execute();
+		}
+	}
+
+	/**
 	 * This class is used to build INSERT INTO … queries
 	 */
 	public static class InsertQuery {
@@ -123,8 +183,10 @@ public class Query {
 					values.addAll(sub.values());
 				}
 			}
-			if (!where.isEmpty()) sb.append(" WHERE ");
-			sb.append(String.join(" AND ", where));
+			if (!where.isEmpty()) {
+				sb.append(" WHERE ");
+				sb.append(String.join(" AND ", where));
+			}
 			if (!groupFields.isEmpty()) sb.append(" GROUP BY ").append(String.join(", ", groupFields));
 			if (!sort.isEmpty()) sb.append(" ORDER BY ").append(String.join(", ", sort));
 			if (limit != null) sb.append(" LIMIT ").append(limit);
@@ -286,7 +348,7 @@ public class Query {
 					stmt.setObject(++index, obj);
 				}
 			}
-			LOG.log(TRACE, () -> " → applying (" + String.join(", ", Arrays.stream(values).map(o -> ""+o).toList()) + ")");
+			LOG.log(TRACE, () -> " → applying (" + String.join(", ", Arrays.stream(values).map(o -> "" + o).toList()) + ")");
 			stmt.execute();
 			return this;
 		}
@@ -407,6 +469,13 @@ public class Query {
 	private Query() {
 	}
 
+	/**
+	 * create a new DeleteQuery
+	 * @return the created Query
+	 */
+	public static DeleteQuery delete() {
+		return new DeleteQuery();
+	}
 
 	/**
 	 * Create a new SelectQuery for the given fields.
