@@ -12,10 +12,11 @@ public class HttpError<NONE> extends Error<NONE> {
 	 * create a new Error object carrying the passed message
 	 *
 	 * @param code the error code
-	 * @param message the message to add to the Error object
+	 * @param message the error message. may contain marks for formatting
+	 * @param fills the objects to fill in while formatting
 	 */
-	public HttpError(String message, int code) {
-		super(message);
+	public HttpError(int code, String message, Object... fills) {
+		super(message.formatted(fills));
 		this.code = code;
 	}
 
@@ -25,5 +26,17 @@ public class HttpError<NONE> extends Error<NONE> {
 	 */
 	public int code() {
 		return code;
+	}
+
+	/**
+	 * create a new HttpError with a formatted message
+	 * @param code the error code
+	 * @param message the error message. may contain marks for formatting
+	 * @param fills the objects to fill in while formatting
+	 * @return the created HttpError object
+	 * @param <T> the expected result type
+	 */
+	public static <T> HttpError<T> of(int code, String message, Object... fills) {
+		return new HttpError<T>(code, message, fills);
 	}
 }

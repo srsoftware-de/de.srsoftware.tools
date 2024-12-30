@@ -214,11 +214,11 @@ public abstract class PathHandler implements HttpHandler {
 			return new JSONObject(body(ex));
 		}
 
-	/**
-	 * request the Accept-Language header
-	 * @param ex the HttpExchange to prompt
-	 * @return the first language from the Accept-Language header or the default language
-	 */
+		/**
+		 * request the Accept-Language header
+		 * @param ex the HttpExchange to prompt
+		 * @return the first language from the Accept-Language header or the default language
+		 */
 		public static String language(HttpExchange ex) {
 			return getHeader(ex, "Accept-Language")  //
 			    .map(s -> Arrays.stream(s.split(",")))
