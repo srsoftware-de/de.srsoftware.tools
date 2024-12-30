@@ -21,9 +21,13 @@ public class Error<None> implements Result<None> {
 	/**
 	 * create a new Error object carrying the passed message
 	 * @param message the message to add to the Error object
+	 * @param data (optional) data to carry along
+	 * @param exceptions (optional) exceptions to wrap
 	 */
-	public Error(String message) {
+	public Error(String message, Map<String, Object> data, Collection<Exception> exceptions) {
 		this.message = message;
+		if (data != null) this.data.putAll(data);
+		if (exceptions != null) this.exceptions.addAll(exceptions);
 	}
 
 	/**
@@ -55,22 +59,11 @@ public class Error<None> implements Result<None> {
 	}
 
 	/**
-	 * get the list of Exceptions added to this Error object
+	 * get the collection of Exceptions added to this Error object
 	 * @return the list of Exceptions
 	 */
-	public List<Exception> exceptions() {
+	public Collection<Exception> exceptions() {
 		return exceptions;
-	}
-
-	/**
-	 * create a new Error object with the message formatted with the given fills
-	 * @param message a message string, which may contain placeholders
-	 * @param fills the objects to replace the placeholders
-	 * @return a new Error object populated with the formatted message
-	 * @param <None> any type
-	 */
-	public static <None> Error<None> format(String message, Object... fills) {
-		return new Error<None>(message.formatted(fills));
 	}
 
 	/**
@@ -78,7 +71,7 @@ public class Error<None> implements Result<None> {
 	 * @return the json object describing the error.
 	 */
 	public JSONObject json() {
-		var json = new JSONObject(Map.of("error", message));
+		var json = new JSONObject(Map.of("message", message));
 		if (!exceptions.isEmpty()) json.put("exceptions", exceptions);
 		if (!data.isEmpty()) json.put("data", data);
 		return json;
@@ -90,16 +83,59 @@ public class Error<None> implements Result<None> {
 	}
 
 	/**
-	 * create a new Error object carrying the passed message
-	 * @param message the message to add to the Error object
-	 * @return a new Error object populated with the passed message
-	 * @param <None> any type
-	 * @param exceptions exceptions to be added to the errors metadata
+	 * return the message encapsulated in this error object
+	 * @return the message string
 	 */
-	public static <None> Error<None> of(String message, Exception... exceptions) {
-		var err = new Error<None>(message);
-		for (Exception e : exceptions) err.add(e);
-		return err;
+	public String message() {
+		return message;
+	}
+
+	/**
+	 * create a new Error object carrying the passed message
+	 * @param message the message to add to the Error object, may contain placeholder marks
+	 * @param fills the list of objects to fill the marks
+	 * @param <T> the type of the result expected at the place this error occurred
+	 * @return the created Error object
+	 */
+	public static <T> Error<T> of(String message, Object... fills) {
+		return new Error<>(message.formatted(fills), null, null);
+	}
+
+	/**
+	 * create a new Error object carrying the passed message
+	 * @param exceptions (optional) exceptions to wrap
+	 * @param message the message to add to the Error object, may contain placeholder marks
+	 * @param fills the list of objects to fill the marks
+	 * @param <T> the type of the result expected at the place this error occurred
+	 * @return the created Error object
+	 */
+	public static <T> Error<T> of(Collection<Exception> exceptions, String message, Object... fills) {
+		return new Error<>(message.formatted(fills), null, exceptions);
+	}
+
+	/**
+	 * create a new Error object carrying the passed message
+	 * @param data (optional) data to carry along
+	 * @param message the message to add to the Error object, may contain placeholder marks
+	 * @param fills the list of objects to fill the marks
+	 * @param <T> the type of the result expected at the place this error occurred
+	 * @return the created Error object
+	 */
+	public static <T> Error<T> of(Map<String, Object> data, String message, Object... fills) {
+		return new Error<>(message, data, null);
+	}
+
+	/**
+	 * create a new Error object carrying the passed message
+	 * @param data (optional) data to carry along
+	 * @param exceptions (optional) exceptions to wrap
+	 * @param message the message to add to the Error object, may contain placeholder marks
+	 * @param fills the list of objects to fill the marks
+	 * @param <T> the type of the result expected at the place this error occurred
+	 * @return the created Error object
+	 */
+	public static <T> Error<T> of(Map<String, Object> data, Collection<Exception> exceptions, String message, Object... fills) {
+		return new Error<>(message.formatted(fills), data, exceptions);
 	}
 
 	@Override
@@ -125,10 +161,7 @@ public class Error<None> implements Result<None> {
 	 * @param <NewType> the payload type of the returned error
 	 */
 	public <NewType> Error<NewType> transform() {
-		Error<NewType> transformed = Error.of(message);
-		transformed.data.putAll(data());
-		transformed.exceptions.addAll(exceptions);
-		return transformed;
+		return Error.of(data, exceptions, message);
 	}
 
 	/**

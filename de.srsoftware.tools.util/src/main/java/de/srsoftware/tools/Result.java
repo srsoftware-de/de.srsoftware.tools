@@ -33,11 +33,11 @@ public interface Result<Content> {
 
 	/**
 	 * Transforms the Result to an Error with appropriate payload type
-	 * @param res if this reslult is an error, it will be transformed using the Error.transform method, otherwise a new Error will be created
+	 * @param res if this result is an error, it will be transformed using the Error.transform method, otherwise a new Error will be created
 	 * @return the transformed error
 	 * @param <T> the payload type of the returned error
 	 */
 	public static <T> Result<T> transform(Result<?> res) {
-		return res instanceof Error<?> err ? err.transform() : Error.format("Invalid parameter: %s", res.getClass().getSimpleName());
+		return res instanceof Error<?> err ? err.transform() : Error.of("Invalid parameter: %s", res.getClass().getSimpleName());
 	}
 }

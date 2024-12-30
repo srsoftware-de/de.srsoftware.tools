@@ -9,6 +9,8 @@ import java.util.*;
 public class Optionals {
 	private static final BigInteger ZERO = new BigInteger("0");
 
+	private Optionals(){}
+
 	public static boolean allEmpty(final Object... objects) {
 		if (objects == null) return true;
 		for (final Object o : objects) {
