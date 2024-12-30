@@ -10,6 +10,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 
+/**
+ * a special cookies allowing to keep track of a session
+ */
 public class SessionToken extends Cookie {
 	private final String	       sessionId;
 	private static final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss O");
