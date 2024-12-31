@@ -2,6 +2,7 @@
 package de.srsoftware.tools;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -60,6 +61,19 @@ public class HttpError<NONE> extends Error<NONE> {
 	/**
 	 * create a new HttpError object carrying the passed message
 	 * @param code the error code
+	 * @param exception exceptions to wrap
+	 * @param message the message to add to the Error object, may contain placeholder marks
+	 * @param fills the list of objects to fill the marks
+	 * @param <T> the type of the result expected at the place this error occurred
+	 * @return the created HttpError object
+	 */
+	public static <T> HttpError<T> of(int code, Exception exception, String message, Object... fills) {
+		return new HttpError<>(code, message.formatted(fills), null, List.of(exception));
+	}
+
+	/**
+	 * create a new HttpError object carrying the passed message
+	 * @param code the error code
 	 * @param data (optional) data to carry along
 	 * @param message the message to add to the Error object, may contain placeholder marks
 	 * @param fills the list of objects to fill the marks
@@ -82,6 +96,20 @@ public class HttpError<NONE> extends Error<NONE> {
 	 */
 	public static <T> HttpError<T> of(int code, Map<String, Object> data, Collection<Exception> exceptions, String message, Object... fills) {
 		return new HttpError<>(code, message.formatted(fills), data, exceptions);
+	}
+
+	/**
+	 * create a new HttpError object carrying the passed message
+	 * @param code the error code
+	 * @param data (optional) data to carry along
+	 * @param exception exception to wrap
+	 * @param message the message to add to the Error object, may contain placeholder marks
+	 * @param fills the list of objects to fill the marks
+	 * @param <T> the type of the result expected at the place this error occurred
+	 * @return the created HttpError object
+	 */
+	public static <T> HttpError<T> of(int code, Map<String, Object> data, Exception exception, String message, Object... fills) {
+		return new HttpError<>(code, message.formatted(fills), data, List.of(exception));
 	}
 
 	/**

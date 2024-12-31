@@ -31,6 +31,7 @@ public abstract class PathHandler implements HttpHandler {
 	public static final String  HOST             = "host";
 	public static final String  JSON             = "application/json";
 	public static System.Logger LOG	             = System.getLogger(PathHandler.class.getSimpleName());
+	public static final String  PATCH            = "PATCH";
 	public static final String  POST             = "POST";
 
 	private String[] paths;
@@ -100,7 +101,7 @@ public abstract class PathHandler implements HttpHandler {
 	/**
 	 * "not found" default implementation
 	 * @param path ignored
-	 * @param ex HttpExchange used to return the not-implmented notification
+	 * @param ex HttpExchange used to return the not-implemented notification
 	 * @return false
 	 * @throws IOException if sending the response fails
 	 */
@@ -111,7 +112,7 @@ public abstract class PathHandler implements HttpHandler {
 	/**
 	 * "not found" default implementation
 	 * @param path ignored
-	 * @param ex HttpExchange used to return the not-implmented notification
+	 * @param ex HttpExchange used to return the not-implemented notification
 	 * @return false
 	 * @throws IOException if sending the response fails
 	 */
@@ -122,7 +123,18 @@ public abstract class PathHandler implements HttpHandler {
 	/**
 	 * "not found" default implementation
 	 * @param path ignored
-	 * @param ex HttpExchange used to return the not-implmented notification
+	 * @param ex HttpExchange used to return the not-implemented notification
+	 * @return false
+	 * @throws IOException if sending the response fails
+	 */
+	public boolean doPatch(String path, HttpExchange ex) throws IOException {
+		return notFound(ex);
+	}
+
+	/**
+	 * "not found" default implementation
+	 * @param path ignored
+	 * @param ex HttpExchange used to return the not-implemented notification
 	 * @return false
 	 * @throws IOException if sending the response fails
 	 */
@@ -138,6 +150,7 @@ public abstract class PathHandler implements HttpHandler {
 		boolean ignored = switch (method) {
 			case DELETE -> doDelete(path,ex);
 			case GET -> doGet(path,ex);
+			case PATCH -> doPatch(path,ex);
 			case POST -> doPost(path,ex);
 			default -> false;
 		};
@@ -198,6 +211,12 @@ public abstract class PathHandler implements HttpHandler {
 			return getAuthToken(ex).filter(token -> token.startsWith("Bearer ")).map(token -> token.substring(7));
 		}
 
+		/**
+		 * get the value of a specific header field
+		 * @param ex the HttpExchange to extract from
+		 * @param key the key to search for
+		 * @return an Optional carrying the value belonging to the key, or empty, if no value is set
+		 */
 		public static Optional<String> getHeader(HttpExchange ex, String key) {
 			return nullable(ex.getRequestHeaders().get(key)).map(List::stream).flatMap(Stream::findFirst);
 		}
@@ -210,6 +229,12 @@ public abstract class PathHandler implements HttpHandler {
 			return host == null ? null : proto + "://" + host;
 		}
 
+	/**
+	 * Try to parse the body of this HttpExchange as JSON object
+	 * @param ex the HttpExchange
+	 * @return a json object build from the contents of this exchange
+	 * @throws IOException if anything bad happens
+	 */
 		public static JSONObject json(HttpExchange ex) throws IOException {
 			return new JSONObject(body(ex));
 		}
@@ -237,13 +262,25 @@ public abstract class PathHandler implements HttpHandler {
 			return sendEmptyResponse(HTTP_NOT_FOUND, ex);
 		}
 
+		/**
+		 * map the query string to a map
+		 * @param ex the HttpExchange to read the entries from
+		 * @return the query parameters as key → value map
+		 */
 		public Map<String, String> queryParam(HttpExchange ex) {
-			return Arrays
-			    .stream(ex.getRequestURI().getQuery().split("&"))  //
-			    .map(s -> s.split("=", 2))
-			    .collect(Collectors.toMap(arr -> arr[0], arr -> arr[1]));
+			return nullable(ex.getRequestURI().getQuery()).stream()
+					.flatMap(query -> Arrays.stream(query.split("&")))
+					.map(s -> s.split("=", 2))
+					.collect(Collectors.toMap(arr -> arr[0], arr -> arr[1]));
 		}
 
+		/**
+		 * send a response without body
+		 * @param statusCode send this status code
+		 * @param ex the HttpExchange to act on
+		 * @return false
+		 * @throws IOException if the response cannot be sent
+		 */
 		public static boolean sendEmptyResponse(int statusCode, HttpExchange ex) throws IOException {
 			ex.sendResponseHeaders(statusCode, 0);
 			return false;
