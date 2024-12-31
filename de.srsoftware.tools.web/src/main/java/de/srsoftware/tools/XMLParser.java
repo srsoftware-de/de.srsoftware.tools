@@ -23,9 +23,9 @@ public class XMLParser {
 	public static Result<Tag> parse(InputStream input) {
 		try {
 			var result = parse(new PushbackReader(new InputStreamReader(input)));
-			return result.isEmpty() ? Error.of("Failed to parse content") : Payload.of(result.getFirst());
+			return result.isEmpty() ? Error.error("Failed to parse content") : Payload.of(result.getFirst());
 		} catch (Exception e) {
-			return Error.of("Failed to parse content of stream", e);
+			return Error.error(e,"Failed to parse content of stream");
 		}
 	}
 
