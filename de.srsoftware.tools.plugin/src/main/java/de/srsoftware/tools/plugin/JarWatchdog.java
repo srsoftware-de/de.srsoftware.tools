@@ -9,13 +9,19 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.time.Duration;
 import java.util.*;
+import java.util.function.Function;
 import java.util.jar.JarFile;
 import java.util.stream.Stream;
 
+/**
+ * This class observes selected directories for JAR files.
+ * If a JAR file is found, it tries to load the contained classes.
+ */
 public class JarWatchdog extends Thread {
 	private static final System.Logger LOGGER = System.getLogger(JarWatchdog.class.getSimpleName());
 
 	private final Set<File> dirs	           = new HashSet<>();
+	private Runnable afterScan,beforeScan;
 	private ClassLoader     context	           = null;
 	private Duration        delay	           = Duration.ofSeconds(30);
 	private final Set<File> loadedFiles        = new HashSet<>();
@@ -32,10 +38,29 @@ public class JarWatchdog extends Thread {
 		return this;
 	}
 
+	/**
+	 * set a function to be launched after each scan run
+	 * @param afterScan the function to run
+	 * @return this object
+	 */
+	public JarWatchdog afterScan(Runnable afterScan){
+		this.afterScan = afterScan;
+		return this;
+	}
+
 	private void announce(Class<?> clazz) {
 		listeners.forEach(listener -> listener.classAdded(clazz));
 	}
 
+	/**
+	 * set a function to be launched before each scan run
+	 * @param beforeScan the function to run
+	 * @return this object
+	 */
+	public JarWatchdog beforeScan(Runnable beforeScan){
+		this.beforeScan = beforeScan;
+		return this;
+	}
 
 	public JarWatchdog dropDirectory(File dir) {
 		dirs.remove(dir);
@@ -91,7 +116,9 @@ public class JarWatchdog extends Thread {
 	public void run() {
 		while (true) {
 			try {
+				if (beforeScan != null) beforeScan.run();
 				for (var dir : dirs) scan(dir);
+				if (afterScan != null) afterScan.run();
 				Thread.sleep(delay);
 			} catch (InterruptedException e) {
 				break;
