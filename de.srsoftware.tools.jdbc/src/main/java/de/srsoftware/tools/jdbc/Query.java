@@ -88,6 +88,7 @@ public class Query {
 		private final String   table;
 		private String[]       fields	 = null;
 		private List<Object[]> valueSets = new ArrayList<>();
+		private boolean ignoreDuplicates = false;
 
 		private InsertQuery(String table) {
 			this.table = table;
@@ -117,13 +118,22 @@ public class Query {
 		}
 
 		/**
+		 * set the ignore flag: duplicates during insert will not cause an error
+		 * @return this InsertQuery object
+		 */
+		public InsertQuery ignoreDuplicates(){
+			ignoreDuplicates = true;
+			return this;
+		}
+
+		/**
 		 * generate the sql statement for this query
 		 * @return sql query
 		 */
 		public String sql() {
 			var marks = Arrays.stream(fields).map(field -> "?").collect(Collectors.joining(", "));
 			var names = String.join(", ", Arrays.asList(fields));
-			return "INSERT INTO %s (%s) VALUES (%s)".formatted(table, names, marks);
+			return "INSERT%s INTO %s (%s) VALUES (%s)".formatted(ignoreDuplicates?" IGNORE":"",table, names, marks);
 		}
 
 
