@@ -10,6 +10,13 @@ import java.util.Map;
 public class ColorLoggerFinder extends System.LoggerFinder {
 	private static final Map<String, ColorLogger> LOGGERS = new HashMap<>();
 
+	/**
+	 * create new instance
+	 */
+	public ColorLoggerFinder(){
+		super();
+	}
+
 	@Override
 	public System.Logger getLogger(String name, Module module) {
 		return LOGGERS.computeIfAbsent(name, ColorLogger::new);

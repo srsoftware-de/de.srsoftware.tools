@@ -16,8 +16,8 @@ import java.util.ResourceBundle;
 public class ColorLogger implements System.Logger {
 	private final String      name;
 	private static int        rootLevel = INFO.getSeverity();
-	private static DateFormat TIME	    = new SimpleDateFormat("hh:mm:ss.SSS");
-	private static DateFormat DATE	    = new SimpleDateFormat("yyyy-MM-dd");
+	private static final DateFormat TIME	    = new SimpleDateFormat("hh:mm:ss.SSS");
+	private static final DateFormat DATE	    = new SimpleDateFormat("yyyy-MM-dd");
 	private static String     lastDate  = null;
 
 	/**
@@ -54,17 +54,18 @@ public class ColorLogger implements System.Logger {
 	public void log(Level level, ResourceBundle bundle, String msg, Throwable thrown) {
 		if (isLoggable(level)) {
 			System.out.println(colorize(msg, level.getSeverity()));
-			thrown.printStackTrace();
+			thrown.printStackTrace(System.err);
 		}
 	}
 
 	@Override
 	public void log(Level level, ResourceBundle bundle, String format, Object... params) {
 		if (isLoggable(level)) try {
-				System.out.println(colorize(MessageFormat.format(format, params), level.getSeverity()));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			if (params != null && params.length >0) format = MessageFormat.format(format,params);
+			System.out.println(colorize(format, level.getSeverity()));
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
 	}
 
 	/**
