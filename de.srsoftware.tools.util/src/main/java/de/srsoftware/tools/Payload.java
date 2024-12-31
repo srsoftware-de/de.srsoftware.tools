@@ -1,6 +1,8 @@
 /* © SRSoftware 2024 */
 package de.srsoftware.tools;
 
+import static de.srsoftware.tools.Error.error;
+
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Function;
@@ -28,7 +30,7 @@ public class Payload<P> implements Result<P> {
 	 * @param <P> the type of the payload
 	 */
 	public static <P> Result<P> of(P object) {
-		if (object == null) return Error.of("Can not create payload of NULL value!");
+		if (object == null) return error("Can not create payload of NULL value!");
 		return new Payload<>(object);
 	}
 
@@ -57,14 +59,14 @@ public class Payload<P> implements Result<P> {
 				Collection<Inner> collection = (Collection<Inner>)coll;
 				return collection.stream().map(Payload::of);
 			} catch (ClassCastException cce) {
-				return Stream.of(Error.of("Failed to cast %s".formatted(coll.getClass().getSimpleName()), cce));
+				return Stream.of(error(cce, "Failed to cast %s", coll.getClass().getSimpleName()));
 			}
 		}
 		try {
 			var inner = (Inner)object;
 			return Stream.of(Payload.of(inner));
 		} catch (ClassCastException cce) {
-			return Stream.of(Error.of("Failed to cast %s".formatted(object.getClass().getSimpleName()), cce));
+			return Stream.of(error(cce, "Failed to cast %s", object.getClass().getSimpleName()));
 		}
 	}
 

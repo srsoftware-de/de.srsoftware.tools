@@ -59,6 +59,79 @@ public class Error<None> implements Result<None> {
 	}
 
 	/**
+	 * create a new Error object carrying the passed message
+	 * @param message the message to add to the Error object, may contain placeholder marks
+	 * @param fills the list of objects to fill the marks
+	 * @param <T> the type of the result expected at the place this error occurred
+	 * @return the created Error object
+	 */
+	public static <T> Error<T> error(String message, Object... fills) {
+		return new Error<>(message.formatted(fills), null, null);
+	}
+
+	/**
+	 * create a new Error object carrying the passed message
+	 * @param exception exception to wrap
+	 * @param message the message to add to the Error object, may contain placeholder marks
+	 * @param fills the list of objects to fill the marks
+	 * @param <T> the type of the result expected at the place this error occurred
+	 * @return the created Error object
+	 */
+	public static <T> Error<T> error(Exception exception, String message, Object... fills) {
+		return new Error<>(message.formatted(fills), null, exception == null ? null : List.of(exception));
+	}
+
+	/**
+	 * create a new Error object carrying the passed message
+	 * @param exceptions (optional) exceptions to wrap
+	 * @param message the message to add to the Error object, may contain placeholder marks
+	 * @param fills the list of objects to fill the marks
+	 * @param <T> the type of the result expected at the place this error occurred
+	 * @return the created Error object
+	 */
+	public static <T> Error<T> error(Collection<Exception> exceptions, String message, Object... fills) {
+		return new Error<>(message.formatted(fills), null, exceptions);
+	}
+
+	/**
+	 * create a new Error object carrying the passed message
+	 * @param data (optional) data to carry along
+	 * @param message the message to add to the Error object, may contain placeholder marks
+	 * @param fills the list of objects to fill the marks
+	 * @param <T> the type of the result expected at the place this error occurred
+	 * @return the created Error object
+	 */
+	public static <T> Error<T> error(Map<String, Object> data, String message, Object... fills) {
+		return new Error<>(message, data, null);
+	}
+
+	/**
+	 * create a new Error object carrying the passed message
+	 * @param data (optional) data to carry along
+	 * @param exception exceptions to wrap
+	 * @param message the message to add to the Error object, may contain placeholder marks
+	 * @param fills the list of objects to fill the marks
+	 * @param <T> the type of the result expected at the place this error occurred
+	 * @return the created Error object
+	 */
+	public static <T> Error<T> error(Map<String, Object> data, Exception exception, String message, Object... fills) {
+		return new Error<>(message.formatted(fills), data, exception == null ? null : List.of(exception));
+	}
+
+	/**
+	 * create a new Error object carrying the passed message
+	 * @param data (optional) data to carry along
+	 * @param exceptions (optional) exceptions to wrap
+	 * @param message the message to add to the Error object, may contain placeholder marks
+	 * @param fills the list of objects to fill the marks
+	 * @param <T> the type of the result expected at the place this error occurred
+	 * @return the created Error object
+	 */
+	public static <T> Error<T> error(Map<String, Object> data, Collection<Exception> exceptions, String message, Object... fills) {
+		return new Error<>(message.formatted(fills), data, exceptions);
+	}
+
+	/**
 	 * get the collection of Exceptions added to this Error object
 	 * @return the list of Exceptions
 	 */
@@ -90,53 +163,6 @@ public class Error<None> implements Result<None> {
 		return message;
 	}
 
-	/**
-	 * create a new Error object carrying the passed message
-	 * @param message the message to add to the Error object, may contain placeholder marks
-	 * @param fills the list of objects to fill the marks
-	 * @param <T> the type of the result expected at the place this error occurred
-	 * @return the created Error object
-	 */
-	public static <T> Error<T> of(String message, Object... fills) {
-		return new Error<>(message.formatted(fills), null, null);
-	}
-
-	/**
-	 * create a new Error object carrying the passed message
-	 * @param exceptions (optional) exceptions to wrap
-	 * @param message the message to add to the Error object, may contain placeholder marks
-	 * @param fills the list of objects to fill the marks
-	 * @param <T> the type of the result expected at the place this error occurred
-	 * @return the created Error object
-	 */
-	public static <T> Error<T> of(Collection<Exception> exceptions, String message, Object... fills) {
-		return new Error<>(message.formatted(fills), null, exceptions);
-	}
-
-	/**
-	 * create a new Error object carrying the passed message
-	 * @param data (optional) data to carry along
-	 * @param message the message to add to the Error object, may contain placeholder marks
-	 * @param fills the list of objects to fill the marks
-	 * @param <T> the type of the result expected at the place this error occurred
-	 * @return the created Error object
-	 */
-	public static <T> Error<T> of(Map<String, Object> data, String message, Object... fills) {
-		return new Error<>(message, data, null);
-	}
-
-	/**
-	 * create a new Error object carrying the passed message
-	 * @param data (optional) data to carry along
-	 * @param exceptions (optional) exceptions to wrap
-	 * @param message the message to add to the Error object, may contain placeholder marks
-	 * @param fills the list of objects to fill the marks
-	 * @param <T> the type of the result expected at the place this error occurred
-	 * @return the created Error object
-	 */
-	public static <T> Error<T> of(Map<String, Object> data, Collection<Exception> exceptions, String message, Object... fills) {
-		return new Error<>(message.formatted(fills), data, exceptions);
-	}
 
 	@Override
 	public Optional<None> optional() {
@@ -161,7 +187,7 @@ public class Error<None> implements Result<None> {
 	 * @param <NewType> the payload type of the returned error
 	 */
 	public <NewType> Error<NewType> transform() {
-		return Error.of(data, exceptions, message);
+		return Error.error(data, exceptions, message);
 	}
 
 	/**

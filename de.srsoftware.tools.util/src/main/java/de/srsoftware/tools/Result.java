@@ -1,6 +1,8 @@
 /* © SRSoftware 2024 */
 package de.srsoftware.tools;
 
+import static de.srsoftware.tools.Error.error;
+
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -38,6 +40,6 @@ public interface Result<Content> {
 	 * @param <T> the payload type of the returned error
 	 */
 	public static <T> Result<T> transform(Result<?> res) {
-		return res instanceof Error<?> err ? err.transform() : Error.of("Invalid parameter: %s", res.getClass().getSimpleName());
+		return res instanceof Error<?> err ? err.transform() : error("Invalid parameter: %s", res.getClass().getSimpleName());
 	}
 }
