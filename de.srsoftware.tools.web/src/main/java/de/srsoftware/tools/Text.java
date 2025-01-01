@@ -34,6 +34,11 @@ public class Text extends Tag {
 		sb.append(" ".repeat(currentIndentation)).append(content).append("\n");
 	}
 
+	/**
+	 * create a new text tag
+	 * @param content the content to wrap
+	 * @return the text tag holding the given content
+	 */
 	public static Text of(String content) {
 		return new Text(content);
 	}

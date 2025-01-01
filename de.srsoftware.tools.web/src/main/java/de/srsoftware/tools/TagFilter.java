@@ -7,6 +7,14 @@ import java.util.function.Predicate;
  * Filters for tags
  */
 public class TagFilter {
+
+	public static final String ANCHOR = "a";
+	public static final String CLASS = "class";
+	public static final String DIV = "div";
+	public static final String ID = "id";
+	public static final String PARAGRAPH = "p";
+	public static final String SPAN = "span";
+
 	private TagFilter() {
 		// discourage instantiation
 	}

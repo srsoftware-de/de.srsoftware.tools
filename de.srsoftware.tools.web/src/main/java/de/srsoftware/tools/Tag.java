@@ -3,6 +3,7 @@ package de.srsoftware.tools;
 
 
 import static de.srsoftware.tools.Optionals.nullable;
+import static de.srsoftware.tools.TagFilter.ID;
 import static java.util.Optional.empty;
 
 import java.util.*;
@@ -81,8 +82,15 @@ public class Tag extends TreeMap<String, String> {
 		return (T)this;
 	}
 
-	public <T extends Tag> T attr(String key, int i) {
-		return attr(key, "" + i);
+	/**
+	 * set an attribute of this tag
+	 * @param name the attribute name
+	 * @param val the value
+	 * @return this tag
+	 * @param <T> the type of this tag
+	 */
+	public <T extends Tag> T attr(String name, int val) {
+		return attr(name, "" + val);
 	}
 
 	public List<Tag> children() {
@@ -113,6 +121,7 @@ public class Tag extends TreeMap<String, String> {
 	 * @return the list of tags that satisfy the filter predicate
 	 */
 	public List<Tag> find(Predicate<Tag> filter) {
+		if (filter == null) return List.of();
 		List<Tag> hits = new ArrayList<>();
 		if (filter.test(this)) hits.add(this);
 		for (var child : children) hits.addAll(child.find(filter));
@@ -140,7 +149,7 @@ public class Tag extends TreeMap<String, String> {
 	}
 
 	public <T extends Tag> T id(String id) {
-		return attr("id", id);
+		return attr(ID, id);
 	}
 
 	protected void indent(StringBuilder sb, int indent, int currentIndentation) {
