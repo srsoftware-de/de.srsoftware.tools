@@ -182,8 +182,8 @@ public class Tag extends TreeMap<String, String> {
 	}
 
 	protected void indent(StringBuilder sb, int indent, int currentIndentation) {
-		boolean empty = type == null || type.isBlank();
-		if (!empty) {
+		boolean textType = type == null || type.isBlank();
+		if (!textType) {
 			sb.append(" ".repeat(currentIndentation)).append("<").append(type);
 			for (var entry : entrySet()) {
 				sb.append(" ").append(entry.getKey());
@@ -194,12 +194,10 @@ public class Tag extends TreeMap<String, String> {
 		if (children.isEmpty()) {
 			sb.append(" />\n");
 		} else {
-			if (!empty) {
-				sb.append(">").append("\n");
-			}
+			if (!textType) sb.append(">").append("\n");
 			for (Tag child : children) child.indent(sb, indent, currentIndentation + indent);
-			if (!empty) sb.append(" ".repeat(currentIndentation));
-			if (!empty) sb.append("</").append(type).append(">\n");
+			if (!textType) sb.append(" ".repeat(currentIndentation));
+			if (!textType) sb.append("</").append(type).append(">\n");
 		}
 	}
 
@@ -236,6 +234,13 @@ public class Tag extends TreeMap<String, String> {
 		return nullable(parent);
 	}
 
+	/**
+	 * add x and y attributes to the tag
+	 * @param x the value for the x attribute
+	 * @param y the value for the y attribute
+	 * @return this tag
+	 * @param <T> the type of this tag
+	 */
 	public <T extends Tag> T pos(int x, int y) {
 		return attr("x", x).attr("y", y);
 	}
@@ -293,8 +298,8 @@ public class Tag extends TreeMap<String, String> {
 	@Override
 	public String toString() {
 		StringBuilder sb    = new StringBuilder();
-		boolean       empty = type == null || type.isBlank();
-		if (!empty) {
+		boolean       textTeype = type == null || type.isBlank();
+		if (!textTeype) {
 			sb.append("<").append(type);
 			for (var entry : entrySet()) {
 				sb.append(" ").append(entry.getKey());
@@ -305,9 +310,9 @@ public class Tag extends TreeMap<String, String> {
 		if (children.isEmpty()) {
 			sb.append(" />");
 		} else {
-			if (!empty) sb.append(">");
+			if (!textTeype) sb.append(">");
 			for (Tag child : children) sb.append(child.toString());
-			if (!empty) sb.append("</").append(type).append(">");
+			if (!textTeype) sb.append("</").append(type).append(">");
 		}
 
 		return sb.toString();

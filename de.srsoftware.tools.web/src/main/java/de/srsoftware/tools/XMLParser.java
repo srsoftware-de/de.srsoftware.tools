@@ -77,7 +77,7 @@ public class XMLParser {
 		boolean closing = token.endsWith("/");
 		if (closing) token = token.substring(0, token.length() - 2).trim();
 		if (token.isBlank()) return null;
-		var parts = token.split(" ", 2);
+		var parts = token.split("\\s", 2);
 		var type  = parts[0];
 		Tag tag   = closing ? ClosedTag.of(type) : OpeningTag.of(type);
 		if (parts.length > 1) fetchAttributes(tag, parts[1]);
@@ -88,7 +88,7 @@ public class XMLParser {
 		PushbackReader input = new PushbackReader(new StringReader(data));
 		while (input.ready()) {
 			skipWhitespace(input);
-			String token = readUntil(input, " ", true).trim();
+			String token = readUntil(input, " \t", true).trim();
 			if (token.isEmpty()) return;
 			var parts = token.split("=", 2);
 			var key   = parts[0];
