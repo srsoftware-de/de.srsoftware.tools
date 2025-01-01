@@ -3,7 +3,6 @@ package de.srsoftware.tools;
 
 
 import static de.srsoftware.tools.Optionals.nullable;
-import static de.srsoftware.tools.TagFilter.ID;
 import static java.util.Optional.empty;
 
 import java.util.*;
@@ -15,6 +14,17 @@ import java.util.function.Predicate;
  *
  */
 public class Tag extends TreeMap<String, String> {
+	/** anchor constant: a */    public static final String ANCHOR = "a";
+	/** body constant */         public static final String BODY = "body";
+	/** class constant */        public static final String CLASS = "class";
+	/** div constant */          public static final String DIV = "div";
+	/** href constant */         public static final String HREF ="href";
+	/** id constant */           public static final String ID = "id";
+	/** img constant */          public static final String IMG = "img";
+	/** paragraph constant: p */ public static final String PARAGRAPH = "p";
+	/** script constant */       public static final String SCRIPT = "script";
+	/** span constant */         public static final String SPAN = "span";
+
 	private final List<Tag> children = new ArrayList<>();
 	private Tag	        parent;
 	private final String    type;
@@ -76,9 +86,16 @@ public class Tag extends TreeMap<String, String> {
 		return attr("alt", txt);
 	}
 
+	/**
+	 * add an &lt;alt&gt; attribute with a given value to this tag
+ 	 * @param name the attribute name
+	 * @param val the text to set for the alt attribute
+	 * @return this tag
+	 * @param <T> the type of this tag
+	 */
 	@SuppressWarnings("unchecked")
-	public <T extends Tag> T attr(String key, String val) {
-		put(key, val);
+	public <T extends Tag> T attr(String name, String val) {
+		put(name, val);
 		return (T)this;
 	}
 
@@ -93,6 +110,10 @@ public class Tag extends TreeMap<String, String> {
 		return attr(name, "" + val);
 	}
 
+	/**
+	 * return the list of child tags
+	 * @return the children of this tag
+	 */
 	public List<Tag> children() {
 		return children;
 	}
@@ -291,6 +312,10 @@ public class Tag extends TreeMap<String, String> {
 		return sb.toString();
 	}
 
+	/**
+	 * return the type of this tag
+	 * @return the tag type
+	 */
 	public String type() {
 		return type;
 	}
