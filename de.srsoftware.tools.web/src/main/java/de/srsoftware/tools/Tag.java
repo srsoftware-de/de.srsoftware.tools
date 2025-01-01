@@ -14,16 +14,18 @@ import java.util.function.Predicate;
  *
  */
 public class Tag extends TreeMap<String, String> {
-	/** anchor constant: a */    public static final String ANCHOR = "a";
-	/** body constant */         public static final String BODY = "body";
-	/** class constant */        public static final String CLASS = "class";
-	/** div constant */          public static final String DIV = "div";
-	/** href constant */         public static final String HREF ="href";
-	/** id constant */           public static final String ID = "id";
-	/** img constant */          public static final String IMG = "img";
+	/** anchor constant: a */    public static final String ANCHOR    = "a";
+	/** body constant */         public static final String BODY      = "body";
+	/** class constant */        public static final String CLASS     = "class";
+	/** div constant */          public static final String DIV       = "div";
+	/** href constant */         public static final String HREF      ="href";
+	/** id constant */           public static final String ID        = "id";
+	/** img constant */          public static final String IMG       = "img";
 	/** paragraph constant: p */ public static final String PARAGRAPH = "p";
-	/** script constant */       public static final String SCRIPT = "script";
-	/** span constant */         public static final String SPAN = "span";
+	/** script constant */       public static final String SCRIPT    = "script";
+	/** span constant */         public static final String SPAN      = "span";
+	/** style constant */        public static final String STYLE     = "style";
+	/** title constant */        public static final String TITLE     = "title";
 
 	private final List<Tag> children = new ArrayList<>();
 	private Tag	        parent;
@@ -120,13 +122,19 @@ public class Tag extends TreeMap<String, String> {
 
 	@SuppressWarnings("unchecked")
 	public <T extends Tag> T clazz(Collection<String> classes) {
-		attr("class", String.join(" ", classes));
+		attr(CLASS, String.join(" ", classes));
 		return (T)this;
 	}
 
+	/**
+	 * adds classes to this tag
+	 * @param classes the classes to add
+	 * @return this tag object
+	 * @param <T> the type of this tag object
+	 */
 	@SuppressWarnings("unchecked")
 	public <T extends Tag> T clazz(String... classes) {
-		attr("class", String.join(" ", classes));
+		attr(CLASS, String.join(" ", classes));
 		return (T)this;
 	}
 
@@ -259,7 +267,7 @@ public class Tag extends TreeMap<String, String> {
 	}
 
 	public <T extends Tag> T style(String style) {
-		return attr("style", style);
+		return attr(STYLE, style);
 	}
 
 	/**
@@ -269,7 +277,7 @@ public class Tag extends TreeMap<String, String> {
 	 * @param <T> the type of this tag
 	 */
 	public <T extends Tag> T title(String title) {
-		return attr("title", title);
+		return attr(TITLE, title);
 	}
 
 	/**
