@@ -86,4 +86,14 @@ public class XmlParserTest {
 		System.out.println(tag.toString(2));
 		assertEquals("<html><head class=\"secret\" /><body class=\"empty\" id=\"blob\" single_quoted=\"this is shit\" /></html>", tag.toString());
 	}
+
+	@Test
+	public void testTolerateBroken() throws IOException{
+		var code = load("broken.html");
+		var result = XMLParser.parse(code);
+		assertInstanceOf(Payload.class, result);
+		var tag = ((Payload<Tag>)result).get();
+		System.out.println(tag.toString(2));
+		assertEquals("<html lang=\"en\"><body><table><tr><td class=\"kalDat1\"><a class=\"kalDetl\" href=\"somewhere\" title=\"Termindetails\">Märchentheater 'Hänsel & Gretel</a></td></tr></table></body></html>", tag.toString());
+	}
 }

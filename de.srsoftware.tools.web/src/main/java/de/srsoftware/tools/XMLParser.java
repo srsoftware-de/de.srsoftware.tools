@@ -32,12 +32,12 @@ public class XMLParser {
 	private static List<Tag> parse(PushbackReader input) throws IOException {
 		var tags = new ArrayList<Tag>();
 		while (true) {
-			var prefix = readUntil(input, "<", true);
+			var prefix = readUntil(input, "<", true,false);
 			if (!prefix.isBlank()) tags.add(new Text(prefix));
 			int c = read(input);
 			if (c <= 0) break;
 			if (c == '<') {
-				var token  = readUntil(input, ">", false);
+				var token  = readUntil(input, ">", false,true);
 				var result = convert(token);
 				if (result instanceof OpeningTag) {
 					var children = parse(input);
@@ -88,7 +88,7 @@ public class XMLParser {
 		PushbackReader input = new PushbackReader(new StringReader(data));
 		while (input.ready()) {
 			skipWhitespace(input);
-			String token = readUntil(input, " \t", true).trim();
+			String token = readUntil(input, " \t", true,true).trim();
 			if (token.isEmpty()) return;
 			var parts = token.split("=", 2);
 			var key   = parts[0];
@@ -123,17 +123,21 @@ public class XMLParser {
 		return input.read();
 	}
 
-	private static String readUntil(PushbackReader input, String delimiters, boolean pushBack) throws IOException {
+	private static String readUntil(PushbackReader input, String delimiters, boolean pushBack, boolean matchQuotes) throws IOException {
 		var token = new StringBuilder();
 		int c     = read(input);
 		while (unlimited(c, delimiters)) {
 			switch (c) {
 				case '"':
-					token.append('"').append(readUntil(input, "\"", false)).append('"');
-					break;
+					if (matchQuotes) {
+						token.append('"').append(readUntil(input, "\"", false,true)).append('"');
+						break;
+					}
 				case '\'':
-					token.append("'").append(readUntil(input, "'", false)).append("'");
-					break;
+					if (matchQuotes) {
+						token.append("'").append(readUntil(input, "'", false,true)).append("'");
+						break;
+					}
 				default:
 					token.append((char)c);
 			}

@@ -325,6 +325,11 @@ public class Tag extends TreeMap<String, String> {
 	}
 
 
+	/**
+	 * export string with indented tags
+	 * @param indent the number of spaces used for indentation
+	 * @return the exported xml
+	 */
 	public String toString(int indent) {
 		StringBuilder sb = new StringBuilder();
 		indent(sb, indent, 0);
