@@ -8,17 +8,19 @@ import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
 /**
  * Provides colorful logging to System.out
  */
 public class ColorLogger implements System.Logger {
-	private final String      name;
-	private static int        rootLevel = INFO.getSeverity();
 	private static final DateFormat TIME	    = new SimpleDateFormat("hh:mm:ss.SSS");
 	private static final DateFormat DATE	    = new SimpleDateFormat("yyyy-MM-dd");
+	private static int        rootLevel = INFO.getSeverity();
+	private static HashMap<String,Integer> instanceLevels = new HashMap<>();
 	private static String     lastDate  = null;
+	private final String      name;
 
 	/**
 	 * create a new ColorLogger with a given name
@@ -33,7 +35,7 @@ public class ColorLogger implements System.Logger {
 	 * @param clazz a class
 	 */
 	public ColorLogger(Class<?> clazz) {
-		this.name = clazz.getSimpleName();
+		this(clazz.getSimpleName());
 	}
 
 	private String colorize(String message, int severity) {
@@ -57,7 +59,9 @@ public class ColorLogger implements System.Logger {
 
 	@Override
 	public boolean isLoggable(Level level) {
-		return level.getSeverity() >= rootLevel;
+		Integer loggerLevel = instanceLevels.get(name);
+		if (loggerLevel == null) loggerLevel = rootLevel;
+		return level.getSeverity() >= loggerLevel;
 	}
 
 	@Override
@@ -88,12 +92,20 @@ public class ColorLogger implements System.Logger {
 	}
 
 	/**
-	 * alte the log level of this logger
-	 * @param level the new log level
-	 * @return this ColorLogger instance
+	 * alter the log level of all ColorLogger instances
+	 * @param newLevel the new log level
 	 */
-	public ColorLogger setLogLevel(Level level) {
-		rootLevel = level.getSeverity();
-		return this;
+	public static void setRootLogLevel(Level newLevel) {
+		rootLevel = newLevel.getSeverity();
+	}
+
+	/**
+	 * alter the log level for a specific logger
+	 * @param loggerName the logger whose level is to update
+	 * @param newLevel the new log level
+	 */
+	public static void setLogLevel(String loggerName, Level newLevel){
+		int severity = newLevel.getSeverity();
+		instanceLevels.put(loggerName,severity);
 	}
 }

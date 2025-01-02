@@ -5,7 +5,6 @@ import static java.lang.Character.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
