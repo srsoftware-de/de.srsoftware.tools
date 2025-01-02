@@ -2,15 +2,21 @@
 package de.srsoftware.tools;
 
 import static java.lang.Character.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Parser to create Document Object Model from InputStream
  */
 public class XMLParser {
+	private static final System.Logger LOG = System.getLogger(XMLParser.class.getSimpleName());
+	private static final Pattern CHARSET = Pattern.compile("<meta .*charset=\\W?([-\\w\\d]+)");
+
 	private XMLParser() {
 		// discourage intantiation
 	}
@@ -113,7 +119,14 @@ public class XMLParser {
 		var bos = new ByteArrayOutputStream();
 		input.transferTo(bos);
 		input.close();
-		return new ByteArrayInputStream(bos.toByteArray());
+		var content = bos.toString(UTF_8);
+		var matcher = CHARSET.matcher(content);
+		if (matcher.find()){
+			var encoding = matcher.group(1);
+			if (!"utf-8".equalsIgnoreCase(encoding)) LOG.log(System.Logger.Level.DEBUG,"Reading with charset {0}…",encoding);
+			content = bos.toString(encoding);
+		}
+		return new ByteArrayInputStream(content.getBytes(UTF_8));
 	}
 
 	private static int read(PushbackReader input) throws IOException {

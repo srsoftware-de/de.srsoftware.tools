@@ -277,6 +277,12 @@ public class Tag extends TreeMap<String, String> {
 		return attr("width", width).attr("height", height);
 	}
 
+	/**
+	 * set style attribute
+	 * @param style the content to set for the style attribute
+	 * @return the altered tag
+	 * @param <T> the type of the tag
+	 */
 	public <T extends Tag> T style(String style) {
 		return attr(STYLE, style);
 	}
