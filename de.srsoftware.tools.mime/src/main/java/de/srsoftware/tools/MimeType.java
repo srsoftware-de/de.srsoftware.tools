@@ -3,6 +3,8 @@ package de.srsoftware.tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 
 public class MimeType {
 	public static final String MIME_DIA     = "image/dia";
@@ -17,8 +19,8 @@ public class MimeType {
 	public static final String MIME_UNKNOWN = "content/unknown";
 	public static final String MIME_XML     = "application/xml";
 
-	public static String guessMime(File file) {
-		var parts     = file.getName().split("\\.");
+	public static String guessMime(URL url) {
+		var parts     = url.toString().split("\\.");
 		var extension = parts[parts.length - 1].toLowerCase();
 		try {
 			return switch (extension) {
@@ -27,9 +29,17 @@ public class MimeType {
 				case "jpg", "jpeg" -> MIME_JPG;
 				case "png" -> MIME_PNG;
 				case "tex" -> MIME_LATEX;
-				default -> file.toURI().toURL().openConnection().getContentType();
+				default -> url.openConnection().getContentType();
 			};
 		} catch (IOException e) {
+			return MIME_UNKNOWN;
+		}
+	}
+
+	public static String guessMime(File file){
+		try {
+			return guessMime(file.toURI().toURL());
+		} catch (IOException e){
 			return MIME_UNKNOWN;
 		}
 	}
