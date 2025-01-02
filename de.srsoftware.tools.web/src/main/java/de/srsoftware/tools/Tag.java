@@ -120,6 +120,12 @@ public class Tag extends TreeMap<String, String> {
 		return children;
 	}
 
+	/**
+	 * adds several classes to a tag
+	 * @param classes the collection of classes to add
+	 * @return the tag, now with more classes
+	 * @param <T> the type of the tag
+	 */
 	@SuppressWarnings("unchecked")
 	public <T extends Tag> T clazz(Collection<String> classes) {
 		attr(CLASS, String.join(" ", classes));

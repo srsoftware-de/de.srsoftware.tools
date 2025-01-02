@@ -93,7 +93,11 @@ public class XMLParser {
 			var parts = token.split("=", 2);
 			var key   = parts[0];
 			var val   = parts.length > 1 ? parts[1] : null;
-			if (val != null && val.startsWith("\"") && val.endsWith("\"")) val = val.substring(1, val.length() - 1);
+			if (val != null) {
+				if (val.startsWith("\"") && val.endsWith("\"")) {
+					val = val.substring(1, val.length() - 1);
+				} else if (val.startsWith("'") && val.endsWith("'")) val = val.substring(1, val.length() - 1);
+			}
 			tag.attr(key, val);
 		}
 	}

@@ -76,4 +76,14 @@ public class XmlParserTest {
 		System.out.println(tag.toString(2));
 		assertEquals("<html lang=\"en\"><head><meta charset=\"UTF-8\" /><title>Title</title></head><body><p>\nThis <em>paragraph</em> contains <b>mixed, <i>nested</i></b> Content\n</p></body></html>", tag.toString());
 	}
+
+	@Test
+	public void testParseSingleQuotedAttributes() throws IOException {
+		var code = load("single_quoted_attributes.html");
+		var result = XMLParser.parse(code);
+		assertInstanceOf(Payload.class, result);
+		var tag = ((Payload<Tag>)result).get();
+		System.out.println(tag.toString(2));
+		assertEquals("<html><head class=\"secret\" /><body class=\"empty\" id=\"blob\" single_quoted=\"this is shit\" /></html>", tag.toString());
+	}
 }
