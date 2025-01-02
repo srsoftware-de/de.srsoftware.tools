@@ -28,7 +28,15 @@ public class ColorLogger implements System.Logger {
 		this.name = name;
 	}
 
-	private static String colorize(String message, int severity) {
+	/**
+	 * crete a new Colorlogger, use the name of the class as logger name
+	 * @param clazz a class
+	 */
+	public ColorLogger(Class<?> clazz) {
+		this.name = clazz.getSimpleName();
+	}
+
+	private String colorize(String message, int severity) {
 		var           color = severity >= ERROR.getSeverity() ? RED : severity >= WARNING.getSeverity() ? YELLOW : severity >= INFO.getSeverity() ? WHITE_BRIGHT : WHITE;
 		var           date  = new Date();
 		var           day   = DATE.format(date);
@@ -37,7 +45,9 @@ public class ColorLogger implements System.Logger {
 			lastDate = day;
 			sb.append(WHITE).append(day).append("\n");
 		}
-		return sb.append(WHITE).append(TIME.format(date)).append(" ").append(color).append(message).append(RESET).toString();
+		return sb.append(WHITE).append(TIME.format(date))
+				.append(" [").append(name).append("]: ")
+				.append(color).append(message).append(RESET).toString();
 	}
 
 	@Override
