@@ -199,6 +199,7 @@ public abstract class PathHandler implements HttpHandler {
 			    .map(Base64.getDecoder()::decode)
 			    .map(bytes -> new String(bytes, UTF_8))
 			    .map(token -> token.split(":", 2))
+				.filter(arr -> arr.length == 2)
 			    .map(arr -> new BasicAuth(arr[0], arr[1]));
 		}
 
@@ -271,6 +272,7 @@ public abstract class PathHandler implements HttpHandler {
 			return nullable(ex.getRequestURI().getQuery()).stream()
 					.flatMap(query -> Arrays.stream(query.split("&")))
 					.map(s -> s.split("=", 2))
+					.filter(arr -> arr.length == 2)
 					.collect(Collectors.toMap(arr -> arr[0], arr -> arr[1]));
 		}
 
@@ -286,6 +288,13 @@ public abstract class PathHandler implements HttpHandler {
 			return false;
 		}
 
+	/**
+	 * send a redirect to the client
+	 * @param ex the HttpExchange to use
+	 * @param url the targeted location
+	 * @return false
+	 * @throws IOException if the anser cannot be sent
+	 */
 		public static boolean sendRedirect(HttpExchange ex, String url) throws IOException {
 			ex.getResponseHeaders().add("Location", url);
 			return sendEmptyResponse(HTTP_MOVED_TEMP, ex);
