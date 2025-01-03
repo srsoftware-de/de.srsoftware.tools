@@ -25,8 +25,8 @@ public class Query {
 	 * represents a delete statement
 	 */
 	public static class DeleteQuery {
-		private String		     table;
-		private Map<String, List<Condition>> conditions = new HashMap<>();
+		private String table;
+		private final Map<String, List<Condition>> conditions = new HashMap<>();
 
 		private DeleteQuery() {
 		}
@@ -87,7 +87,7 @@ public class Query {
 	public static class InsertQuery {
 		private final String   table;
 		private String[]       fields	 = null;
-		private List<Object[]> valueSets = new ArrayList<>();
+		private final List<Object[]> valueSets = new ArrayList<>();
 		private boolean ignoreDuplicates = false;
 
 		private InsertQuery(String table) {
@@ -103,6 +103,7 @@ public class Query {
 		 */
 		public PreparedStatement execute(Connection conn) throws SQLException {
 			var stmt = conn.prepareStatement(sql(), Statement.RETURN_GENERATED_KEYS);
+			LOG.log(DEBUG,this);
 			conn.setAutoCommit(false);
 			for (var arr : valueSets) {
 				for (int i = 0; i < arr.length; i++) stmt.setObject(i + 1, arr[i]);
@@ -158,14 +159,14 @@ public class Query {
 	 * This class can be used to create SELECT queries
 	 */
 	public static class SelectQuery {
-		private List<String> sort = new ArrayList<>();
-		private final String[]	     fields;
-		private StringBuilder	     tables = new StringBuilder();
-		private String		     lastTable;
-		private Long		     limit;
-		private Map<String, List<Condition>> conditions = new HashMap<>();
-		private Long		     skip;
-		private List<String>	     groupFields = new ArrayList<>();
+		private final List<String> sort = new ArrayList<>();
+		private final String[]	fields;
+		private final StringBuilder	tables = new StringBuilder();
+		private String lastTable;
+		private Long limit;
+		private final Map<String, List<Condition>> conditions = new HashMap<>();
+		private Long skip;
+		private final List<String> groupFields = new ArrayList<>();
 
 		/**
 		 * the fields to select
@@ -175,11 +176,6 @@ public class Query {
 			this.fields = fields;
 		}
 
-		/**
-		 * Create an SQL String from this query object
-		 * @param values
-		 * @return
-		 */
 		private String compile(List<Object> values) {
 			var sb = new StringBuilder("SELECT ")  //
 			             .append(String.join(", ", Arrays.asList(fields)))
@@ -215,6 +211,7 @@ public class Query {
 			var sql    = compile(values);
 			var stmt   = conn.prepareStatement(sql);
 			for (int i = 0; i < values.size(); i++) stmt.setObject(i + 1, values.get(i));
+			LOG.log(DEBUG, this::toString);
 			return stmt.executeQuery();
 		}
 
@@ -370,11 +367,11 @@ public class Query {
 	public static class UpdateQuery {
 		private final String  table;
 		private final boolean ignore;
-		private int	      counter;
-		private List<String>  fields	      = new ArrayList<>();
-		private List<Integer> fieldInputs     = new ArrayList<>();
-		private List<String>  conditions      = new ArrayList<>();
-		private List<Object>  conditionInputs = new ArrayList<>();
+		private       int     counter;
+		private final List<String>  fields	        = new ArrayList<>();
+		private final List<Integer> fieldInputs     = new ArrayList<>();
+		private final List<String>  conditions      = new ArrayList<>();
+		private final List<Object>  conditionInputs = new ArrayList<>();
 
 		private UpdateQuery(String table, boolean ignore) {
 			this.table  = table;
