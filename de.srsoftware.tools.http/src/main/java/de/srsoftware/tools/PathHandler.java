@@ -154,6 +154,7 @@ public abstract class PathHandler implements HttpHandler {
 			case POST -> doPost(path,ex);
 			default -> false;
 		};
+		ex.getRequestBody().close();
  		ex.getResponseBody().close();
 	}
 

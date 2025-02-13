@@ -33,6 +33,7 @@ public class XMLParser {
 			return Error.error(e,"Failed to parse content of stream");
 		}
 	}
+	
 
 	private static List<Tag> parse(PushbackReader input) throws IOException {
 		var tags = new ArrayList<Tag>();
