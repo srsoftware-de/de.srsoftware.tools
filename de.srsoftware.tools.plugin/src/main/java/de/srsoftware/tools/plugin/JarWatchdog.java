@@ -115,14 +115,18 @@ public class JarWatchdog extends Thread {
 	public void run() {
 		while (true) {
 			try {
-				if (beforeScan != null) beforeScan.run();
-				for (var dir : dirs) scan(dir);
-				if (afterScan != null) afterScan.run();
+				scan();
 				Thread.sleep(delay);
 			} catch (InterruptedException e) {
 				break;
 			}
 		}
+	}
+
+	public void scan(){
+		if (beforeScan != null) beforeScan.run();
+		for (var dir : dirs) scan(dir);
+		if (afterScan != null) afterScan.run();
 	}
 
 	private void scan(File dir) {
