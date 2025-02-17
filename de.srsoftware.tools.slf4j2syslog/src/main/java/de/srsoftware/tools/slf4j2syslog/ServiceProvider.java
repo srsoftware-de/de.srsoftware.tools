@@ -32,7 +32,5 @@ public class ServiceProvider implements org.slf4j.spi.SLF4JServiceProvider{
 	}
 
 	@Override
-	public void initialize() {
-		System.out.println("init");
-	}
+	public void initialize() {}
 }
