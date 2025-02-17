@@ -2,13 +2,15 @@
 package de.srsoftware.tools.slf4j2syslog;
 
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Creates a Logger factory for Slf4J2SysLog loggers
  */
 public class LoggerFactory implements org.slf4j.ILoggerFactory{
 
-	private HashMap<String,Logger> loggers = new HashMap<>();
+	private ConcurrentMap<String,Logger> loggers = new ConcurrentHashMap<>();
 
 	@Override
 	public org.slf4j.Logger getLogger(String key) {
