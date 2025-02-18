@@ -1,7 +1,7 @@
 /* © SRSoftware 2024 */
-package de.srsoftware.tools;
+package de.srsoftware.tools.result;
 
-import static de.srsoftware.tools.Error.error;
+import static de.srsoftware.tools.result.Error.error;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -11,9 +11,7 @@ import java.util.stream.Stream;
 /**
  * A wrapper for results that carry an actual payload
  * @param <P> the type of the expected payload
- * @deprecated Will be replaced by de.srsoftware.tools.result
  */
-@Deprecated
 public class Payload<P> implements Result<P> {
 	private final P object;
 

@@ -1,7 +1,7 @@
 /* © SRSoftware 2024 */
-package de.srsoftware.tools;
+package de.srsoftware.tools.result;
 
-import static de.srsoftware.tools.Error.error;
+import static de.srsoftware.tools.result.Error.error;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -10,9 +10,7 @@ import java.util.stream.Stream;
 /**
  * This interface can be used as a result type for functions that may return something or an error.
  * @param <Content> The expected type of the result payload
- * @deprecated Will be replaced by de.srsoftware.tools.result
  */
-@Deprecated
 public interface Result<Content> {
 	/**
 	 * Transform this Result object to another via a mapping function.

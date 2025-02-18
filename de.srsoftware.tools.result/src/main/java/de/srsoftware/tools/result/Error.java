@@ -1,8 +1,9 @@
 /* © SRSoftware 2024 */
-package de.srsoftware.tools;
+package de.srsoftware.tools.result;
 
 import static java.util.Optional.empty;
 
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -12,9 +13,7 @@ import org.json.JSONObject;
  * This class may be returned by methods whose execution failed.
  * It may carry additional data about the cause of the failure
  * @param <None> This result is not expected to carry a payload in the sense of a positive execution result.
- * @deprecated Will be replaced by de.srsoftware.tools.result
  */
-@Deprecated
 public class Error<None> implements Result<None> {
 	private final List<Exception> exceptions = new ArrayList<>();
 	private final Map<String, Object> data   = new HashMap<>();
@@ -68,7 +67,7 @@ public class Error<None> implements Result<None> {
 	 * @return the created Error object
 	 */
 	public static <T> Error<T> error(String message, Object... fills) {
-		return new Error<>(message.formatted(fills), null, null);
+		return new Error<>(MessageFormat.format(message,fills), null, null);
 	}
 
 	/**
@@ -80,7 +79,7 @@ public class Error<None> implements Result<None> {
 	 * @return the created Error object
 	 */
 	public static <T> Error<T> error(Exception exception, String message, Object... fills) {
-		return new Error<>(message.formatted(fills), null, exception == null ? null : List.of(exception));
+		return new Error<>(MessageFormat.format(message,fills), null, exception == null ? null : List.of(exception));
 	}
 
 	/**
@@ -92,7 +91,7 @@ public class Error<None> implements Result<None> {
 	 * @return the created Error object
 	 */
 	public static <T> Error<T> error(Collection<Exception> exceptions, String message, Object... fills) {
-		return new Error<>(message.formatted(fills), null, exceptions);
+		return new Error<>(MessageFormat.format(message,fills), null, exceptions);
 	}
 
 	/**
@@ -104,7 +103,7 @@ public class Error<None> implements Result<None> {
 	 * @return the created Error object
 	 */
 	public static <T> Error<T> error(Map<String, Object> data, String message, Object... fills) {
-		return new Error<>(message, data, null);
+		return new Error<>(MessageFormat.format(message,fills), data, null);
 	}
 
 	/**
@@ -117,7 +116,7 @@ public class Error<None> implements Result<None> {
 	 * @return the created Error object
 	 */
 	public static <T> Error<T> error(Map<String, Object> data, Exception exception, String message, Object... fills) {
-		return new Error<>(message.formatted(fills), data, exception == null ? null : List.of(exception));
+		return new Error<>(MessageFormat.format(message,fills), data, exception == null ? null : List.of(exception));
 	}
 
 	/**
@@ -130,7 +129,7 @@ public class Error<None> implements Result<None> {
 	 * @return the created Error object
 	 */
 	public static <T> Error<T> error(Map<String, Object> data, Collection<Exception> exceptions, String message, Object... fills) {
-		return new Error<>(message.formatted(fills), data, exceptions);
+		return new Error<>(MessageFormat.format(message,fills), data, exceptions);
 	}
 
 	/**

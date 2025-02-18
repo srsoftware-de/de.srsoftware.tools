@@ -514,6 +514,12 @@ public class Query {
 		return new InsertQuery(table).fields(fields);
 	}
 
+	/**
+	 * create a new InsertQuery for the given fields in the given table, but using the REPLACE verb instead of INSERT
+	 * @param table the table to replace into
+	 * @param fields the fields to set
+	 * @return the new InsertQuery
+	 */
 	public static InsertQuery replaceInto(String table, String... fields) {
 		return new InsertQuery(table,true).fields(fields);
 	}
