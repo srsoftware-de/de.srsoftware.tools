@@ -8,6 +8,9 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+import de.srsoftware.tools.result.Result;
+import de.srsoftware.tools.result.Error;
+import de.srsoftware.tools.result.Payload;
 
 /**
  * Parser to create Document Object Model from InputStream
