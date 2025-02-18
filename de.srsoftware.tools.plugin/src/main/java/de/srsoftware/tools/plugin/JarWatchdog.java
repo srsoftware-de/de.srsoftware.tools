@@ -94,7 +94,7 @@ public class JarWatchdog extends Thread {
 				if (!silent) LOGGER.log(DEBUG, "Found entry: {0}", entry);
 				if (entry.isDirectory() || !entry.getName().endsWith(".class")) continue;
 				String className = entry.getName().substring(0, entry.getName().length() - 6).replace('/', '.');
-				if (!silent) LOGGER.log(INFO, "Trying to load {0}", className);
+				if (!silent) LOGGER.log(INFO, "Trying to load {0}…", className);
 				Class<?> c = loader.loadClass(className);
 				if (!silent) LOGGER.log(INFO, "{0} loaded.", c.getSimpleName());
 				classes.add(c);

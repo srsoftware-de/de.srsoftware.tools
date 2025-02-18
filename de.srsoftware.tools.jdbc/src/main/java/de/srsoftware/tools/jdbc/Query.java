@@ -2,13 +2,12 @@
 package de.srsoftware.tools.jdbc;
 
 
-import static java.lang.System.Logger.Level.DEBUG;
-import static java.lang.System.Logger.Level.TRACE;
-
 import java.security.InvalidParameterException;
 import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.lang.System.Logger.Level.*;
 
 /**
  * Object that wraps an SQL query
@@ -86,12 +85,18 @@ public class Query {
 	 */
 	public static class InsertQuery {
 		private final String   table;
+		private final boolean replace;
 		private String[]       fields	 = null;
 		private final List<Object[]> valueSets = new ArrayList<>();
 		private boolean ignoreDuplicates = false;
 
 		private InsertQuery(String table) {
+			this(table,false);
+		}
+
+		private InsertQuery(String table, boolean replace){
 			this.table = table;
+			this.replace = replace;
 		}
 
 		/**
@@ -123,7 +128,11 @@ public class Query {
 		 * @return this InsertQuery object
 		 */
 		public InsertQuery ignoreDuplicates(){
-			ignoreDuplicates = true;
+			if (replace) {
+				LOG.log(WARNING,"Ignore duplicates is ignored on REPLACE query!");
+			} else {
+				ignoreDuplicates = true;
+			}
 			return this;
 		}
 
@@ -134,7 +143,8 @@ public class Query {
 		public String sql() {
 			var marks = Arrays.stream(fields).map(field -> "?").collect(Collectors.joining(", "));
 			var names = String.join(", ", Arrays.asList(fields));
-			return "INSERT%s INTO %s (%s) VALUES (%s)".formatted(ignoreDuplicates?" IGNORE":"",table, names, marks);
+			var verb = replace ? "REPLACE" : (ignoreDuplicates ? "INSERT IGNORE" : "INSERT");
+			return "%s INTO %s (%s) VALUES (%s)".formatted(verb,table, names, marks);
 		}
 
 
@@ -502,6 +512,10 @@ public class Query {
 	 */
 	public static InsertQuery insertInto(String table, String... fields) {
 		return new InsertQuery(table).fields(fields);
+	}
+
+	public static InsertQuery replaceInto(String table, String... fields) {
+		return new InsertQuery(table,true).fields(fields);
 	}
 
 	/**

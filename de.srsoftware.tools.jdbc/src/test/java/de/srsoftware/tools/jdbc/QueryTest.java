@@ -93,6 +93,35 @@ public class QueryTest {
 	}
 
 	@Test
+	void testInsertIgnore() {
+		var query = Query  //
+				.insertInto("movies", "title", "year")
+				.ignoreDuplicates()
+				.values("Per Anhalter", "2005")
+				.values("2001: A Space Odyssey", "1968");
+		assertEquals("INSERT IGNORE INTO movies (title, year) VALUES (?, ?)", query.sql());
+	}
+
+	@Test
+	void testReplace() {
+		var query = Query  //
+				.replaceInto("movies", "title", "year")
+				.values("Per Anhalter", "2005")
+				.values("2001: A Space Odyssey", "1968");
+		assertEquals("REPLACE INTO movies (title, year) VALUES (?, ?)", query.sql());
+	}
+
+	@Test
+	void testReplaceIgnore() {
+		var query = Query  //
+				.replaceInto("movies", "title", "year")
+				.ignoreDuplicates()
+				.values("Per Anhalter", "2005")
+				.values("2001: A Space Odyssey", "1968");
+		assertEquals("REPLACE INTO movies (title, year) VALUES (?, ?)", query.sql());
+	}
+
+	@Test
 	void testUpdate() {
 		var query = Query.update("movies").set("title", "year").where("year", equal(MARK)).set("id").where("id", notIn(5));
 		assertEquals("UPDATE movies SET title = args[0], year = args[1], id = args[3] WHERE year = args[2] AND id NOT IN (5)", query.toString());
