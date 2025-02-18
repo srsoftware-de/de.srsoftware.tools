@@ -17,18 +17,21 @@ public class SessionToken extends Cookie {
 	private final String	       sessionId;
 	private static final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss O");
 
-	public SessionToken(String sessionId, Instant expiration, boolean trust) {
-		super("sessionToken", sessionToken(sessionId, expiration, trust));
+	public SessionToken(String sessionId, String path, Instant expiration, boolean trust) {
+		super("sessionToken", sessionToken(sessionId, path, expiration, trust));
 		this.sessionId = sessionId;
 	}
 
-	private static String sessionToken(String sessionId, Instant expiration, boolean trust) {
-		if (trust) return "%s; Path=/api; Expires=%s".formatted(sessionId, FORMAT.format(expiration.atZone(ZoneOffset.UTC)));
-		return "%s; Path=/api".formatted(sessionId);
+	private static String sessionToken(String sessionId, String path, Instant expiration, boolean trust) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(sessionId);
+		if (path != null) sb.append("; Path=").append(path);
+		if (trust && expiration != null) sb.append("; Expires=").append(FORMAT.format(expiration.atZone(ZoneOffset.UTC)));
+		return sb.toString();
 	}
 
 	public SessionToken(String sessionId) {
-		super("sessionToken", sessionId + "; Path=/api");
+		super("sessionToken", sessionId);
 		this.sessionId = sessionId;
 	}
 
