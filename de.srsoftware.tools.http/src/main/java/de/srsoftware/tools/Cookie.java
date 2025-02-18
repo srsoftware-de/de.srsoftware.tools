@@ -32,7 +32,7 @@ public abstract class Cookie implements Map.Entry<String, String> {
 	@SuppressWarnings("unchecked")
 	public <T extends Cookie> T addTo(Headers headers) {
 		LOG.log(INFO, "sending cookie {0}={1}", key, value);
-		headers.add("Set-de.srsoftware.tools.Cookie", "%s=%s".formatted(key, value));
+		headers.add("Set-Cookie", "%s=%s".formatted(key, value));
 		return (T)this;
 	}
 
