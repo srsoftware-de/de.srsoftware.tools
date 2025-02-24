@@ -4,6 +4,11 @@ dependencies {
     implementation(project(":de.srsoftware.tools.util"))
 
     testImplementation("org.xerial:sqlite-jdbc:3.47.1.0")
+
+    testImplementation("com.mysql:mysql-connector-j:9.1.0")
+    testImplementation("ch.vorburger.mariaDB4j:mariaDB4j:3.1.0")
+
+    testImplementation("org.slf4j:slf4j-simple:2.0.16")
 }
 
 plugins {
@@ -14,7 +19,7 @@ object Meta {
     val COMPONENT_TYPE = "java" // "java" or "versionCatalog"
     val GROUP = "de.srsoftware"
     val ARTIFACT_ID = "tools.jdbc"
-    val VERSION = "1.2.0"
+    val VERSION = "1.3.0"
     val PUBLISHING_TYPE = "AUTOMATIC" // USER_MANAGED or AUTOMATIC
     val SHA_ALGORITHMS = listOf("SHA-256", "SHA-512") // sha256 and sha512 are supported but not mandatory. Only sha1 is mandatory but it is supported by default.
     val DESC = "SRSoftware Tools : JDBC utils"

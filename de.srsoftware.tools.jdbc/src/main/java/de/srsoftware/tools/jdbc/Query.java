@@ -76,7 +76,9 @@ public class Query {
 			}
 			var stmt = conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
 			for (int i = 0; i < values.size(); i++) stmt.setObject(i + 1, values.get(i));
-			return stmt.execute();
+			var res = stmt.execute();
+			stmt.close();
+			return res;
 		}
 	}
 
@@ -348,11 +350,12 @@ public class Query {
 		/**
 		 * execute a database transaction:
 		 * values are applied to the placeholders in the order the were presented during Query construction.
+		 *
 		 * @param values values to apply to the query
 		 * @return this PreparedUpdateQuery (can be used to repeat the apply process)
 		 * @throws SQLException if writing data fails
 		 */
-		public PreparedUpdateQuery apply(Object... values) throws SQLException {
+		public PreparedStatement apply(Object... values) throws SQLException {
 			if (values.length != counter) throw new InvalidParameterException("apply(…) expected %s arguments, got %s!".formatted(counter, values.length));
 			int index = 0;
 			for (int fieldInputIndex : fieldInputs) {
@@ -367,7 +370,7 @@ public class Query {
 			}
 			LOG.log(TRACE, () -> " → applying (" + String.join(", ", Arrays.stream(values).map(o -> "" + o).toList()) + ")");
 			stmt.execute();
-			return this;
+			return stmt;
 		}
 	}
 
