@@ -152,13 +152,13 @@ public abstract class PathHandler implements HttpHandler {
 			case GET -> doGet(path,ex);
 			case PATCH -> doPatch(path,ex);
 			case POST -> doPost(path,ex);
-			default -> handleMethod(method,ex);
+			default -> handleMethod(method,path,ex);
 		};
 		ex.getRequestBody().close();
  		ex.getResponseBody().close();
 	}
 
-	public boolean handleMethod(String method,HttpExchange ex) throws IOException {
+	public boolean handleMethod(String method,String path, HttpExchange ex) throws IOException {
 		return notFound(ex);
 	}
 
