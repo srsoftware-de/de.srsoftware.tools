@@ -11,7 +11,7 @@ spotless {
         target("**/src/**/java/**/*.java")
         removeUnusedImports()
         importOrder()
-        licenseHeader("/* © SRSoftware 2024 */")
+        licenseHeader("/* © SRSoftware 2025 */")
     }
 }
 

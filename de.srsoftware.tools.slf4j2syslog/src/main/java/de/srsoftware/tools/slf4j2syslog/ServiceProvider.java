@@ -1,4 +1,4 @@
-/* © SRSoftware 2024 */
+/* © SRSoftware 2025 */
 package de.srsoftware.tools.slf4j2syslog;
 
 import org.slf4j.ILoggerFactory;

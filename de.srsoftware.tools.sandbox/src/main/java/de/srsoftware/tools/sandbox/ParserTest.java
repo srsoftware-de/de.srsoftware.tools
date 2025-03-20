@@ -1,4 +1,4 @@
-/* © SRSoftware 2024 */
+/* © SRSoftware 2025 */
 package de.srsoftware.tools.sandbox;
 
 import de.srsoftware.tools.Payload;
