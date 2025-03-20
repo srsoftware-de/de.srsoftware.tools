@@ -3,6 +3,7 @@ package de.srsoftware.tools;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import de.srsoftware.tools.result.Payload;
 import java.io.IOException;
 import java.io.InputStream;
 import org.junit.jupiter.api.Test;

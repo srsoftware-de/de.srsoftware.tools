@@ -4,13 +4,13 @@ package de.srsoftware.tools;
 import static java.lang.Character.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import de.srsoftware.tools.result.Error;
+import de.srsoftware.tools.result.Payload;
+import de.srsoftware.tools.result.Result;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
-import de.srsoftware.tools.result.Result;
-import de.srsoftware.tools.result.Error;
-import de.srsoftware.tools.result.Payload;
 
 /**
  * Parser to create Document Object Model from InputStream

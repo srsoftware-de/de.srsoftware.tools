@@ -1,7 +1,6 @@
 /* © SRSoftware 2024 */
 package de.srsoftware.tools.slf4j2syslog;
 
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 

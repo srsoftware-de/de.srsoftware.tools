@@ -4,6 +4,7 @@ package de.srsoftware.tools;
 import static de.srsoftware.tools.TagFilter.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import de.srsoftware.tools.result.Payload;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;

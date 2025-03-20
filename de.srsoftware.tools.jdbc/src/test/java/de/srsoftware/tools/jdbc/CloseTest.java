@@ -1,24 +1,21 @@
+/* © SRSoftware 2024 */
 package de.srsoftware.tools.jdbc;
-
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Map;
-
-import ch.vorburger.mariadb4j.DB;
-import ch.vorburger.mariadb4j.DBConfigurationBuilder;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import static de.srsoftware.tools.jdbc.Query.insertInto;
 import static java.text.MessageFormat.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import ch.vorburger.mariadb4j.DB;
+import ch.vorburger.mariadb4j.DBConfigurationBuilder;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class CloseTest {
 	private static final String TABLE = "foofoo";

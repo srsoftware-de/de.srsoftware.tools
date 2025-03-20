@@ -2,12 +2,12 @@
 package de.srsoftware.tools.jdbc;
 
 
+import static java.lang.System.Logger.Level.*;
+
 import java.security.InvalidParameterException;
 import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static java.lang.System.Logger.Level.*;
 
 /**
  * Object that wraps an SQL query
