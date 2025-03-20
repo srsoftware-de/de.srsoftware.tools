@@ -105,7 +105,7 @@ public abstract class PathHandler implements HttpHandler {
 	 * @return false
 	 * @throws IOException if sending the response fails
 	 */
-	public boolean doDelete(String path, HttpExchange ex) throws IOException {
+	public boolean doDelete(Path path, HttpExchange ex) throws IOException {
 		return notFound(ex);
 	}
 
@@ -116,7 +116,7 @@ public abstract class PathHandler implements HttpHandler {
 	 * @return false
 	 * @throws IOException if sending the response fails
 	 */
-	public boolean doGet(String path, HttpExchange ex) throws IOException {
+	public boolean doGet(Path path, HttpExchange ex) throws IOException {
 		return notFound(ex);
 	}
 
@@ -127,7 +127,7 @@ public abstract class PathHandler implements HttpHandler {
 	 * @return false
 	 * @throws IOException if sending the response fails
 	 */
-	public boolean doPatch(String path, HttpExchange ex) throws IOException {
+	public boolean doPatch(Path path, HttpExchange ex) throws IOException {
 		return notFound(ex);
 	}
 
@@ -138,13 +138,13 @@ public abstract class PathHandler implements HttpHandler {
 	 * @return false
 	 * @throws IOException if sending the response fails
 	 */
-	public boolean doPost(String path, HttpExchange ex) throws IOException {
+	public boolean doPost(Path path, HttpExchange ex) throws IOException {
 		return notFound(ex);
 	}
 
 	@Override
 	public void handle(HttpExchange ex) throws IOException {
-		String path   = relativePath(ex);
+		Path path   = relativePath(ex);
 		String method = ex.getRequestMethod();
 		LOG.log(INFO, "{0} {1}", method, path);
 		boolean ignored = switch (method) {
@@ -158,11 +158,11 @@ public abstract class PathHandler implements HttpHandler {
  		ex.getResponseBody().close();
 	}
 
-	public boolean handleMethod(String method,String path, HttpExchange ex) throws IOException {
+	public boolean handleMethod(String method,Path path, HttpExchange ex) throws IOException {
 		return notFound(ex);
 	}
 
-	public String relativePath(HttpExchange ex) {
+	public Path relativePath(HttpExchange ex) {
 		var requestPath = ex.getRequestURI().toString();
 		for (var path : paths){
 			if (requestPath.startsWith(path)) {
@@ -170,10 +170,9 @@ public abstract class PathHandler implements HttpHandler {
 				break;
 			}
 		}
-		if (!requestPath.startsWith("/")) requestPath = "/" + requestPath;
 		var pos = requestPath.indexOf("?");
 		if (pos >= 0) requestPath = requestPath.substring(0, pos);
-		return requestPath;
+		return Path.of(requestPath);
 	}
 
 	/******* begin of static methods *************/

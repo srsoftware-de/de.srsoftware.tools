@@ -17,6 +17,13 @@ public class SessionToken extends Cookie {
 	private final String	       sessionId;
 	private static final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss O");
 
+	/**
+	 * create a new sessoin token cookie carrying the given session id
+	 * @param sessionId a string to provide as sesstionToken cookie
+	 * @param path the path this cookie is valid for
+	 * @param expiration the time when the cookie is about to expire
+	 * @param trust whether the cookie shall be persistent
+	 */
 	public SessionToken(String sessionId, String path, Instant expiration, boolean trust) {
 		super("sessionToken", sessionToken(sessionId, path, expiration, trust));
 		this.sessionId = sessionId;
@@ -30,6 +37,10 @@ public class SessionToken extends Cookie {
 		return sb.toString();
 	}
 
+	/**
+	 * create a new sessoin token cookie carrying the given session id
+	 * @param sessionId a string to provide as sesstionToken cookie
+	 */
 	public SessionToken(String sessionId) {
 		super("sessionToken", sessionId);
 		this.sessionId = sessionId;
@@ -41,6 +52,11 @@ public class SessionToken extends Cookie {
 		return super.addTo(headers);
 	}
 
+	/**
+	 * extract the session token from an HttpExchange
+	 * @param ex the exchange to extract from
+	 * @return an optional carrying a session token, if one was submitted in the exchange
+	 */
 	public static Optional<SessionToken> from(HttpExchange ex) {
 		return Cookie.of(ex)
 		    .stream()
@@ -51,6 +67,10 @@ public class SessionToken extends Cookie {
 		    .findAny();
 	}
 
+	/**
+	 * return the string carried by this session token instance
+	 * @return the carried id
+	 */
 	public String sessionId() {
 		return sessionId;
 	}
