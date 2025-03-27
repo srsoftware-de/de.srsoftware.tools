@@ -52,6 +52,24 @@ public class ColorLogger implements System.Logger {
 				.append(color).append(message).append(RESET).toString();
 	}
 
+	/**
+	 * The Systemlogger may replace other loggers which are used with patterns that contain placeholders without index.
+	 * To circumvent problems with these patterns, this method introduces indexes.
+	 * @param pattern the original pattern
+	 * @param args fillers to be inserted at the marks
+	 * @return the filled text
+	 */
+	private String format(String pattern, Object...args){
+		for (int i=0; i<args.length; i++){
+			var key = "{"+i+"}";
+			if (!pattern.contains(key)){
+				var pos = pattern.indexOf("{}");
+				if (pos>=0)	pattern = pattern.substring(0,pos)+key+pattern.substring(pos+2);
+			}
+		}
+		return MessageFormat.format(pattern,args);
+	}
+
 	@Override
 	public String getName() {
 		return name;
@@ -75,7 +93,7 @@ public class ColorLogger implements System.Logger {
 	@Override
 	public void log(Level level, ResourceBundle bundle, String format, Object... params) {
 		if (isLoggable(level)) try {
-			if (params != null && params.length >0) format = MessageFormat.format(format,params);
+			if (params != null && params.length >0) format = format(format,params);
 			System.out.println(colorize(format, level.getSeverity()));
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
