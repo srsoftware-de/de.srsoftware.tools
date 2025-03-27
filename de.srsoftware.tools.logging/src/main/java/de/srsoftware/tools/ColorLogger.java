@@ -38,6 +38,14 @@ public class ColorLogger implements System.Logger {
 		this(clazz.getSimpleName());
 	}
 
+	/**
+	 * create a new ColorLogger, use the name of the provided object as logger name
+	 * @param o the object from whose class the logger name is derived
+	 */
+	public ColorLogger(Object o){
+		this(o.getClass().getSimpleName());
+	}
+
 	private String colorize(String message, int severity) {
 		var           color = severity >= ERROR.getSeverity() ? RED : severity >= WARNING.getSeverity() ? YELLOW : severity >= INFO.getSeverity() ? WHITE_BRIGHT : WHITE;
 		var           date  = new Date();
@@ -77,8 +85,16 @@ public class ColorLogger implements System.Logger {
 
 	@Override
 	public boolean isLoggable(Level level) {
-		Integer loggerLevel = instanceLevels.get(name);
-		if (loggerLevel == null) loggerLevel = rootLevel;
+		Integer loggerLevel = instanceLevels.get(name); // search for exact match
+		if (loggerLevel == null) {
+			for (var entry : instanceLevels.entrySet()){ // search for partial match
+				if (name.contains(entry.getKey())) {
+					loggerLevel = entry.getValue();
+					break;
+				}
+			}
+		}
+		if (loggerLevel == null) loggerLevel = rootLevel; // fallback
 		return level.getSeverity() >= loggerLevel;
 	}
 
@@ -108,6 +124,14 @@ public class ColorLogger implements System.Logger {
 	public static ColorLogger of(Class<?> clazz) {
 		return new ColorLogger(clazz.getSimpleName());
 	}
+
+	/**
+	 * reset the settings for different loggers (set by setLogLevel(…,…))
+	 */
+	public static void reset() {
+		instanceLevels.clear();
+	}
+
 
 	/**
 	 * alter the log level of all ColorLogger instances
