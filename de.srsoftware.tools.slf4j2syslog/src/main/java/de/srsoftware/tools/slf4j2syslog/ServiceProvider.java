@@ -8,7 +8,7 @@ import org.slf4j.helpers.NOPMDCAdapter;
 import org.slf4j.spi.MDCAdapter;
 
 /**
- * ServiceProvider implementation to accomodate SL4J injection
+ * ServiceProvider implementation to accommodate SL4J injection
  */
 public class ServiceProvider implements org.slf4j.spi.SLF4JServiceProvider{
 	@Override
