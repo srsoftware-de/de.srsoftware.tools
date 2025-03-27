@@ -61,9 +61,9 @@ public class SessionToken extends Cookie {
 		return Cookie.of(ex)
 		    .stream()
 		    .filter(cookie -> cookie.startsWith("sessionToken="))
-
 		    .map(cookie -> cookie.split("=", 2)[1])
-		    .map(id -> new SessionToken(id))
+			.filter(id -> !id.isBlank())
+		    .map(SessionToken::new)
 		    .findAny();
 	}
 
