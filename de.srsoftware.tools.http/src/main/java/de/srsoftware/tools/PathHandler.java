@@ -31,7 +31,7 @@ public abstract class PathHandler implements HttpHandler {
 	public static final String  GET	             = "GET";
 	public static final String  HOST             = "host";
 	public static final String  JSON             = "application/json";
-	public static System.Logger LOG	             = System.getLogger(PathHandler.class.getSimpleName());
+	public System.Logger LOG	                 = System.getLogger(getClass().getSimpleName());
 	public static final String  PATCH            = "PATCH";
 	public static final String  POST             = "POST";
 
@@ -75,7 +75,7 @@ public abstract class PathHandler implements HttpHandler {
 	 * @return true – result is only created to allow return badRequest(…)
 	 * @throws IOException if writing to the HttpEchange object fails
 	 */
-	public static boolean badRequest(HttpExchange ex, byte[] bytes) throws IOException {
+	public boolean badRequest(HttpExchange ex, byte[] bytes) throws IOException {
 		return sendContent(ex, HTTP_BAD_REQUEST, bytes);
 	}
 
@@ -86,7 +86,7 @@ public abstract class PathHandler implements HttpHandler {
 	 * @return true – result is only created to allow return badRequest(…)
 	 * @throws IOException if writing to the HttpEchange object fails
 	 */
-	public static boolean badRequest(HttpExchange ex, Object o) throws IOException {
+	public boolean badRequest(HttpExchange ex, Object o) throws IOException {
 		return sendContent(ex, HTTP_BAD_REQUEST, o);
 	}
 
@@ -263,7 +263,7 @@ public abstract class PathHandler implements HttpHandler {
 	 * @return false
 	 * @throws IOException if sending the response fails
 	 */
-	public static boolean notFound(HttpExchange ex) throws IOException {
+	public boolean notFound(HttpExchange ex) throws IOException {
 		LOG.log(ERROR, "not implemented");
 		return sendEmptyResponse(HTTP_NOT_FOUND, ex);
 	}
@@ -313,7 +313,7 @@ public abstract class PathHandler implements HttpHandler {
 	 * @return true – result is only created to allow return badRequest(…)
 	 * @throws IOException if writing to the HttpEchange object fails
 	 */
-	public static boolean sendContent(HttpExchange ex, int status, byte[] bytes) throws IOException {
+	public boolean sendContent(HttpExchange ex, int status, byte[] bytes) throws IOException {
 		LOG.log(DEBUG, "sending {0} response…", status);
 		ex.sendResponseHeaders(status, bytes.length);
 		ex.getResponseBody().write(bytes);
@@ -328,7 +328,7 @@ public abstract class PathHandler implements HttpHandler {
 	 * @return true – result is only created to allow return badRequest(…)
 	 * @throws IOException if writing to the HttpEchange object fails
 	 */
-	public static boolean sendContent(HttpExchange ex, int status, Object o) throws IOException {
+	public boolean sendContent(HttpExchange ex, int status, Object o) throws IOException {
 		if (o instanceof Payload<?> payload) o = payload.get();
 		if (o instanceof List<?> list) o = new JSONArray(list);
 		if (o instanceof Map<?, ?> map) o = new JSONObject(map);
@@ -340,11 +340,11 @@ public abstract class PathHandler implements HttpHandler {
 	}
 
 
-	public static boolean sendContent(HttpExchange ex, byte[] bytes) throws IOException {
+	public boolean sendContent(HttpExchange ex, byte[] bytes) throws IOException {
 		return sendContent(ex, HTTP_OK, bytes);
 	}
 
-	public static boolean sendContent(HttpExchange ex, Object o) throws IOException {
+	public boolean sendContent(HttpExchange ex, Object o) throws IOException {
 		return sendContent(ex, HTTP_OK, o);
 	}
 
@@ -355,7 +355,7 @@ public abstract class PathHandler implements HttpHandler {
 	 * @return false
 	 * @throws IOException if the content cannot be sent
 	 */
-	public static boolean serverError(HttpExchange ex, Object o) throws IOException {
+	public boolean serverError(HttpExchange ex, Object o) throws IOException {
 		sendContent(ex, HTTP_INTERNAL_ERROR, o);
 		return false;
 	}
