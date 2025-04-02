@@ -5,6 +5,7 @@ package de.srsoftware.tools; /* © SRSoftware 2024 */
 import static de.srsoftware.tools.Optionals.nullable;
 import static java.lang.System.Logger.Level.*;
 import static java.net.HttpURLConnection.*;
+import static java.net.URLDecoder.decode;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -13,6 +14,7 @@ import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpsExchange;
 import de.srsoftware.tools.result.Error;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -269,16 +271,26 @@ public abstract class PathHandler implements HttpHandler {
 	}
 
 	/**
-	 * map the query string to a map
+	 * map the query from the Request URI to a map
 	 * @param ex the HttpExchange to read the entries from
 	 * @return the query parameters as key → value map
 	 */
 	public Map<String, String> queryParam(HttpExchange ex) {
-		return nullable(ex.getRequestURI().getQuery()).stream()
-				.flatMap(query -> Arrays.stream(query.split("&")))
+		return querySplit(ex.getRequestURI().getQuery());
+	}
+
+	/**
+	 * map the query from the string to a map
+	 * @param query the query string
+	 * @return the query parameters as key → value map
+	 */
+	public static Map<String,String> querySplit(String query){
+		return nullable(query).stream()
+				.flatMap(q -> Arrays.stream(q.split("&")))
 				.map(s -> s.split("=", 2))
 				.filter(arr -> arr.length == 2)
-				.collect(Collectors.toMap(arr -> arr[0], arr -> arr[1]));
+				.collect(Collectors.toMap(arr -> decode(arr[0],UTF_8), arr -> decode(arr[1],UTF_8)));
+
 	}
 
 	/**
