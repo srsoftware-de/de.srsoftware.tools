@@ -46,6 +46,12 @@ public class Path extends Stack<String> {
 	}
 
 	@Override
+	public synchronized String pop() {
+		if (isEmpty()) return null;
+		return super.pop();
+	}
+
+	@Override
 	public synchronized String toString() {
 		StringBuilder sb = new StringBuilder();
 		for (int i = size(); i>0; i--) sb.append("/").append(get(i-1));
