@@ -71,6 +71,17 @@ public abstract class PathHandler implements HttpHandler {
 	}
 
 	/**
+	 * this method sets the 'Access-Control-Allow-Origin' header value
+	 * @param ex the HttpExchange, whose response headers are to be modified
+	 * @param origin the value for the header
+	 * @return the HttpExchange
+	 */
+	public HttpExchange allowOrigin(HttpExchange ex,String origin){
+		ex.getResponseHeaders().add("Access-Control-Allow-Origin",origin);
+		return ex;
+	}
+
+	/**
 	 * create a response with status code 400, send payload
 	 * @param ex the HttpExchange to write to
 	 * @param bytes the payload
