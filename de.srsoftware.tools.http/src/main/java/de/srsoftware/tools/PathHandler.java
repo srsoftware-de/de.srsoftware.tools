@@ -342,6 +342,7 @@ public abstract class PathHandler implements HttpHandler {
 	 */
 	public boolean sendContent(HttpExchange ex, int status, Object o) throws IOException {
 		if (o instanceof Payload<?> payload) o = payload.get();
+		if (o instanceof de.srsoftware.tools.result.Payload<?> payload) o = payload.get();
 		if (o instanceof List<?> list) o = new JSONArray(list);
 		if (o instanceof Map<?, ?> map) o = new JSONObject(map);
 		if (o instanceof HttpError<?> error) return sendContent(ex, error.code(), error.json());
