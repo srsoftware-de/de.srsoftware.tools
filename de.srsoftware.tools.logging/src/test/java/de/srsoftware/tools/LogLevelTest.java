@@ -1,14 +1,12 @@
+/* © SRSoftware 2025 */
 package de.srsoftware.tools;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import java.lang.reflect.Field;
-import java.util.HashMap;
 
 import static java.lang.System.Logger.Level.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class LogLevelTest {
 
