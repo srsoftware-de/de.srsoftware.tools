@@ -1,6 +1,9 @@
 /* © SRSoftware 2025 */
 package de.srsoftware.tools;
 
+import static java.net.URLDecoder.decode;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.util.Stack;
 
 /**
@@ -48,7 +51,7 @@ public class Path extends Stack<String> {
 	@Override
 	public synchronized String pop() {
 		if (isEmpty()) return null;
-		return super.pop();
+		return decode(super.pop(), UTF_8);
 	}
 
 	@Override

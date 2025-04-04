@@ -1,9 +1,9 @@
-import de.srsoftware.tools.PathHandler;
-import org.junit.jupiter.api.Test;
-
-import java.util.Map;
-
+/* © SRSoftware 2025 */
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import de.srsoftware.tools.PathHandler;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
 
 public class QueryTest {
 	@Test
