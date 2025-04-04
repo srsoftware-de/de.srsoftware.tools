@@ -140,6 +140,11 @@ public class Error<None> implements Result<None> {
 		return exceptions;
 	}
 
+	@Override
+	public boolean isEmpty() {
+		return true;
+	}
+
 	/**
 	 * Create a json object of the error.
 	 * @return the json object describing the error.

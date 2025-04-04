@@ -12,6 +12,15 @@ import java.util.stream.Stream;
  * @param <Content> The expected type of the result payload
  */
 public interface Result<Content> {
+
+	/**
+	 * checks whether the object returned by optional() is empty
+	 * @return true, only if optional().isEmpty() returns true
+	 */
+	public default boolean isEmpty(){
+		return optional().isEmpty();
+	}
+
 	/**
 	 * Transform this Result object to another via a mapping function.
 	 * @param mapper a function, that processes results and produces results
