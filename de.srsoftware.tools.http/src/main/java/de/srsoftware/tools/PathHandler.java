@@ -13,8 +13,8 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpsExchange;
 import de.srsoftware.tools.result.Error;
+import de.srsoftware.tools.result.Payload;
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -353,11 +353,9 @@ public abstract class PathHandler implements HttpHandler {
 	 */
 	public boolean sendContent(HttpExchange ex, int status, Object o) throws IOException {
 		if (o instanceof Payload<?> payload) o = payload.get();
-		if (o instanceof de.srsoftware.tools.result.Payload<?> payload) o = payload.get();
 		if (o instanceof List<?> list) o = new JSONArray(list);
 		if (o instanceof Map<?, ?> map) o = new JSONObject(map);
 		if (o instanceof HttpError<?> error) return sendContent(ex, error.code(), error.json());
-		if (o instanceof de.srsoftware.tools.Error<?> error) return serverError(ex,error.json()); // Legacy
 		if (o instanceof Error<?> error) return serverError(ex, error.json());
 		if (o instanceof JSONObject || o instanceof JSONArray) ex.getResponseHeaders().add(CONTENT_TYPE, JSON);
 		return sendContent(ex, status, o.toString().getBytes(UTF_8));
