@@ -11,6 +11,7 @@ public class MimeType {
 	public static final String MIME_GIF      = "image/gif";
 	public static final String MIME_HTML     = "text/html";
 	public static final String MIME_JPG      = "image/jpeg";
+	public static final String MIME_JSON     = "application/json";
 	public static final String MIME_LATEX    = "text/x-tex";
 	public static final String MIME_PDF      = "image/pdf";
 	public static final String MIME_PNG      = "image/png";
@@ -39,6 +40,7 @@ public class MimeType {
 				case "dia" -> MIME_DIA;
 				case "gif" -> MIME_GIF;
 				case "jpg", "jpeg" -> MIME_JPG;
+				case "json" -> MIME_JSON;
 				case "htm", "html" -> MIME_HTML;
 				case "pdf" -> MIME_PDF;
 				case "png" -> MIME_PNG;
