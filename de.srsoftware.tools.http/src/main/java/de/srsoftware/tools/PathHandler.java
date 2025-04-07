@@ -2,6 +2,7 @@
 package de.srsoftware.tools; /* © SRSoftware 2024 */
 
 
+import static de.srsoftware.tools.MimeType.MIME_JSON;
 import static de.srsoftware.tools.Optionals.nullable;
 import static java.lang.System.Logger.Level.*;
 import static java.net.HttpURLConnection.*;
@@ -32,7 +33,6 @@ public abstract class PathHandler implements HttpHandler {
 	private static final String FORWARDED_HOST   = "x-forwarded-host";
 	public static final String  GET	             = "GET";
 	public static final String  HOST             = "host";
-	public static final String  JSON             = "application/json";
 	public System.Logger LOG	                 = System.getLogger(getClass().getSimpleName());
 	public static final String  PATCH            = "PATCH";
 	public static final String  POST             = "POST";
@@ -366,7 +366,7 @@ public abstract class PathHandler implements HttpHandler {
 		if (o instanceof Map<?, ?> map) o = new JSONObject(map);
 		if (o instanceof HttpError<?> error) return sendContent(ex, error.code(), error.json());
 		if (o instanceof Error<?> error) return serverError(ex, error.json());
-		if (o instanceof JSONObject || o instanceof JSONArray) ex.getResponseHeaders().add(CONTENT_TYPE, JSON);
+		if (o instanceof JSONObject || o instanceof JSONArray) ex.getResponseHeaders().add(CONTENT_TYPE, MIME_JSON);
 		return sendContent(ex, status, o.toString().getBytes(UTF_8));
 	}
 
