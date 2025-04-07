@@ -202,6 +202,15 @@ public abstract class PathHandler implements HttpHandler {
 	}
 
 	/**
+	 * extracts the request content type of a given HttpExchange
+	 * @param ex the exchange whose content type is to be investigated
+	 * @return an Optional containing the content type or empty if no content type was submitted
+	 */
+	public static Optional<String> contentType(HttpExchange ex){
+		return ex.getRequestHeaders().get(CONTENT_TYPE).stream().findAny();
+	}
+
+	/**
 	 * extract the value of an <em>Authorization</em> header, if present
 	 * @param ex the HttpExchange to extract from
 	 * @return an optional, carrying the first value of an <em>Authorization</em> header, of present. empty, otherwise.
