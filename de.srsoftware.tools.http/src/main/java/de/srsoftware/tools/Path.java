@@ -55,6 +55,12 @@ public class Path extends Stack<String> {
 	}
 
 	@Override
+	public synchronized String peek() {
+		if (isEmpty()) return null;
+		return decode(super.peek(), UTF_8);
+	}
+
+	@Override
 	public synchronized String toString() {
 		StringBuilder sb = new StringBuilder();
 		for (int i = size(); i>0; i--) sb.append("/").append(get(i-1));
