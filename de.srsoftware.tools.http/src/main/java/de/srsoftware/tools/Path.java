@@ -15,6 +15,13 @@ public class Path extends Stack<String> {
 		// discourage constructor
 	}
 
+	@Override
+	public synchronized Path clone() {
+		var clone = new Path();
+		clone.addAll(this);
+		return clone;
+	}
+
 	/**
 	 * checks whether this path ends with the given string
 	 * @param s the string to compare to
