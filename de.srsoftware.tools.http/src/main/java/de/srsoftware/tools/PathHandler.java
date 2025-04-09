@@ -272,13 +272,13 @@ public abstract class PathHandler implements HttpHandler {
 	 * @param ex the HttpExchange to prompt
 	 * @return the set of languages passed via header
 	 */
-	public static Set<String> languages(HttpExchange ex) {
+	public static List<String> languages(HttpExchange ex) {
 		return getHeader(ex, "Accept-Language")
 			.map(s -> s.split(","))
 			.stream()
 			.flatMap(Arrays::stream)
 			.filter(not(String::isBlank))
-			.collect(Collectors.toSet());
+			.toList();
 	}
 
 	/**
