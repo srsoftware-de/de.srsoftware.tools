@@ -1,8 +1,8 @@
 description = "SRSoftware Tools : Web"
 
 dependencies {
+    implementation(project(":de.srsoftware.tools.container"))
     implementation(project(":de.srsoftware.tools.optionals"))
-    implementation(project(":de.srsoftware.tools.result"))
     implementation(project(":de.srsoftware.tools.util"))
 }
 

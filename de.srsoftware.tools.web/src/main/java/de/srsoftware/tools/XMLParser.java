@@ -4,9 +4,9 @@ package de.srsoftware.tools;
 import static java.lang.Character.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-import de.srsoftware.tools.result.Error;
-import de.srsoftware.tools.result.Payload;
-import de.srsoftware.tools.result.Result;
+import de.srsoftware.tools.container.Container;
+import de.srsoftware.tools.container.Error;
+import de.srsoftware.tools.container.Payload;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ public class XMLParser {
 	 * @param input the input stream to read from
 	 * @return Payload&lt;Tag&gt; if stream is read successfull and contains xml, Error otherwise
 	 */
-	public static Result<Tag> parse(InputStream input) {
+	public static Container<Tag> parse(InputStream input) {
 		try {
 			var result = parse(new PushbackReader(new InputStreamReader(input)));
 			return result.isEmpty() ? Error.error("Failed to parse content") : Payload.of(result.getFirst());

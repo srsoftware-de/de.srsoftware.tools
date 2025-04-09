@@ -3,7 +3,7 @@ package de.srsoftware.tools.sandbox;
 
 import de.srsoftware.tools.Tag;
 import de.srsoftware.tools.XMLParser;
-import de.srsoftware.tools.result.Payload;
+import de.srsoftware.tools.container.Payload;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;

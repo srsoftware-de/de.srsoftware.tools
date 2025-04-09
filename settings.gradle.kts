@@ -1,4 +1,5 @@
 rootProject.name = "de.srsoftware.tools"
+include("de.srsoftware.tools.container")
 include("de.srsoftware.tools.http")
 include("de.srsoftware.tools.jdbc")
 include("de.srsoftware.tools.logging")
@@ -7,6 +8,5 @@ include("de.srsoftware.tools.optionals")
 include("de.srsoftware.tools.plugin")
 include("de.srsoftware.tools.util")
 include("de.srsoftware.tools.web")
-include("de.srsoftware.tools.result")
 include("de.srsoftware.tools.sandbox")
 include("de.srsoftware.tools.slf4j2syslog")

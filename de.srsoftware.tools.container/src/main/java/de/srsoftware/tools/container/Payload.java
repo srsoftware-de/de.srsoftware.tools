@@ -1,7 +1,7 @@
 /* © SRSoftware 2025 */
-package de.srsoftware.tools.result;
+package de.srsoftware.tools.container;
 
-import static de.srsoftware.tools.result.Error.error;
+import static de.srsoftware.tools.container.Error.error;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -12,7 +12,7 @@ import java.util.stream.Stream;
  * A wrapper for results that carry an actual payload
  * @param <P> the type of the expected payload
  */
-public class Payload<P> implements Result<P> {
+public class Payload<P> implements Container<P> {
 	private final P object;
 
 	/**
@@ -29,7 +29,7 @@ public class Payload<P> implements Result<P> {
 	 * @return the wrapped payload object
 	 * @param <P> the type of the payload
 	 */
-	public static <P> Result<P> of(P object) {
+	public static <P> Container<P> of(P object) {
 		if (object == null) return error("Can not create payload of NULL value!");
 		return new Payload<>(object);
 	}
@@ -43,7 +43,7 @@ public class Payload<P> implements Result<P> {
 	}
 
 	@Override
-	public <Mapped> Result<Mapped> map(Function<Result<P>, Result<Mapped>> mapper) {
+	public <Mapped> Container<Mapped> map(Function<Container<P>, Container<Mapped>> mapper) {
 		return mapper.apply(this);
 	}
 
@@ -53,7 +53,17 @@ public class Payload<P> implements Result<P> {
 	}
 
 	@Override
-	public <Inner> Stream<Result<Inner>> stream() {
+	public <Inner> Stream<Inner> stream() throws ClassCastException {
+		if (object instanceof Collection<?> coll) {
+				Collection<Inner> collection = (Collection<Inner>)coll;
+				return collection.stream();
+		}
+		var inner = (Inner)object;
+		return Stream.of(inner);
+	}
+
+	@Override
+	public <Inner> Stream<Container<Inner>> streamContained() {
 		if (object instanceof Collection<?> coll) {
 			try {
 				Collection<Inner> collection = (Collection<Inner>)coll;

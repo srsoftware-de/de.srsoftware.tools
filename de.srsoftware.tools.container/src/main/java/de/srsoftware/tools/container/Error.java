@@ -1,5 +1,5 @@
 /* © SRSoftware 2025 */
-package de.srsoftware.tools.result;
+package de.srsoftware.tools.container;
 
 import static java.util.Optional.empty;
 
@@ -14,7 +14,7 @@ import org.json.JSONObject;
  * It may carry additional data about the cause of the failure
  * @param <None> This result is not expected to carry a payload in the sense of a positive execution result.
  */
-public class Error<None> implements Result<None> {
+public class Error<None> implements Container<None> {
 	private final List<Exception> exceptions = new ArrayList<>();
 	private final Map<String, Object> data   = new HashMap<>();
 	private final String	  message;
@@ -157,7 +157,7 @@ public class Error<None> implements Result<None> {
 	}
 
 	@Override
-	public <Mapped> Result<Mapped> map(Function<Result<None>, Result<Mapped>> mapper) {
+	public <Mapped> Container<Mapped> map(Function<Container<None>, Container<Mapped>> mapper) {
 		return mapper.apply(this);
 	}
 
@@ -176,7 +176,12 @@ public class Error<None> implements Result<None> {
 	}
 
 	@Override
-	public <Inner> Stream<Result<Inner>> stream() {
+	public <Inner> Stream<Inner> stream() {
+		return Stream.empty();
+	}
+
+	@Override
+	public <Inner> Stream<Container<Inner>> streamContained() {
 		return Stream.of(this.transform());
 	}
 

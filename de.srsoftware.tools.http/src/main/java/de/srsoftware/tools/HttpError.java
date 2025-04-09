@@ -1,7 +1,7 @@
 /* © SRSoftware 2025 */
 package de.srsoftware.tools;
 
-import de.srsoftware.tools.result.Error;
+import de.srsoftware.tools.container.Error;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
