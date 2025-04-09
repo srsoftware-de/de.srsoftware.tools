@@ -8,6 +8,7 @@ import static java.lang.System.Logger.Level.*;
 import static java.net.HttpURLConnection.*;
 import static java.net.URLDecoder.decode;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.function.Predicate.not;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -28,7 +29,6 @@ import org.json.JSONObject;
 public abstract class PathHandler implements HttpHandler {
 	public static final String  AUTHORIZATION    = "Authorization";
 	public static final String  CONTENT_TYPE     = "Content-Type";
-	public static final String  DEFAULT_LANGUAGE = "en";
 	public static final String  DELETE           = "DELETE";
 	private static final String FORWARDED_HOST   = "x-forwarded-host";
 	public static final String  GET	             = "GET";
@@ -270,13 +270,15 @@ public abstract class PathHandler implements HttpHandler {
 	/**
 	 * request the Accept-Language header
 	 * @param ex the HttpExchange to prompt
-	 * @return the first language from the Accept-Language header or the default language
+	 * @return the set of languages passed via header
 	 */
-	public static String language(HttpExchange ex) {
-		return getHeader(ex, "Accept-Language")  //
-			.map(s -> Arrays.stream(s.split(",")))
-			.flatMap(Stream::findFirst)
-			.orElse(DEFAULT_LANGUAGE);
+	public static Set<String> languages(HttpExchange ex) {
+		return getHeader(ex, "Accept-Language")
+			.map(s -> s.split(","))
+			.stream()
+			.flatMap(Arrays::stream)
+			.filter(not(String::isBlank))
+			.collect(Collectors.toSet());
 	}
 
 	/**
