@@ -15,6 +15,9 @@ import org.json.JSONObject;
  * @param <None> This result is not expected to carry a payload in the sense of a positive execution result.
  */
 public class Error<None> implements Container<None> {
+	public static final String DATA = "data";
+	public static final String EXCEPTIONS = "exceptions";
+	public static final String MESSAGE = "message";
 	private final List<Exception> exceptions = new ArrayList<>();
 	private final Map<String, Object> data   = new HashMap<>();
 	private final String	  message;
@@ -150,9 +153,9 @@ public class Error<None> implements Container<None> {
 	 * @return the json object describing the error.
 	 */
 	public JSONObject json() {
-		var json = new JSONObject(Map.of("message", message));
-		if (!exceptions.isEmpty()) json.put("exceptions", exceptions);
-		if (!data.isEmpty()) json.put("data", data);
+		var json = new JSONObject(Map.of(MESSAGE, message));
+		if (!exceptions.isEmpty()) json.put(EXCEPTIONS, exceptions);
+		if (!data.isEmpty()) json.put(DATA, data);
 		return json;
 	}
 
