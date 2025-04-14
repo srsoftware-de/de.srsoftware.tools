@@ -297,7 +297,7 @@ public abstract class PathHandler implements HttpHandler {
 	 * @param ex the HttpExchange to read the entries from
 	 * @return the query parameters as key → value map
 	 */
-	public Map<String, String> queryParam(HttpExchange ex) {
+	public static Map<String, String> queryParam(HttpExchange ex) {
 		return querySplit(ex.getRequestURI().getQuery());
 	}
 
