@@ -159,11 +159,6 @@ public class Error<None> implements Container<None> {
 		return json;
 	}
 
-	@Override
-	public <Mapped> Container<Mapped> map(Function<Container<None>, Container<Mapped>> mapper) {
-		return mapper.apply(this);
-	}
-
 	/**
 	 * return the message encapsulated in this error object
 	 * @return the message string
@@ -194,6 +189,18 @@ public class Error<None> implements Container<None> {
 		for (var ex : exceptions) sb.append("\n").append(ex.getMessage());
 		return sb.toString();
 	}
+
+
+	/**
+	 * map an error to another object
+	 * @param mapper the mapper function
+	 * @return the object returned by the mapper function
+	 * @param <T>
+	 */
+	public <T> T then(Function<Error<None>, T> mapper) {
+		return mapper.apply(this);
+	}
+
 
 	/**
 	 * create an Error with the same metadata content as this Object, but with different payload type

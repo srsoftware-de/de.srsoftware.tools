@@ -25,9 +25,11 @@ public interface Container<Content> {
 	 * Transform this Result object to another via a mapping function.
 	 * @param mapper a function, that processes results and produces results
 	 * @return the result of the mapping function
-	 * @param <Mapped> the payload type of the result of the mapping function
+	 * @param <T> the result type of the mapping function
 	 */
-	public <Mapped> Container<Mapped> map(Function<Container<Content>, Container<Mapped>> mapper);
+	public default <T> T map(Function<Container<Content>, T> mapper){
+		return mapper.apply(this);
+	}
 
 	/**
 	 * Create an Optional from a Result.

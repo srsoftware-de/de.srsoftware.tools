@@ -10,17 +10,25 @@ import java.util.stream.Stream;
 
 /**
  * A wrapper for results that carry an actual payload
- * @param <P> the type of the expected payload
+ * @param <Content> the type of the expected payload
  */
-public class Payload<P> implements Container<P> {
-	private final P object;
+public class Payload<Content> implements Container<Content> {
+	private final Content object;
 
 	/**
 	 * Wrap a payload as a successful instance of Result
 	 * @param object the payload object
 	 */
-	public Payload(P object) {
+	public Payload(Content object) {
 		this.object = object;
+	}
+
+	/**
+	 * get the payload
+	 * @return the payload object
+	 */
+	public Content get() {
+		return object;
 	}
 
 	/**
@@ -34,21 +42,8 @@ public class Payload<P> implements Container<P> {
 		return new Payload<>(object);
 	}
 
-	/**
-	 * get the payload
-	 * @return the payload object
-	 */
-	public P get() {
-		return object;
-	}
-
 	@Override
-	public <Mapped> Container<Mapped> map(Function<Container<P>, Container<Mapped>> mapper) {
-		return mapper.apply(this);
-	}
-
-	@Override
-	public Optional<P> optional() {
+	public Optional<Content> optional() {
 		return Optional.ofNullable(object);
 	}
 
@@ -78,6 +73,16 @@ public class Payload<P> implements Container<P> {
 		} catch (ClassCastException cce) {
 			return Stream.of(error(cce, "Failed to cast %s", object.getClass().getSimpleName()));
 		}
+	}
+
+	/**
+	 * map a payload to another object
+	 * @param mapper the mapper function
+	 * @return the object returned by the mapper function
+	 * @param <T>
+	 */
+	public <T> T then(Function<Payload<Content>, T> mapper) {
+		return mapper.apply(this);
 	}
 
 	@Override
