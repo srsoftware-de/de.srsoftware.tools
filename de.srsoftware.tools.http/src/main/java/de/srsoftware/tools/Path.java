@@ -71,6 +71,6 @@ public class Path extends Stack<String> {
 	public synchronized String toString() {
 		StringBuilder sb = new StringBuilder();
 		for (int i = size(); i>0; i--) sb.append("/").append(get(i-1));
-		return sb.isEmpty() ? "" : sb.substring(1);
+		return sb.isEmpty() ? "/" : sb.substring(1);
 	}
 }
