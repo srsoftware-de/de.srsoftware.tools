@@ -114,7 +114,6 @@ public class JarWatchdog extends Thread {
 			// We need to NOT CLOSE the loader, as we may wish to load resources from that jar later!
 			//noinspection resource
 			var loader = new URLClassLoader(new URL[] {jarFile.toURI().toURL()});
-			LOGGER.log(WARNING,"loader for {0}: {1}",jarFile,loader.toString());
 			var enumeration = jar.entries();
 			while (enumeration.hasMoreElements()) {
 				var entry = enumeration.nextElement();
