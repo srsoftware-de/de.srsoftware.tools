@@ -15,8 +15,11 @@ import org.json.JSONObject;
  * @param <None> This result is not expected to carry a payload in the sense of a positive execution result.
  */
 public class Error<None> implements Container<None> {
+	/** data **/
 	public static final String DATA = "data";
+	/** exceptions **/
 	public static final String EXCEPTIONS = "exceptions";
+	/** message **/
 	public static final String MESSAGE = "message";
 	private final List<Exception> exceptions = new ArrayList<>();
 	private final Map<String, Object> data   = new HashMap<>();
@@ -195,7 +198,7 @@ public class Error<None> implements Container<None> {
 	 * map an error to another object
 	 * @param mapper the mapper function
 	 * @return the object returned by the mapper function
-	 * @param <T>
+	 * @param <T> type of the expected result
 	 */
 	public <T> T then(Function<Error<None>, T> mapper) {
 		return mapper.apply(this);

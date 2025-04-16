@@ -79,7 +79,7 @@ public class Payload<Content> implements Container<Content> {
 	 * map a payload to another object
 	 * @param mapper the mapper function
 	 * @return the object returned by the mapper function
-	 * @param <T>
+	 * @param <T> type of the expected result
 	 */
 	public <T> T then(Function<Payload<Content>, T> mapper) {
 		return mapper.apply(this);
