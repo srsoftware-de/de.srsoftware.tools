@@ -17,6 +17,7 @@ import com.sun.net.httpserver.HttpsExchange;
 import de.srsoftware.tools.container.Error;
 import de.srsoftware.tools.container.Payload;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -27,15 +28,17 @@ import org.json.JSONObject;
  * implementation of HttpHandler that attaches to a given path
  */
 public abstract class PathHandler implements HttpHandler {
-	public static final String  AUTHORIZATION    = "Authorization";
-	public static final String  CONTENT_TYPE     = "Content-Type";
-	public static final String  DELETE           = "DELETE";
-	private static final String FORWARDED_HOST   = "x-forwarded-host";
-	public static final String  GET	             = "GET";
-	public static final String  HOST             = "host";
-	public System.Logger LOG	                 = System.getLogger(getClass().getSimpleName());
-	public static final String  PATCH            = "PATCH";
-	public static final String  POST             = "POST";
+	/** "Authorization" **/   public static final String AUTHORIZATION    = "Authorization";
+	/** "Content-Type" **/    public static final String CONTENT_TYPE     = "Content-Type";
+	/** DELETE **/            public static final String DELETE           = "DELETE";
+	/** x-forwarded-host **/  public static final String FORWARDED_HOST   = "x-forwarded-host";
+	/** X-forwarded-proto **/ public static final String FORWARDED_PROTO  = "X-forwarded-proto";
+	/** GET **/               public static final String GET	          = "GET";
+	/** host **/              public static final String HOST             = "host";
+	/** PATCH **/             public static final String PATCH            = "PATCH";
+	/** POST **/              public static final String POST             = "POST";
+
+	/** System Logger **/    public System.Logger LOG	                 = System.getLogger(getClass().getSimpleName());
 
 	private String[] paths;
 
@@ -172,6 +175,15 @@ public abstract class PathHandler implements HttpHandler {
  		ex.getResponseBody().close();
 	}
 
+	/**
+	 * Default implementation, defaulting to notFound(ex).
+	 * You can override this method to implement own httpRequest method handlers
+	 * @param method method from the request header
+	 * @param path path from the request header
+	 * @param ex http exchange to process
+	 * @return a boolean that is ignored
+	 * @throws IOException if the transmission fails
+	 */
 	public boolean handleMethod(String method,Path path, HttpExchange ex) throws IOException {
 		return notFound(ex);
 	}
@@ -219,6 +231,11 @@ public abstract class PathHandler implements HttpHandler {
 		return getHeader(ex, AUTHORIZATION);
 	}
 
+	/**
+	 * retrieve and decode a basic auth header
+	 * @param ex the HttpExchange to process
+	 * @return an optional containing the basic auth data, of such a header is present. empty otherwise.
+	 */
 	public static Optional<BasicAuth> getBasicAuth(HttpExchange ex) {
 		return getAuthToken(ex)
 			.filter(token -> token.startsWith("Basic "))  //
@@ -249,11 +266,16 @@ public abstract class PathHandler implements HttpHandler {
 		return nullable(ex.getRequestHeaders().get(key)).map(List::stream).flatMap(Stream::findFirst);
 	}
 
+	/**
+	 * get the hostname requested by the client from the host header or – if set – the hostname submitted in the x-forwarded-host header
+	 * @param ex the HttpExchange to process
+	 * @return the host url, e.g. https://example.com
+	 */
 	public static String hostname(HttpExchange ex) {
 		var headers = ex.getRequestHeaders();
 		var host    = headers.getFirst(FORWARDED_HOST);
 		if (host == null) host = headers.getFirst(HOST);
-		var proto = nullable(headers.getFirst("X-forwarded-proto")).orElseGet(() -> ex instanceof HttpsExchange ? "https" : "http");
+		var proto = nullable(headers.getFirst(FORWARDED_PROTO)).orElseGet(() -> ex instanceof HttpsExchange ? "https" : "http");
 		return host == null ? null : proto + "://" + host;
 	}
 
@@ -373,10 +395,24 @@ public abstract class PathHandler implements HttpHandler {
 	}
 
 
+	/**
+	 * send an array of bytes
+	 * @param ex the http exchange to respond to
+	 * @param bytes the payload to send
+	 * @return a boolean that is ignored
+	 * @throws IOException if writing to the HttpExchange object fails
+	 */
 	public boolean sendContent(HttpExchange ex, byte[] bytes) throws IOException {
 		return sendContent(ex, HTTP_OK, bytes);
 	}
 
+	/**
+	 * send an object, thereby trying to guess the correct mime and transmission type.
+	 * @param ex the http exchange to respond to
+	 * @param o the payload to send
+	 * @return a boolean that is ignored
+	 * @throws IOException if writing to the HttpExchange object fails
+	 */
 	public boolean sendContent(HttpExchange ex, Object o) throws IOException {
 		return sendContent(ex, HTTP_OK, o);
 	}
@@ -400,5 +436,22 @@ public abstract class PathHandler implements HttpHandler {
 	 */
 	public static String url(HttpExchange ex) {
 		return hostname(ex) + ex.getRequestURI();
+	}
+
+	/**
+	 * Decode a form-url-encoded body. Arrays are not processed with the current implementation.
+	 * @param body the url-encoded string
+	 * @return a map with the contents of the body.
+	 */
+	public static Map<String,String> urlDecode(String body) {
+		var map = new HashMap<String,String>();
+		var parts = body.split("&");
+		for (var part : parts){
+			var entry = part.split("=",2);
+			var key = entry[0];
+			var val  = entry.length>1 ? entry[1] : null;
+			map.put(URLDecoder.decode(key, UTF_8),URLDecoder.decode(val, UTF_8));
+		}
+		return map;
 	}
 }
