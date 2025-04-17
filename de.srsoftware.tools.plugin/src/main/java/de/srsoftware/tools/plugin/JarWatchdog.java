@@ -110,6 +110,7 @@ public class JarWatchdog extends Thread {
 			return Stream.of();
 		}
 		List<Class<?>> classes = new ArrayList<>();
+		String className = "unknown";
 		try (var jar = new JarFile(jarFile)) {
 			// We need to NOT CLOSE the loader, as we may wish to load resources from that jar later!
 			//noinspection resource
@@ -119,7 +120,7 @@ public class JarWatchdog extends Thread {
 				var entry = enumeration.nextElement();
 				if (!silent) LOGGER.log(DEBUG, "Found entry: {0}", entry);
 				if (entry.isDirectory() || !entry.getName().endsWith(".class")) continue;
-				String className = entry.getName().substring(0, entry.getName().length() - 6).replace('/', '.');
+				className = entry.getName().substring(0, entry.getName().length() - 6).replace('/', '.');
 				if (!silent) LOGGER.log(INFO, "Trying to load {0}…", className);
 				Class<?> c = loader.loadClass(className);
 				if (!silent) LOGGER.log(INFO, "{0} loaded.", c.getSimpleName());
@@ -130,7 +131,7 @@ public class JarWatchdog extends Thread {
 			return classes.stream();
 		} catch (Throwable e) {
 			if (!silent) {
-				LOGGER.log(WARNING, "Failed to load classes from jar!");
+				LOGGER.log(WARNING, "Failed to load classes from jar! ({0})",className,e);
 				warned.add(filename);
 			}
 			return Stream.of();
