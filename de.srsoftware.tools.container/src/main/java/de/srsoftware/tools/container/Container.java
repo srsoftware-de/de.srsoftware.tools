@@ -57,7 +57,7 @@ public interface Container<Content> {
 	 * @return the transformed error
 	 * @param <T> the payload type of the returned error
 	 */
-	public static <T> Container<T> transform(Container<?> res) {
+	public static <T> Error<T> transform(Container<?> res) {
 		return res instanceof Error<?> err ? err.transform() : error("Invalid parameter: %s", res.getClass().getSimpleName());
 	}
 }
