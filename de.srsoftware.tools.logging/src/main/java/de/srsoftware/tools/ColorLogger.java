@@ -111,6 +111,7 @@ public class ColorLogger implements System.Logger {
 		if (isLoggable(level)) try {
 			if (params != null && params.length >0) format = format(format,params);
 			System.out.println(colorize(format, level.getSeverity()));
+			if (params != null && params.length>0 && params[params.length-1] instanceof Exception e) e.printStackTrace(System.err);
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
 		}
