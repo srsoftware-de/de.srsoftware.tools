@@ -171,6 +171,7 @@ public class Query {
 	 * This class can be used to create SELECT queries
 	 */
 	public static class SelectQuery {
+		public static final String ALL = "*";
 		private final List<String> sort = new ArrayList<>();
 		private final String[]	fields;
 		private final StringBuilder	tables = new StringBuilder();
