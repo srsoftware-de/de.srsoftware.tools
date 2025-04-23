@@ -222,9 +222,9 @@ public class Query {
 		public ResultSet exec(Connection conn) throws SQLException {
 			var values = new ArrayList<>();
 			var sql    = compile(values);
+			LOG.log(DEBUG, this::toString);
 			var stmt   = conn.prepareStatement(sql);
 			for (int i = 0; i < values.size(); i++) stmt.setObject(i + 1, values.get(i));
-			LOG.log(DEBUG, this::toString);
 			return stmt.executeQuery();
 		}
 
