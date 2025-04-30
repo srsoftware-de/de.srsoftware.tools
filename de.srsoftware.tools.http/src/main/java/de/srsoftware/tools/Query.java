@@ -3,6 +3,7 @@ package de.srsoftware.tools;
 
 import static java.lang.System.Logger.Level.INFO;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Optional.empty;
 
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -27,8 +28,9 @@ public class Query {
 	 * @return a map of the decoded data
 	 */
 	public static Map<String,Object> decode(String query){
-		var parts = query.split("&");
 		var map = new LinkedHashMap<String,Object>();
+		if (query == null) return map;
+		var parts = query.split("&");
 		for (var part : parts){
 			var keyVal = part.split("=",2);
 			var key = URLDecoder.decode(keyVal[0], UTF_8);
@@ -75,7 +77,8 @@ public class Query {
 	 * @param query the data to serialize
 	 * @return the serialized, URL-safe representation of the input data
 	 */
-	public static String encode(Map<String,?> query){
+	public static Optional<String> encode(Map<String,?> query){
+		if (query == null) return empty();
 		var sb = new StringBuilder();
 		for (var entry : query.entrySet()){
 			if (!sb.isEmpty()) sb.append("&");
@@ -94,7 +97,7 @@ public class Query {
 				sb.append(pathList);
 			}
 		}
-		return sb.toString();
+		return Optional.of(sb.toString());
 	}
 
 	private static List<String> traverse(Map<?,?> map){

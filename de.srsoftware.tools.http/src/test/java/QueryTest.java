@@ -23,7 +23,7 @@ public class QueryTest {
 		query.put("first","1");
 		query.put("second","two");
 		query.put("third","three");
-		var string = encode(query);
+		var string = encode(query).orElse(null);
 		var expected = "first=1&second=two&third=three";
 		assertEquals(expected,string);
 	}
@@ -33,7 +33,7 @@ public class QueryTest {
 		var query = new LinkedHashMap<String,Object>();
 		query.put("first","primitive");
 		query.put("second",List.of("A","B","C"));
-		var string = encode(query);
+		var string = encode(query).orElse(null);
 		var expected = "first=primitive&second=A&second=B&second=C";
 		assertEquals(expected,string);
 	}
@@ -53,7 +53,7 @@ public class QueryTest {
 
 		query.put("first","primitive");
 		query.put("second",second);
-		var string = encode(query);
+		var string = encode(query).orElse(null);
 		var expected = "first=primitive&second[A][A]=AA&second[A][B]=AB&second[B][A]=BA&second[B][B]=BB";
 		assertEquals(expected,string);
 	}
