@@ -1,3 +1,4 @@
+/* © SRSoftware 2025 */
 package de.srsoftware.tools;
 
 import java.util.Map;
