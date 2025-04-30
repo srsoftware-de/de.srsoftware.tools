@@ -15,6 +15,12 @@ spotless {
     }
 }
 
+afterEvaluate {
+    tasks.named("build") {
+        dependsOn("spotlessApply")
+    }
+}
+
 subprojects {
     group = "de.srsoftware"
 

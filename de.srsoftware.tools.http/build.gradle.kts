@@ -6,6 +6,7 @@ dependencies{
     implementation(project(":de.srsoftware.tools.optionals"))
     implementation(project(":de.srsoftware.tools.mime"))
     implementation(project(":de.srsoftware.tools.util"))
+    testImplementation(project(":de.srsoftware.tools.logging"))
 }
 
 plugins {
@@ -16,7 +17,7 @@ object Meta {
     val COMPONENT_TYPE = "java" // "java" or "versionCatalog"
     val GROUP = "de.srsoftware"
     val ARTIFACT_ID = "tools.http"
-    val VERSION = "4.0.3"
+    val VERSION = "5.0.0"
     val PUBLISHING_TYPE = "AUTOMATIC" // USER_MANAGED or AUTOMATIC
     val SHA_ALGORITHMS = listOf("SHA-256", "SHA-512") // sha256 and sha512 are supported but not mandatory. Only sha1 is mandatory but it is supported by default.
     val DESC = "SRSoftware Tools : HTTP utils"

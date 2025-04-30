@@ -6,7 +6,6 @@ import static de.srsoftware.tools.MimeType.MIME_JSON;
 import static de.srsoftware.tools.Optionals.nullable;
 import static java.lang.System.Logger.Level.*;
 import static java.net.HttpURLConnection.*;
-import static java.net.URLDecoder.decode;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.function.Predicate.not;
 
@@ -19,7 +18,6 @@ import de.srsoftware.tools.container.Payload;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -188,6 +186,11 @@ public abstract class PathHandler implements HttpHandler {
 		return notFound(ex);
 	}
 
+	/**
+	 * convert the request URI to a path object
+	 * @param ex the http exchange to process
+	 * @return the path object
+	 */
 	public Path relativePath(HttpExchange ex) {
 		var requestPath = ex.getRequestURI().toString();
 		for (var path : paths){
@@ -319,22 +322,8 @@ public abstract class PathHandler implements HttpHandler {
 	 * @param ex the HttpExchange to read the entries from
 	 * @return the query parameters as key → value map
 	 */
-	public static Map<String, String> queryParam(HttpExchange ex) {
-		return querySplit(ex.getRequestURI().getQuery());
-	}
-
-	/**
-	 * map the query from the string to a map
-	 * @param query the query string
-	 * @return the query parameters as key → value map
-	 */
-	public static Map<String,String> querySplit(String query){
-		return nullable(query).stream()
-				.flatMap(q -> Arrays.stream(q.split("&")))
-				.map(s -> s.split("=", 2))
-				.filter(arr -> arr.length == 2)
-				.collect(Collectors.toMap(arr -> decode(arr[0],UTF_8), arr -> decode(arr[1],UTF_8)));
-
+	public static Map<String, Object> queryParam(HttpExchange ex) {
+		return Query.decode(ex.getRequestURI().getQuery());
 	}
 
 	/**

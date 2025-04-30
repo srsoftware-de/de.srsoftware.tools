@@ -197,6 +197,16 @@ public class PathTest {
 		assertEquals("test",path.pop());
 		assertEquals("a",clone.pop());
 		assertEquals("test",clone.pop());
+	}
 
+	@Test
+	void testTrailingSlash() throws URISyntaxException {
+		var ex = new ExchangeMock(new URI("this/is/a/test/"));
+		var path = mockHandler().relativePath(ex);
+		assertEquals("this",path.pop());
+		assertEquals("is",path.pop());
+		assertEquals("a",path.pop());
+		assertEquals("test",path.pop());
+		assertTrue(path.isEmpty());
 	}
 }
