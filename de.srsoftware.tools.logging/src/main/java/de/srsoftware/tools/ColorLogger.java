@@ -3,6 +3,7 @@ package de.srsoftware.tools;
 
 import static de.srsoftware.tools.ConsoleColors.*;
 import static java.lang.System.Logger.Level.*;
+import static java.lang.Thread.currentThread;
 
 import java.text.DateFormat;
 import java.text.MessageFormat;
@@ -18,7 +19,7 @@ public class ColorLogger implements System.Logger {
 	private static final DateFormat TIME	    = new SimpleDateFormat("hh:mm:ss.SSS");
 	private static final DateFormat DATE	    = new SimpleDateFormat("yyyy-MM-dd");
 	private static int        rootLevel = INFO.getSeverity();
-	private static HashMap<String,Integer> instanceLevels = new HashMap<>();
+	private static HashMap<String, Integer> instanceLevels = new HashMap<>();
 	private static String     lastDate  = null;
 	private final String      name;
 
@@ -55,8 +56,10 @@ public class ColorLogger implements System.Logger {
 			lastDate = day;
 			sb.append(WHITE).append(day).append("\n");
 		}
-		return sb.append(WHITE).append(TIME.format(date))
-				.append(" [").append(name).append("]: ")
+
+		var marker = markerFor(currentThread().threadId());
+		return sb.append(WHITE).append(TIME.format(date)).append(marker)
+				.append(WHITE).append(" [").append(name).append("]: ")
 				.append(color).append(message).append(RESET).toString();
 	}
 
@@ -115,6 +118,46 @@ public class ColorLogger implements System.Logger {
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
 		}
+	}
+
+	private synchronized String markerFor(long thread) {
+		var color1 = switch ((int) ((thread / 16) % 16)){
+			case 0 -> BLACK;
+			case 1 -> RED;
+			case 2 -> GREEN;
+			case 3 -> BLUE;
+			case 4 -> YELLOW;
+			case 5 -> PURPLE;
+			case 6 -> CYAN;
+			case 7 -> WHITE;
+			case 8 -> BLACK_BRIGHT;
+			case 9 -> RED_BRIGHT;
+			case 10 -> GREEN_BRIGHT;
+			case 11 -> BLUE_BRIGHT;
+			case 12 -> YELLOW_BRIGHT;
+			case 13 -> PURPLE_BRIGHT;
+			case 14 -> CYAN_BRIGHT;
+			default -> WHITE_BRIGHT;
+		};
+		var color2 = switch ((int) (thread % 16)){
+			case 0 -> BLACK;
+			case 1 -> RED;
+			case 2 -> GREEN;
+			case 3 -> BLUE;
+			case 4 -> YELLOW;
+			case 5 -> PURPLE;
+			case 6 -> CYAN;
+			case 7 -> WHITE;
+			case 8 -> BLACK_BRIGHT;
+			case 9 -> RED_BRIGHT;
+			case 10 -> GREEN_BRIGHT;
+			case 11 -> BLUE_BRIGHT;
+			case 12 -> YELLOW_BRIGHT;
+			case 13 -> PURPLE_BRIGHT;
+			case 14 -> CYAN_BRIGHT;
+			default -> WHITE_BRIGHT;
+		};
+		return " "+color1+"█"+color2+"█";
 	}
 
 	/**

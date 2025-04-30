@@ -48,7 +48,7 @@ public class LoggingTest {
 		System.out.flush();
 		var content = bos.toString(UTF_8);
 		bos.close();
-		assertTrue(content.contains("["+this.getClass().getSimpleName()+"]:"));
+		assertTrue(content.contains(" ["+this.getClass().getSimpleName()+"]:"));
 		content = content.split(": ")[1];
 		assertEquals(RED+"Test"+RESET+"\n",content);
 	}
@@ -61,7 +61,7 @@ public class LoggingTest {
 		System.out.flush();
 		var content = bos.toString(UTF_8);
 		bos.close();
-		assertTrue(content.contains("["+this.getClass().getSimpleName()+"]:"));
+		assertTrue(content.contains(" ["+this.getClass().getSimpleName()+"]:"));
 		content = content.split(": ")[1];
 		assertEquals(RED+"A-B"+RESET+"\n",content);
 	}
@@ -74,7 +74,7 @@ public class LoggingTest {
 		System.out.flush();
 		var content = bos.toString(UTF_8);
 		bos.close();
-		assertTrue(content.contains("["+this.getClass().getSimpleName()+"]:"));
+		assertTrue(content.contains(" ["+this.getClass().getSimpleName()+"]:"));
 		content = content.split(": ")[1];
 		assertEquals(RED+"A-B"+RESET+"\n",content);
 	}
