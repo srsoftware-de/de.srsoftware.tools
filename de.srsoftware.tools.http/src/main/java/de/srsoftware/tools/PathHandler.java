@@ -16,7 +16,6 @@ import com.sun.net.httpserver.HttpsExchange;
 import de.srsoftware.tools.container.Error;
 import de.srsoftware.tools.container.Payload;
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.util.*;
 import java.util.stream.Stream;
 import org.json.JSONArray;
@@ -425,22 +424,5 @@ public abstract class PathHandler implements HttpHandler {
 	 */
 	public static String url(HttpExchange ex) {
 		return hostname(ex) + ex.getRequestURI();
-	}
-
-	/**
-	 * Decode a form-url-encoded body. Arrays are not processed with the current implementation.
-	 * @param body the url-encoded string
-	 * @return a map with the contents of the body.
-	 */
-	public static Map<String,String> urlDecode(String body) {
-		var map = new HashMap<String,String>();
-		var parts = body.split("&");
-		for (var part : parts){
-			var entry = part.split("=",2);
-			var key = entry[0];
-			var val  = entry.length>1 ? entry[1] : null;
-			map.put(URLDecoder.decode(key, UTF_8),URLDecoder.decode(val, UTF_8));
-		}
-		return map;
 	}
 }

@@ -4,7 +4,6 @@ package de.srsoftware.tools.container;
 import static java.text.MessageFormat.format;
 import static java.util.Optional.empty;
 
-import java.text.MessageFormat;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
