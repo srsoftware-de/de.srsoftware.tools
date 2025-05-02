@@ -20,11 +20,14 @@ public class QueryTest {
 	@Test
 	public void testEncodeSimple(){
 		var query = new LinkedHashMap<String,Object>();
-		query.put("first","1");
-		query.put("second","two");
-		query.put("third","three");
+		query.put("one",1L);
+		query.put("two",2);
+		query.put("three",3f);
+		query.put("four",4d);
+		query.put("five","5");
+		query.put("six","six");
 		var string = encode(query).orElse(null);
-		var expected = "first=1&second=two&third=three";
+		var expected = "one=1&two=2&three=3.0&four=4.0&five=5&six=six";
 		assertEquals(expected,string);
 	}
 

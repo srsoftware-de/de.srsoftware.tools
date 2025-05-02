@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
  * This class provides method to decode and encode URL query parameters
  */
 public class Query {
-	private static final Pattern ARRAY_PATTERN = Pattern.compile("([^\\[]+)(\\[(.*?)\\])*");
 	private static final System.Logger LOG = System.getLogger(Query.class.getSimpleName());
 
 	private Query(){
@@ -84,6 +83,7 @@ public class Query {
 			if (!sb.isEmpty()) sb.append("&");
 			var key = URLEncoder.encode(entry.getKey(), UTF_8);
 			var val = entry.getValue();
+			if (val instanceof Number num) sb.append(key).append("=").append(num);
 			if (val instanceof String stringValue) {
 				stringValue = URLEncoder.encode(stringValue, UTF_8);
 				sb.append(key).append("=").append(stringValue);
