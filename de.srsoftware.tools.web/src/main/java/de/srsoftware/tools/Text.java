@@ -15,7 +15,7 @@ public class Text extends Tag {
 	 * @param content the content to store in this tag
 	 */
 	public Text(String content) {
-		super(null);
+		super((String)null);
 		this.content = content;
 	}
 

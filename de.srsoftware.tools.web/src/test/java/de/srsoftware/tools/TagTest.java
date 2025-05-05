@@ -1,6 +1,7 @@
 /* © SRSoftware 2025 */
 package de.srsoftware.tools;
 
+import static de.srsoftware.tools.NameConversion.*;
 import static de.srsoftware.tools.TagFilter.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -139,5 +140,32 @@ public class TagTest {
 		assertEquals("p", p.type());
 		var text = p.strip().trim();
 		assertEquals("Some Text with emphasis.", text);
+	}
+
+	private class NameTest_Class extends Tag{
+		public NameTest_Class(){
+			this(NO_CONVERSION);
+		}
+		public NameTest_Class(NameConversion nameConversion) {
+			super(nameConversion);
+		}
+	}
+
+	@Test
+	public void testNaming(){
+		var dummy = new NameTest_Class();
+		assertEquals("<NameTest_Class />",dummy.toString());
+
+		dummy = new NameTest_Class(LOWER_CASE);
+		assertEquals("<nametest_class />",dummy.toString());
+
+		dummy = new NameTest_Class(UPPER_CASE);
+		assertEquals("<NAMETEST_CLASS />",dummy.toString());
+
+		dummy = new NameTest_Class(CAMEL_CASE);
+		assertEquals("<NameTestClass />",dummy.toString());
+
+		dummy = new NameTest_Class(SNAKE_CASE);
+		assertEquals("<name_test_class />",dummy.toString());
 	}
 }

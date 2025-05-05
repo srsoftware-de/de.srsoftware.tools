@@ -2,7 +2,10 @@
 package de.srsoftware.tools;
 
 
+import static de.srsoftware.tools.NameConversion.NO_CONVERSION;
 import static de.srsoftware.tools.Optionals.nullable;
+import static de.srsoftware.tools.Strings.camelCase;
+import static de.srsoftware.tools.Strings.snakeCase;
 import static java.util.Optional.empty;
 
 import java.util.*;
@@ -37,6 +40,22 @@ public class Tag extends TreeMap<String, String> {
 	 */
 	public Tag(String type) {
 		this.type = type;
+	}
+
+	/**
+	 * Create a new tag. The tag`s class will match the name of the Tag class converted as specified.
+	 * @param nameConversion specifies, how to convert the class name
+	 */
+	public Tag(NameConversion nameConversion){
+		super();
+		var name = getClass().getSimpleName();
+		type = switch (nameConversion){
+			case CAMEL_CASE -> camelCase(name);
+			case LOWER_CASE -> name.toLowerCase();
+			case NO_CONVERSION -> name;
+			case SNAKE_CASE -> snakeCase(name);
+			case UPPER_CASE -> name.toUpperCase();
+		};
 	}
 
 	/**
@@ -144,6 +163,12 @@ public class Tag extends TreeMap<String, String> {
 		return (T)this;
 	}
 
+	/**
+	 * add a text tag with the given content as child
+	 * @param content the content of the tag
+	 * @return the tag itself
+	 * @param <T> the type of the tag
+	 */
 	@SuppressWarnings("unchecked")
 	public <T extends Tag> T content(String content) {
 		add(new Text(content));
@@ -183,10 +208,22 @@ public class Tag extends TreeMap<String, String> {
 		return sb.toString();
 	}
 
+	/**
+	 * set the id attribute of this tag
+	 * @param id the value to use
+	 * @return the altered tag
+	 * @param <T> the type of the tag
+	 */
 	public <T extends Tag> T id(String id) {
 		return attr(ID, id);
 	}
 
+	/**
+	 * create a string representation of this tag (and its children) including the tags children, append to the string builder
+	 * @param sb the string builder to append to
+	 * @param indent the indentation for the sub-ordered levels
+	 * @param currentIndentation the indentation of this level
+	 */
 	protected void indent(StringBuilder sb, int indent, int currentIndentation) {
 		boolean textType = type == null || type.isBlank();
 		if (!textType) {
@@ -228,6 +265,11 @@ public class Tag extends TreeMap<String, String> {
 		return this.type != null && this.type.equalsIgnoreCase(type);
 	}
 
+	/**
+	 * create a tag of a given type
+	 * @param type the type to use as tag type
+	 * @return the created tag
+	 */
 	public static Tag of(String type) {
 		return new Tag(type);
 	}
@@ -273,6 +315,13 @@ public class Tag extends TreeMap<String, String> {
 		return nullable(parent).map(p -> p.removeChild(this));
 	}
 
+	/**
+	 * set width and size attribute of this tag
+	 * @param width the width
+	 * @param height the height
+	 * @return the altered tag
+	 * @param <T> the type of the returned tag
+	 */
 	public <T extends Tag> T size(int width, int height) {
 		return attr("width", width).attr("height", height);
 	}
