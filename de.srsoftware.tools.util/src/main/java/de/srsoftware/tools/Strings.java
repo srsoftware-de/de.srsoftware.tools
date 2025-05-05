@@ -31,7 +31,7 @@ public class Strings {
 		var upper = false;
 		for (int i = 0; i < text.length(); i++) {
 			char c = text.charAt(i);
-			if (c == ' ') {
+			if (c == ' '||c == '_') {
 				upper = true;
 			} else {
 				sb.append(upper ? Character.toUpperCase(c) : c);
@@ -86,6 +86,21 @@ public class Strings {
 		return sb.toString();
 	}
 
+	/**
+	 * convert a string to nake case: every uppercase character is converted to lowercase and prefixed by an underscore. Spaces are also converted to underscores.
+	 * @param text the text to be converted
+	 * @return the snake case version of the provided text
+	 */
+	public static String snakeCase(String text){
+		var sb = new StringBuilder();
+		for (int i=0; i<text.length();i++){
+			char c = text.charAt(i);
+			if (c == ' ') c = '_';
+			if (Character.isUpperCase(c) && i>0 && sb.charAt(sb.length()-1)!='_') sb.append("_");
+			if (c != '_' || sb.charAt(sb.length()-1)!=c ) sb.append(Character.toLowerCase(c));
+		}
+		return sb.toString();
+	}
 
 	/**
 	 * shorthand to create a new UUID
