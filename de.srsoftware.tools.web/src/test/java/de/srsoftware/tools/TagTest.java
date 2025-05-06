@@ -168,4 +168,20 @@ public class TagTest {
 		dummy = new NameTest_Class(SNAKE_CASE);
 		assertEquals("<name_test_class />",dummy.toString());
 	}
+
+	@Test
+	public void testAddInsert(){
+		var parent = Tag.of("parent");
+		parent.add(Tag.of("first"));
+		parent.add(Tag.of("third"));
+		var second = Tag.of("second");
+		parent.add(second);
+		parent.add(Tag.of("fourth"));
+
+		assertEquals("<parent><first /><third /><second /><fourth /></parent>",parent.toString());
+		parent.add(second);
+		assertEquals("<parent><first /><third /><fourth /><second /></parent>",parent.toString());
+		parent.add(1,second);
+		assertEquals("<parent><first /><second /><third /><fourth /></parent>",parent.toString());
+	}
 }

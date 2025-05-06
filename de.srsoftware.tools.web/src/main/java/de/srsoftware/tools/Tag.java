@@ -2,7 +2,6 @@
 package de.srsoftware.tools;
 
 
-import static de.srsoftware.tools.NameConversion.NO_CONVERSION;
 import static de.srsoftware.tools.Optionals.nullable;
 import static de.srsoftware.tools.Strings.camelCase;
 import static de.srsoftware.tools.Strings.snakeCase;
@@ -68,6 +67,15 @@ public class Tag extends TreeMap<String, String> {
 		return addAll(Arrays.asList(newChildren));
 	}
 
+	public Tag add(int index, Tag child){
+		if (child != null) {
+			if (child.parent != null) child.parent.removeChild(child);
+			child.parent = this;
+			children.add(index, child);
+		}
+		return this;
+	}
+
 	/**
 	 * Add children to the tag. The parent of the children will be set to this tag, too.
 	 * If a child had another parent before, this relationship will be terminated.
@@ -83,6 +91,15 @@ public class Tag extends TreeMap<String, String> {
 			}
 		}
 		return this;
+	}
+
+	/**
+	 * add a child tag at the head of the list
+	 * @param child the child tag to add
+	 * @return this tag
+	 */
+	public Tag addFirst(Tag child){
+		return add(0,child);
 	}
 
 	/**
@@ -173,6 +190,11 @@ public class Tag extends TreeMap<String, String> {
 	public <T extends Tag> T content(String content) {
 		add(new Text(content));
 		return (T)this;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		return o == this;
 	}
 
 	/**
@@ -294,6 +316,15 @@ public class Tag extends TreeMap<String, String> {
 	}
 
 	/**
+	 * Remove a tag from its parent tag.
+	 * If the tag has no parent, noting changes.
+	 * @return the parent tag, if it was present
+	 */
+	public Optional<Tag> remove() {
+		return nullable(parent).map(p -> p.removeChild(this));
+	}
+
+	/**
 	 * Removes a certain child tag
 	 * @param child the tag to be removed from the list of children
 	 * @return this tag
@@ -307,15 +338,6 @@ public class Tag extends TreeMap<String, String> {
 	}
 
 	/**
-	 * Remove a tag from its parent tag.
-	 * If the tag has no parent, noting changes.
-	 * @return the parent tag, if it was present
-	 */
-	public Optional<Tag> remove() {
-		return nullable(parent).map(p -> p.removeChild(this));
-	}
-
-	/**
 	 * set width and size attribute of this tag
 	 * @param width the width
 	 * @param height the height
@@ -324,6 +346,16 @@ public class Tag extends TreeMap<String, String> {
 	 */
 	public <T extends Tag> T size(int width, int height) {
 		return attr("width", width).attr("height", height);
+	}
+
+	/**
+	 * Return the text content of this tag and its descendants, i.e. the code without the tags.
+	 * @return the combined text
+	 */
+	public String strip() {
+		var sb = new StringBuilder();
+		children.stream().map(Tag::strip).forEach(sb::append);
+		return sb.toString();
 	}
 
 	/**
@@ -344,16 +376,6 @@ public class Tag extends TreeMap<String, String> {
 	 */
 	public <T extends Tag> T title(String title) {
 		return attr(TITLE, title);
-	}
-
-	/**
-	 * Return the text content of this tag and its descendants, i.e. the code without the tags.
-	 * @return the combined text
-	 */
-	public String strip() {
-		var sb = new StringBuilder();
-		children.stream().map(Tag::strip).forEach(sb::append);
-		return sb.toString();
 	}
 
 	@Override
