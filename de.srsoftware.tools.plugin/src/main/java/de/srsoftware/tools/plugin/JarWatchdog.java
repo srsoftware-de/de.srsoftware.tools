@@ -121,7 +121,7 @@ public class JarWatchdog extends Thread {
 				if (!silent) LOGGER.log(DEBUG, "Found entry: {0}", entry);
 				if (entry.isDirectory() || !entry.getName().endsWith(".class")) continue;
 				className = entry.getName().substring(0, entry.getName().length() - 6).replace('/', '.');
-				if (className.equals("module-info")) {
+				if (className.equals("module-info") || className.startsWith("META-INF")) {
 					LOGGER.log(DEBUG,"Skipping {0} from {1}",className,jarFile);
 					continue;
 				}
