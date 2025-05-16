@@ -28,7 +28,7 @@ public class JarWatchdog extends Thread {
 	/**
 	 * create a new instance
 	 */
-	JarWatchdog(){
+	public JarWatchdog(){
 		super();
 	}
 
