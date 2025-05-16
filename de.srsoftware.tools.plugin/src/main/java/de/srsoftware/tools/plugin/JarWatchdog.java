@@ -26,6 +26,13 @@ public class JarWatchdog extends Thread {
 	private final Set<String> warned           = new HashSet<>();
 
 	/**
+	 * create a new instance
+	 */
+	JarWatchdog(){
+		super();
+	}
+
+	/**
 	 * add a directory to the watchdogs watch list
 	 * @param dir the directory to add
 	 * @return the watchdog instance
