@@ -1,14 +1,12 @@
 /* © SRSoftware 2025 */
 package de.srsoftware.tools;
 
-import static java.lang.System.Logger.Level.INFO;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Optional.empty;
 
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.*;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -41,7 +39,6 @@ public class Query {
 
 	@SuppressWarnings("unchecked")
 	private static void insertInto(HashMap<String, Object> map, String key, String value) {
-		LOG.log(INFO,"key = {0}",key);
 		var parts = key.split("\\[|]\\[|]");
 		Map<String, Object> current = map;
 		for (int i = 0; i < parts.length; i++) {
