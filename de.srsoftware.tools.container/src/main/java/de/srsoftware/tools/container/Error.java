@@ -73,7 +73,7 @@ public class Error<None> implements Container<None> {
 	 * @return the created Error object
 	 */
 	public static <T> Error<T> error(String message, Object... fills) {
-		return new Error<>(format(message,fills), null, null);
+		return new Error<>(fill(message,fills), null, null);
 	}
 
 	/**
@@ -85,7 +85,7 @@ public class Error<None> implements Container<None> {
 	 * @return the created Error object
 	 */
 	public static <T> Error<T> error(Exception exception, String message, Object... fills) {
-		return new Error<>(format(message,fills), null, exception == null ? null : List.of(exception));
+		return new Error<>(fill(message,fills), null, exception == null ? null : List.of(exception));
 	}
 
 	/**
@@ -97,7 +97,7 @@ public class Error<None> implements Container<None> {
 	 * @return the created Error object
 	 */
 	public static <T> Error<T> error(Collection<Exception> exceptions, String message, Object... fills) {
-		return new Error<>(format(message,fills), null, exceptions);
+		return new Error<>(fill(message,fills), null, exceptions);
 	}
 
 	/**
@@ -109,7 +109,7 @@ public class Error<None> implements Container<None> {
 	 * @return the created Error object
 	 */
 	public static <T> Error<T> error(Map<String, Object> data, String message, Object... fills) {
-		return new Error<>(format(message,fills), data, null);
+		return new Error<>(fill(message,fills), data, null);
 	}
 
 	/**
@@ -122,7 +122,7 @@ public class Error<None> implements Container<None> {
 	 * @return the created Error object
 	 */
 	public static <T> Error<T> error(Map<String, Object> data, Exception exception, String message, Object... fills) {
-		return new Error<>(format(message,fills), data, exception == null ? null : List.of(exception));
+		return new Error<>(fill(message,fills), data, exception == null ? null : List.of(exception));
 	}
 
 	/**
@@ -135,7 +135,7 @@ public class Error<None> implements Container<None> {
 	 * @return the created Error object
 	 */
 	public static <T> Error<T> error(Map<String, Object> data, Collection<Exception> exceptions, String message, Object... fills) {
-		return new Error<>(format(message,fills), data, exceptions);
+		return new Error<>(fill(message,fills), data, exceptions);
 	}
 
 	/**
@@ -144,6 +144,10 @@ public class Error<None> implements Container<None> {
 	 */
 	public Collection<Exception> exceptions() {
 		return exceptions;
+	}
+
+	private static String fill(String message, Object ... fills){
+		return fills == null || fills.length < 1 ? message : format(message,fills);
 	}
 
 	@Override
