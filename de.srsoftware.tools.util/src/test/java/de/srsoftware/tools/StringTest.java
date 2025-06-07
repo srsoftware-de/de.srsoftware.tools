@@ -1,8 +1,7 @@
 /* © SRSoftware 2025 */
 package de.srsoftware.tools;
 
-import static de.srsoftware.tools.Strings.camelCase;
-import static de.srsoftware.tools.Strings.snakeCase;
+import static de.srsoftware.tools.Strings.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
@@ -34,4 +33,10 @@ public class StringTest {
 		assertEquals("dies_ist_ein_ganz_normaler_satz.", mapped);
 	}
 
+	@Test
+	void testEscapeHtmlEntities(){
+		var orig = "Huren & Söhne";
+		var then = escapeHtmlEntities(orig);
+		assertEquals("Huren &amp; Söhne",then);
+	}
 }

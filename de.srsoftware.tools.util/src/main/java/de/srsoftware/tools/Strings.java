@@ -1,6 +1,8 @@
 /* © SRSoftware 2025 */
 package de.srsoftware.tools;
 
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
 import java.util.Base64;
 import java.util.UUID;
 
@@ -39,6 +41,36 @@ public class Strings {
 			}
 		}
 		return sb.toString();
+	}
+
+	private static String entity(int idx) {
+		if (idx < 10) return "&#00"+idx+";";
+		if (idx < 100) return "&#0"+idx+";";
+		return "&#00"+idx+";";
+	}
+
+	/**
+	 * replace some special characters that clash with xml markup
+	 * @param text original text to be processed
+	 * @return text with replacements
+	 */
+	public static String escapeHtmlEntities(String text) {
+		final StringBuilder result = new StringBuilder();
+		final StringCharacterIterator iterator = new StringCharacterIterator(text);
+		char character = iterator.current();
+		while (character != CharacterIterator.DONE) {
+			var appendix = switch (character){
+				case '<' -> "&lt;";
+				case '>' -> "&gt;";
+				case '&' -> "&amp;";
+				case '"' -> "&quot;";
+				case '\t' -> entity(9);
+				default -> character;
+			};
+			result.append(appendix);
+			character = iterator.next();
+		}
+		return result.toString();
 	}
 
 	/**
