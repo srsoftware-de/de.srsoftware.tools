@@ -225,6 +225,16 @@ public abstract class PathHandler implements HttpHandler {
 	}
 
 	/**
+	 * fetches data from an form-urlencoded message body
+	 * @param ex the exchange whose content type is to be evaluated
+	 * @return a data map representing the form data
+	 * @throws IOException if the data cannot be read
+	 */
+	public static Map<String, Object> formData(HttpExchange ex) throws IOException {
+		return Query.decode(body(ex));
+	}
+
+	/**
 	 * extract the value of an <em>Authorization</em> header, if present
 	 * @param ex the HttpExchange to extract from
 	 * @return an optional, carrying the first value of an <em>Authorization</em> header, of present. empty, otherwise.
