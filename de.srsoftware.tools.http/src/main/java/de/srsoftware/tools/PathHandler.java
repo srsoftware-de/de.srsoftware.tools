@@ -76,8 +76,18 @@ public abstract class PathHandler implements HttpHandler {
 	 * @param origin the value for the header
 	 * @return the HttpExchange
 	 */
-	public HttpExchange allowOrigin(HttpExchange ex,String origin){
+	public static HttpExchange allowOrigin(HttpExchange ex,String origin){
 		ex.getResponseHeaders().add("Access-Control-Allow-Origin",origin);
+		return ex;
+	}
+
+	/**
+	 * this method sets the 'Access-Control-Allow-Credentials' header value to true
+	 * @param ex the HttpExchange, whose response headers are to be modified
+	 * @return the HttpExchange
+	 */
+	public static HttpExchange allowCredentials(HttpExchange ex){
+		ex.getResponseHeaders().add("Access-Control-Allow-Credentials","true");
 		return ex;
 	}
 
