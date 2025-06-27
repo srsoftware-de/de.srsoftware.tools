@@ -32,6 +32,7 @@ public abstract class PathHandler implements HttpHandler {
 	/** X-forwarded-proto **/ public static final String FORWARDED_PROTO  = "X-forwarded-proto";
 	/** GET **/               public static final String GET	          = "GET";
 	/** host **/              public static final String HOST             = "host";
+	/** OPTIONS **/           public static final String OPTIONS          = "OPTIONS";
 	/** PATCH **/             public static final String PATCH            = "PATCH";
 	/** POST **/              public static final String POST             = "POST";
 
@@ -155,6 +156,17 @@ public abstract class PathHandler implements HttpHandler {
 	 * @return false
 	 * @throws IOException if sending the response fails
 	 */
+	public boolean doOptions(Path path, HttpExchange ex) throws IOException {
+		return notFound(ex);
+	}
+
+	/**
+	 * "not found" default implementation
+	 * @param path ignored
+	 * @param ex HttpExchange used to return the not-implemented notification
+	 * @return false
+	 * @throws IOException if sending the response fails
+	 */
 	public boolean doPatch(Path path, HttpExchange ex) throws IOException {
 		return notFound(ex);
 	}
@@ -178,6 +190,7 @@ public abstract class PathHandler implements HttpHandler {
 		boolean ignored = switch (method) {
 			case DELETE -> doDelete(path,ex);
 			case GET -> doGet(path,ex);
+			case OPTIONS -> doOptions(path,ex);
 			case PATCH -> doPatch(path,ex);
 			case POST -> doPost(path,ex);
 			default -> handleMethod(method,path,ex);
