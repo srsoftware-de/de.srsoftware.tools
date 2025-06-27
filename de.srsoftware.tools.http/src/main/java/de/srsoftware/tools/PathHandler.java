@@ -65,8 +65,12 @@ public abstract class PathHandler implements HttpHandler {
 		 * @return this PathHandler object
 		 */
 		public PathHandler on(HttpServer server) {
-			for (var path : paths) server.createContext(path, PathHandler.this);
-			return PathHandler.this;
+			var ph = PathHandler.this;
+			for (var path : paths) {
+				server.createContext(path, PathHandler.this);
+				ph.LOG.log(INFO,"Binding {0} to {1}.",ph.getClass().getSimpleName(),path);
+			}
+			return ph;
 		}
 	}
 
