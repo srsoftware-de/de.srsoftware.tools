@@ -38,6 +38,13 @@ public abstract class PathHandler implements HttpHandler {
 
 	/** System Logger **/    public System.Logger LOG	                 = System.getLogger(getClass().getSimpleName());
 
+	/**
+	 * Creates a new instance
+	 */
+	public PathHandler(){
+
+	}
+
 	private String[] paths;
 
 	/**
@@ -412,6 +419,7 @@ public abstract class PathHandler implements HttpHandler {
 	public boolean sendContent(HttpExchange ex, int status, Object o) throws IOException {
 		if (o instanceof Payload<?> payload) o = payload.get();
 		if (o instanceof List<?> list) o = new JSONArray(list);
+		if (o instanceof Mappable mappable) o = mappable.toMap();
 		if (o instanceof Map<?, ?> map) o = new JSONObject(map);
 		if (o instanceof HttpError<?> error) return sendContent(ex, error.code(), error.json());
 		if (o instanceof Error<?> error) return serverError(ex, error.json());
