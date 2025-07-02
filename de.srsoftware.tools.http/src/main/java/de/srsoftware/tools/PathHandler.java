@@ -418,6 +418,8 @@ public abstract class PathHandler implements HttpHandler {
 	 */
 	public boolean sendContent(HttpExchange ex, int status, Object o) throws IOException {
 		if (o instanceof Payload<?> payload) o = payload.get();
+		if (o instanceof Stream<?> stream) o = stream.toList();
+		if (o instanceof Set<?> set) o = List.copyOf(set);
 		if (o instanceof List<?> list) o = new JSONArray(list);
 		if (o instanceof Mappable mappable) o = mappable.toMap();
 		if (o instanceof Map<?, ?> map) o = new JSONObject(map);
