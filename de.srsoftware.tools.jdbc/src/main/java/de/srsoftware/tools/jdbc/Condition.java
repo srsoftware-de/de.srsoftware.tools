@@ -36,6 +36,14 @@ public class Condition {
 	}
 
 	/**
+	 * create a IS NULL condition
+	 * @return  the built condition
+	 */
+	public static Condition isNull(){
+		return new Condition(" IS NULL");
+	}
+
+	/**
 	 * create a …&lt; x… condition
 	 * @param value the value to compare against
 	 * @return the built condition
