@@ -15,6 +15,16 @@ import java.util.stream.Collectors;
  */
 public class Query {
 	private static final System.Logger LOG = System.getLogger(Query.class.getSimpleName());
+
+	/**
+	 * discriminates different SQL dialects
+	 */
+	public enum Dialect{
+		/** MARIADB **/ MARIADB,
+		/** MYSQL   **/ MYSQL,
+		/** SQLITE  **/ SQLITE
+	}
+
 	/**
 	 * this mark instance can be during construction of update queries
 	 */
@@ -90,7 +100,7 @@ public class Query {
 		private final boolean replace;
 		private String[]       fields	 = null;
 		private final List<Object[]> valueSets = new ArrayList<>();
-		private boolean ignoreDuplicates = false;
+		private Dialect ignoreDuplicates = null;
 
 		private InsertQuery(String table) {
 			this(table,false);
@@ -127,13 +137,14 @@ public class Query {
 
 		/**
 		 * set the ignore flag: duplicates during insert will not cause an error
+		 * @param dialect set to a dialect to generate the correct IGNORE clause for the respective dialect. Set to NULL to not ignore duplicates
 		 * @return this InsertQuery object
 		 */
-		public InsertQuery ignoreDuplicates(){
+		public InsertQuery ignoreDuplicates(Dialect dialect){
 			if (replace) {
 				LOG.log(WARNING,"Ignore duplicates is ignored on REPLACE query!");
 			} else {
-				ignoreDuplicates = true;
+				ignoreDuplicates = dialect;
 			}
 			return this;
 		}
@@ -145,8 +156,12 @@ public class Query {
 		public String sql() {
 			var marks = Arrays.stream(fields).map(field -> "?").collect(Collectors.joining(", "));
 			var names = String.join(", ", Arrays.asList(fields));
-			var verb = replace ? "REPLACE" : (ignoreDuplicates ? "INSERT IGNORE" : "INSERT");
-			return "%s INTO %s (%s) VALUES (%s)".formatted(verb,table, names, marks);
+			var verb = replace ? "REPLACE" : switch (ignoreDuplicates){
+				case MYSQL, MARIADB -> "INSERT IGNORE";
+				case SQLITE -> "INSERT OR IGNORE";
+				case null -> "INSERT";
+			};
+			return "%s INTO %s (%s) VALUES (%s)".formatted(verb, table, names, marks);
 		}
 
 

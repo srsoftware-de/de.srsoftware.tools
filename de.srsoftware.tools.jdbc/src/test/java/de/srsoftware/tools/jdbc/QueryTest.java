@@ -2,6 +2,7 @@
 package de.srsoftware.tools.jdbc;
 
 import static de.srsoftware.tools.jdbc.Condition.*;
+import static de.srsoftware.tools.jdbc.Query.Dialect.*;
 import static de.srsoftware.tools.jdbc.Query.MARK;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -96,10 +97,24 @@ public class QueryTest {
 	void testInsertIgnore() {
 		var query = Query  //
 				.insertInto("movies", "title", "year")
-				.ignoreDuplicates()
+				.ignoreDuplicates(MARIADB)
 				.values("Per Anhalter", "2005")
 				.values("2001: A Space Odyssey", "1968");
 		assertEquals("INSERT IGNORE INTO movies (title, year) VALUES (?, ?)", query.sql());
+
+		query = Query  //
+				.insertInto("movies", "title", "year")
+				.ignoreDuplicates(MYSQL)
+				.values("Per Anhalter", "2005")
+				.values("2001: A Space Odyssey", "1968");
+		assertEquals("INSERT IGNORE INTO movies (title, year) VALUES (?, ?)", query.sql());
+
+		query = Query  //
+				.insertInto("movies", "title", "year")
+				.ignoreDuplicates(SQLITE)
+				.values("Per Anhalter", "2005")
+				.values("2001: A Space Odyssey", "1968");
+		assertEquals("INSERT OR IGNORE INTO movies (title, year) VALUES (?, ?)", query.sql());
 	}
 
 	@Test
@@ -115,7 +130,21 @@ public class QueryTest {
 	void testReplaceIgnore() {
 		var query = Query  //
 				.replaceInto("movies", "title", "year")
-				.ignoreDuplicates()
+				.ignoreDuplicates(MARIADB)
+				.values("Per Anhalter", "2005")
+				.values("2001: A Space Odyssey", "1968");
+		assertEquals("REPLACE INTO movies (title, year) VALUES (?, ?)", query.sql());
+
+		query = Query  //
+				.replaceInto("movies", "title", "year")
+				.ignoreDuplicates(MYSQL)
+				.values("Per Anhalter", "2005")
+				.values("2001: A Space Odyssey", "1968");
+		assertEquals("REPLACE INTO movies (title, year) VALUES (?, ?)", query.sql());
+
+		query = Query  //
+				.replaceInto("movies", "title", "year")
+				.ignoreDuplicates(SQLITE)
 				.values("Per Anhalter", "2005")
 				.values("2001: A Space Odyssey", "1968");
 		assertEquals("REPLACE INTO movies (title, year) VALUES (?, ?)", query.sql());
