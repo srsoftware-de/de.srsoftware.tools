@@ -7,6 +7,7 @@ import static de.srsoftware.tools.Optionals.nullable;
 import static java.lang.System.Logger.Level.*;
 import static java.net.HttpURLConnection.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Optional.empty;
 import static java.util.function.Predicate.not;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -255,7 +256,8 @@ public abstract class PathHandler implements HttpHandler {
 	 * @return an Optional containing the content type or empty if no content type was submitted
 	 */
 	public static Optional<String> contentType(HttpExchange ex){
-		return ex.getRequestHeaders().get(CONTENT_TYPE).stream().findAny();
+		var list = ex.getRequestHeaders().get(CONTENT_TYPE);
+		return list == null ? empty() : list.stream().findAny();
 	}
 
 	/**

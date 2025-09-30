@@ -7,6 +7,7 @@ import java.net.URL;
 
 public class MimeType {
 	public static final String MIME_DIA      = "image/dia";
+	public static final String MIME_FORM_DATA = "multipart/form-data";
 	public static final String MIME_FORM_URL = "application/x-www-form-urlencoded";
 	public static final String MIME_GIF      = "image/gif";
 	public static final String MIME_HTML     = "text/html";
