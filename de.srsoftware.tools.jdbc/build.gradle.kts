@@ -19,7 +19,7 @@ object Meta {
     val COMPONENT_TYPE = "java" // "java" or "versionCatalog"
     val GROUP = "de.srsoftware"
     val ARTIFACT_ID = "tools.jdbc"
-    val VERSION = "2.0.0"
+    val VERSION = "2.0.1"
     val PUBLISHING_TYPE = "AUTOMATIC" // USER_MANAGED or AUTOMATIC
     val SHA_ALGORITHMS = listOf("SHA-256", "SHA-512") // sha256 and sha512 are supported but not mandatory. Only sha1 is mandatory but it is supported by default.
     val DESC = "SRSoftware Tools : JDBC utils"
