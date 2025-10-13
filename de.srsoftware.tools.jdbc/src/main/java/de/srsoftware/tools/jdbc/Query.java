@@ -128,6 +128,7 @@ public class Query {
 				stmt.execute();
 			}
 			if (isAutoCommit) conn.setAutoCommit(true);
+			valueSets.clear();
 			return stmt;
 		}
 
