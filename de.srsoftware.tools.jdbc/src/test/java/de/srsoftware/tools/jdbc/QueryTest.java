@@ -46,6 +46,12 @@ public class QueryTest {
 	}
 
 	@Test
+	void testFilterNocase() {
+		var query = Query.select("id", "title", "year").from("movies").where("title", Condition.iEqual("Spaceballs"));
+		assertEquals("SELECT id, title, year FROM movies WHERE title = \"Spaceballs\" COLLATE NOCASE", query.toString());
+	}
+
+	@Test
 	void testMultiFilter() {
 		var query = Query.select("id", "title", "year").from("movies").where("year", Condition.notIn(2020)).where("title", Condition.in("Wall:E")).where("year", Condition.notIn(2021, 2022));
 		assertEquals("SELECT id, title, year FROM movies WHERE year NOT IN (2020) AND year NOT IN (2021, 2022) AND title IN (\"Wall:E\")", query.toString());

@@ -26,6 +26,17 @@ public class Condition {
 	}
 
 	/**
+	 * create a …= x… condition (case insensitive)
+	 * @param value the value to compare against
+	 * @return the built condition
+	 */
+	public static Condition iEqual(Object value) {
+		return new Condition(" = ? COLLATE NOCASE", value);
+	}
+
+
+
+	/**
 	 * create a IN (…) condition
 	 * @param values the values to compare against
 	 * @return the built condition
