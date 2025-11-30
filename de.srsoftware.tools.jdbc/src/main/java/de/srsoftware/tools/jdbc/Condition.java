@@ -22,6 +22,7 @@ public class Condition {
 	 * @return the built condition
 	 */
 	public static Condition equal(Object value) {
+		if (value == null) return isNull();
 		return new Condition(" = ?", value);
 	}
 
@@ -31,6 +32,7 @@ public class Condition {
 	 * @return the built condition
 	 */
 	public static Condition iEqual(Object value) {
+		if (value == null) return isNull();
 		return new Condition(" = ? COLLATE NOCASE", value);
 	}
 
