@@ -120,10 +120,15 @@ public class Query {
 		 */
 		public PreparedStatement execute(Connection conn) throws SQLException {
 			var stmt = conn.prepareStatement(sql(), Statement.RETURN_GENERATED_KEYS);
-			LOG.log(DEBUG,this);
 			var isAutoCommit = conn.getAutoCommit(); // disable and re-enable only if it is disabled before
 			if (isAutoCommit) conn.setAutoCommit(false);
 			for (var arr : valueSets) {
+				if (LOG.isLoggable(DEBUG)){
+					var instance = toString();
+					for (Object o : arr) instance = instance.replace("?", o.toString());
+					LOG.log(DEBUG,instance);
+				}
+
 				for (int i = 0; i < arr.length; i++) stmt.setObject(i + 1, arr[i]);
 				stmt.execute();
 			}
