@@ -125,7 +125,7 @@ public class Query {
 			for (var arr : valueSets) {
 				if (LOG.isLoggable(DEBUG)){
 					var instance = toString();
-					for (Object o : arr) instance = instance.replace("?", ""+o);
+					for (Object o : arr) instance = instance.replaceFirst("\\?", o instanceof Number n ? ""+n : (o == null ? "null" : "\""+o+"\""));
 					LOG.log(DEBUG,instance);
 				}
 
