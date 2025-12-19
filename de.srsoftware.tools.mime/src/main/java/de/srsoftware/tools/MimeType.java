@@ -6,20 +6,21 @@ import java.io.IOException;
 import java.net.URL;
 
 public class MimeType {
-	public static final String MIME_DIA      = "image/dia";
-	public static final String MIME_FORM_DATA = "multipart/form-data";
-	public static final String MIME_FORM_URL = "application/x-www-form-urlencoded";
-	public static final String MIME_GIF      = "image/gif";
-	public static final String MIME_HTML     = "text/html";
-	public static final String MIME_JPG      = "image/jpeg";
-	public static final String MIME_JSON     = "application/json";
-	public static final String MIME_LATEX    = "text/x-tex";
-	public static final String MIME_PDF      = "image/pdf";
-	public static final String MIME_PNG      = "image/png";
-	public static final String MIME_SVG      = "image/svg";
-	public static final String MIME_TXT      = "text/plain";
-	public static final String MIME_UNKNOWN  = "content/unknown";
-	public static final String MIME_XML      = "application/xml";
+	public static final String MIME_DIA          = "image/dia";
+	public static final String MIME_EVENT_STREAM = "text/event-stream";
+	public static final String MIME_FORM_DATA    = "multipart/form-data";
+	public static final String MIME_FORM_URL     = "application/x-www-form-urlencoded";
+	public static final String MIME_GIF          = "image/gif";
+	public static final String MIME_HTML         = "text/html";
+	public static final String MIME_JPG          = "image/jpeg";
+	public static final String MIME_JSON         = "application/json";
+	public static final String MIME_LATEX        = "text/x-tex";
+	public static final String MIME_PDF          = "image/pdf";
+	public static final String MIME_PNG          = "image/png";
+	public static final String MIME_SVG          = "image/svg";
+	public static final String MIME_TXT          = "text/plain";
+	public static final String MIME_UNKNOWN      = "content/unknown";
+	public static final String MIME_XML          = "application/xml";
 
 	/**
 	 * discourage entity creation
