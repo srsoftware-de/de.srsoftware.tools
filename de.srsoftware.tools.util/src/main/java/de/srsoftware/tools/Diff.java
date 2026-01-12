@@ -4,8 +4,22 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeSet;
 
+/**
+ * This class provides means to create textual diff descriptions for several object types
+ */
 public class Diff {
+
+	/**
+	 * Creates textual diffs of multi-line texts or arrays of lines
+	 */
 	public static class LineDiff{
+
+		/**
+		 * create a textual representation of two arrays of strings
+		 * @param reference a reference text passed as array of strings
+		 * @param update text that will be compared against the reference, provided as array of strings
+		 * @return the textual diff
+		 */
 		public static String diff(String[] reference, String[] update) {
 			var diff = new ArrayList<String>();
 			var matchBefore = 0;
@@ -27,8 +41,29 @@ public class Diff {
 			for (var i = matchBefore; i<update.length; i++) diff.add("+ "+update[i]);
 			return String.join("\n",diff);
 		}
+
+		/**
+		 * create a textual representation of two (multi-line) strings
+		 * @param reference a reference text
+		 * @param update text that will be compared against the reference
+		 * @return the textual diff
+		 */
+		public static String diff(String reference, String update){
+			return diff(reference.split("\n"),update.split("\n"));
+		}
 	}
+
+	/**
+	 * this class provides methods to generate a textual diff of two maps
+	 */
 	public static class MapDiff{
+
+		/**
+		 * create a textual diff of two maps
+		 * @param reference first map, against the second map will be compared
+		 * @param update second map, compared against the reference map
+		 * @return the textual diff
+		 */
 		public static String diff(Map<String, Object> reference, Map<String, Object> update) {
 			var lines = new ArrayList<String>();
 			diff("", lines, reference, update);
@@ -64,7 +99,7 @@ public class Diff {
 				if (refVal.equals(updVal)) continue;
 				// different
 				if (refVal instanceof String r && updVal instanceof String u){
-					lines.add(key+": "+LineDiff.diff(r.split("\n"), u.split("\n")));
+					lines.add(key+": "+LineDiff.diff(r, u));
 				}
 				if (refVal instanceof Map<?,?> && updVal instanceof Map<?,?>){
 					diff(prefixed+".",lines, (Map<String, Object>) refVal, (Map<String, Object>) updVal);

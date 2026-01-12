@@ -76,7 +76,7 @@ public class DiffTest {
 				…
 				+ Line G
 				""".trim();
-		var diff = Diff.LineDiff.diff(a.split("\n"),b.split("\n"));
+		var diff = Diff.LineDiff.diff(a,b);
 		assertEquals(expected,diff);
 	}
 }
