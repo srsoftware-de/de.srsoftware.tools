@@ -100,6 +100,7 @@ public class Diff {
 				// different
 				if (refVal instanceof String r && updVal instanceof String u){
 					lines.add(key+": "+LineDiff.diff(r, u));
+					continue;
 				}
 				if (refVal instanceof Map<?,?> && updVal instanceof Map<?,?>){
 					diff(prefixed+".",lines, (Map<String, Object>) refVal, (Map<String, Object>) updVal);
