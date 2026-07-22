@@ -121,16 +121,23 @@ public class Query {
 		public PreparedStatement execute(Connection conn) throws SQLException {
 			var stmt = conn.prepareStatement(sql(), Statement.RETURN_GENERATED_KEYS);
 			var isAutoCommit = conn.getAutoCommit(); // disable and re-enable only if it is disabled before
-			if (isAutoCommit) conn.setAutoCommit(false);
-			for (var arr : valueSets) {
-				if (LOG.isLoggable(DEBUG)){
-					var instance = toString();
-					for (Object o : arr) instance = instance.replaceFirst("\\?", o instanceof Number n ? ""+n : (o == null ? "null" : "\""+o+"\""));
-					LOG.log(DEBUG,instance);
-				}
+			try {
+				if (isAutoCommit) conn.setAutoCommit(false);
+				for (var arr : valueSets) {
+					if (LOG.isLoggable(DEBUG)) {
+						var instance = toString();
+						for (Object o : arr)
+							instance = instance.replaceFirst("\\?", o instanceof Number n ? "" + n : (o == null ? "null" : "\"" + o + "\""));
+						LOG.log(DEBUG, instance);
+					}
 
-				for (int i = 0; i < arr.length; i++) stmt.setObject(i + 1, arr[i]);
-				stmt.execute();
+					for (int i = 0; i < arr.length; i++) stmt.setObject(i + 1, arr[i]);
+					stmt.execute();
+				}
+			} catch (SQLException e){
+				conn.rollback();
+				if (isAutoCommit) conn.setAutoCommit(true);
+				throw e;
 			}
 			if (isAutoCommit) conn.setAutoCommit(true);
 			valueSets.clear();
